@@ -1,4 +1,4 @@
-metrics-cdi
+CDI Extension for Metrics
 ===========
 
-CDI extension for Yammer's Metrics library
+[CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/).
