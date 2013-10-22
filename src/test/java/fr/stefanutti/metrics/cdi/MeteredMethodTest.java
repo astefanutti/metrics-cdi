@@ -15,13 +15,16 @@
  */
 package fr.stefanutti.metrics.cdi;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import fr.stefanutti.metrics.cdi.bean.MeteredMethodBean;
 import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
@@ -32,54 +35,44 @@ import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class MetricsExtensionTest {
+public class MeteredMethodTest {
 
-    private final static String TIMER_NAME = TimedMethodBean.class.getName() + "." + "timedMethod";
+    private final static String METER_NAME = MeteredMethodBean.class.getName() + "." + "meteredMethod";
 
     @Deployment
-    public static Archive<?> deployManagedInterfaces() throws Exception {
-        //J-
+    public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedMethodBean.class)
+            .addClass(MeteredMethodBean.class)
             // DeltaSpike
             .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
-            .addPackages(true, MetricsExtension.class.getPackage())
+            .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)
             // Bean archive deployment descriptor
             .addAsManifestResource("META-INF/beans.xml");
-        //J+
     }
-
-    @Inject
-    private TimedMethodBean bean;
 
     @Produces
     @Singleton
     private static MetricRegistry registry = new MetricRegistry();
 
-    @Test
-    @InSequence(1)
-    public void timedMethodNotCalledYet() {
-    }
+    @Inject
+    private MeteredMethodBean bean;
 
     @Test
-    @InSequence(2)
-    public void callTimedMethodOnce() {
-        // Call the timed method and assert it's been timed
-        bean.timedMethod();
+    public void callMeteredMethodOnce() {
+        // Call the metered method and assert it's been marked
+        bean.meteredMethod();
 
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
+        Meter meter = registry.getMeters().get(METER_NAME);
 
-        // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
+        // Make sure that the meter has been called
+        assertThat("Timer count is incorrect", meter.getCount(), is(equalTo(1L)));
     }
 }

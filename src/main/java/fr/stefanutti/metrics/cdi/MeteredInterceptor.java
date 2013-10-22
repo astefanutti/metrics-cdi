@@ -15,45 +15,30 @@
  */
 package fr.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.Metric;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.annotation.ExceptionMetered;
-import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 @Interceptor
-@TimedBinding
-class TimedInterceptor {
+@MeteredBinding
+class MeteredInterceptor {
 
     @Inject
     MetricRegistry registry;
 
-    @Inject
-    private TimedInterceptor() {
-
-    }
-
     @AroundInvoke
     private Object timeMethod(InvocationContext ic) throws Exception {
-        Timed timed = ic.getMethod().getAnnotation(Timed.class);
-        String finalName = timed.name().isEmpty() ? ic.getMethod().getName() : timed.name();
-        Timer timer = registry.timer(timed.absolute() ? finalName : MetricRegistry.name(ic.getMethod().getDeclaringClass(), finalName));
-        Timer.Context context = timer.time();
-        try {
-            return ic.proceed();
-        } finally {
-            context.stop();
-        }
+        Metered metered = ic.getMethod().getAnnotation(Metered.class);
+        String finalName = metered.name().isEmpty() ? ic.getMethod().getName() : metered.name();
+        Meter meter = registry.meter(metered.absolute() ? finalName : MetricRegistry.name(ic.getMethod().getDeclaringClass(), finalName));
+        meter.mark();
+        return ic.proceed();
     }
 }
