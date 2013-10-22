@@ -1,14 +1,15 @@
 CDI Extension for Metrics
 ===========
 
-[CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/).
+[CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/) compliant
+with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1](http://jcp.org/en/jsr/detail?id=346).
 
 ## About
 
-The `metrics-cdi` library provides support for the [_Metrics_ annotations](https://github.com/codahale/metrics/tree/master/metrics-annotation)
-in a [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) enabled environment.
+_Metrics CDI_ provides support for the [_Metrics_ annotations](https://github.com/codahale/metrics/tree/master/metrics-annotation)
+in [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
-+ Intercept invocations on managed bean methods annotated with
++ Intercept invocations of managed bean methods annotated with
   [`@ExceptionMetered`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html),
   [`@Metered`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html) and
   [`@Timed`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html))
@@ -16,9 +17,11 @@ It implements the contract specified by these annotations with the following lev
   in the `MetricRegistry` bean available in the CDI container
 + Register [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html) instances
   for bean methods annotated with [`@Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html)
-+ Inject by name [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html)
++ Inject by name [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html),
   [`Meter`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Meter.html) and
   [`Timer`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html) instances
+
+_Metrics CDI_ is compatible with _Metrics_ version 3.0.
 
 ## Getting Started
 
