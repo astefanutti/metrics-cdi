@@ -15,10 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
-import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import org.apache.deltaspike.core.util.metadata.AnnotationInstanceProvider;
@@ -28,24 +25,31 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
-public class MetricsExtension implements Extension {
+class MetricsExtension implements Extension {
 
     private <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> event) {
         for (AnnotatedMethod method : event.getAnnotatedType().getMethods()) {
+            if (method.isAnnotationPresent(ExceptionMetered.class)) {
+                AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
+                    .readFromType(event.getAnnotatedType())
+                    .addToClass(AnnotationInstanceProvider.of(MetricsBinding.class))
+                    .addToMethod(method, AnnotationInstanceProvider.of(ExceptionMeteredBinding.class));
+                event.setAnnotatedType(builder.create());
+            }
 
             if (method.isAnnotationPresent(Metered.class)) {
                 AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
-                        .readFromType(event.getAnnotatedType())
-                        .addToMethod(method, AnnotationInstanceProvider.of(MeteredBinding.class));
+                    .readFromType(event.getAnnotatedType())
+                    .addToClass(AnnotationInstanceProvider.of(MetricsBinding.class))
+                    .addToMethod(method, AnnotationInstanceProvider.of(MeteredBinding.class));
                 event.setAnnotatedType(builder.create());
             }
 
             if (method.isAnnotationPresent(Timed.class)) {
                 AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
                     .readFromType(event.getAnnotatedType())
+                    .addToClass(AnnotationInstanceProvider.of(MetricsBinding.class))
                     .addToMethod(method, AnnotationInstanceProvider.of(TimedBinding.class));
                 event.setAnnotatedType(builder.create());
             }

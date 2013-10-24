@@ -16,6 +16,7 @@
 package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.bean.MeteredMethodBean;
 import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
@@ -34,9 +35,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -45,7 +44,7 @@ public class TimedMethodTest {
     private final static String TIMER_NAME = TimedMethodBean.class.getName() + "." + "timedMethod";
 
     @Deployment
-    public static Archive<?> createTestArchive() {
+    private static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(TimedMethodBean.class)
@@ -66,12 +65,23 @@ public class TimedMethodTest {
     private TimedMethodBean bean;
 
     @Test
-    public void callTimedMethodOnce() {
-        // Call the timed method and assert it's been timed
-        bean.timedMethod();
-
+    @InSequence(1)
+    public void timedMethodNotCalledYet() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);
+
+        // Make sure that the timer hasn't been called yet
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
+    }
+
+    @Test
+    @InSequence(2)
+    public void callTimedMethodOnce() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
+
+        // Call the timed method and assert it's been timed
+        bean.timedMethod();
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));

@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.0.1</metrics.version>
         <cdi.version>1.1</cdi.version>
-        <weld.version>2.1.0.CR1</weld.version>
+        <weld.version>2.1.0.Final</weld.version>
         <deltaspike.version>0.5</deltaspike.version>
     </properties>
 

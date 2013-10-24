@@ -17,6 +17,7 @@ package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.bean.MeteredMethodBean;
 import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -44,7 +46,7 @@ public class MeteredMethodTest {
     private final static String METER_NAME = MeteredMethodBean.class.getName() + "." + "meteredMethod";
 
     @Deployment
-    public static Archive<?> createTestArchive() {
+    private static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(MeteredMethodBean.class)
@@ -65,12 +67,23 @@ public class MeteredMethodTest {
     private MeteredMethodBean bean;
 
     @Test
-    public void callMeteredMethodOnce() {
-        // Call the metered method and assert it's been marked
-        bean.meteredMethod();
-
+    @InSequence(1)
+    public void meteredMethodNotCalledYet() {
         assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
         Meter meter = registry.getMeters().get(METER_NAME);
+
+        // Make sure that the meter hasn't been called yet
+        assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(0L)));
+    }
+
+    @Test
+    @InSequence(2)
+    public void callMeteredMethodOnce() {
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
+        Meter meter = registry.getMeters().get(METER_NAME);
+
+        // Call the metered method and assert it's been marked
+        bean.meteredMethod();
 
         // Make sure that the meter has been called
         assertThat("Timer count is incorrect", meter.getCount(), is(equalTo(1L)));

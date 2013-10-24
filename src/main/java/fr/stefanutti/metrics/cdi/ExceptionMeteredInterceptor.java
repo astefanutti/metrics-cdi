@@ -17,29 +17,32 @@ package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Metered;
-import com.codahale.metrics.annotation.Timed;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.util.Arrays;
 
 @Interceptor
-@MeteredBinding
-class MeteredInterceptor {
+@ExceptionMeteredBinding
+class ExceptionMeteredInterceptor {
 
     @Inject
     private MetricRegistry registry;
 
     @AroundInvoke
-    private Object meteredMethod(InvocationContext context) throws Exception {
-        Metered metered = context.getMethod().getAnnotation(Metered.class);
-        String finalName = metered.name().isEmpty() ? context.getMethod().getName() : metered.name();
+    private Object exceptionMeteredMethod(InvocationContext context) throws Throwable {
+        ExceptionMetered metered = context.getMethod().getAnnotation(ExceptionMetered.class);
+        String finalName = metered.name().isEmpty() ? context.getMethod().getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
         Meter meter = registry.meter(metered.absolute() ? finalName : MetricRegistry.name(context.getMethod().getDeclaringClass(), finalName));
-        meter.mark();
-        return context.proceed();
+        try {
+            return context.proceed();
+        } catch (Throwable throwable) {
+            if (metered.cause().isInstance(throwable))
+                meter.mark();
+            throw throwable;
+        }
     }
 }
