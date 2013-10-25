@@ -16,6 +16,7 @@
 package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import org.apache.deltaspike.core.util.metadata.AnnotationInstanceProvider;
@@ -37,7 +38,12 @@ class MetricsExtension implements Extension {
                     .addToMethod(method, AnnotationInstanceProvider.of(ExceptionMeteredBinding.class));
                 event.setAnnotatedType(builder.create());
             }
-
+            if (method.isAnnotationPresent(Gauge.class)) {
+                AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
+                    .readFromType(event.getAnnotatedType())
+                    .addToClass(AnnotationInstanceProvider.of(MetricsBinding.class));
+                event.setAnnotatedType(builder.create());
+            }
             if (method.isAnnotationPresent(Metered.class)) {
                 AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
                     .readFromType(event.getAnnotatedType())
@@ -45,7 +51,6 @@ class MetricsExtension implements Extension {
                     .addToMethod(method, AnnotationInstanceProvider.of(MeteredBinding.class));
                 event.setAnnotatedType(builder.create());
             }
-
             if (method.isAnnotationPresent(Timed.class)) {
                 AnnotatedTypeBuilder<T> builder = new AnnotatedTypeBuilder<T>()
                     .readFromType(event.getAnnotatedType())

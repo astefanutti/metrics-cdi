@@ -15,7 +15,6 @@
  */
 package fr.stefanutti.metrics.cdi.bean;
 
-
 import com.codahale.metrics.annotation.Timed;
 
 public class TimedMethodBean {

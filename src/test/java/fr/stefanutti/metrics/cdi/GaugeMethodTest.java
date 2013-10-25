@@ -15,11 +15,11 @@
  */
 package fr.stefanutti.metrics.cdi;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
-import fr.stefanutti.metrics.cdi.bean.MeteredMethodBean;
-import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
+import fr.stefanutti.metrics.cdi.bean.GaugeMethodBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -36,18 +36,19 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimedMethodTest {
+public class GaugeMethodTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
+    private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
     @Deployment
     private static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedMethodBean.class)
+            .addClass(GaugeMethodBean.class)
             // DeltaSpike
             .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
@@ -62,28 +63,29 @@ public class TimedMethodTest {
     private static MetricRegistry registry = new MetricRegistry();
 
     @Inject
-    private TimedMethodBean bean;
+    private GaugeMethodBean bean;
 
     @Test
     @InSequence(1)
-    public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+    public void gaugeCalledWithDefaultValue() {
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
 
-        // Make sure that the timer hasn't been called yet
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
+        // Make sure that the gauge has the expected value
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
     }
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+    public void callGaugeAfterSetterCall() {
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
 
-        // Call the timed method and assert it's been timed
-        bean.timedMethod();
-
-        // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
+        // Call the setter method and assert the gauge is up-to-date
+        long value = Math.round(Math.random() * Long.MAX_VALUE);
+        bean.setGauge(value);
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(value)));
     }
 }

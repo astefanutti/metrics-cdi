@@ -15,11 +15,21 @@
  */
 package fr.stefanutti.metrics.cdi.bean;
 
-import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Gauge;
 
-public class MeteredMethodBean {
+import javax.inject.Singleton;
 
-    @Metered(name = "meteredMethod")
-    public void meteredMethod() {
+@Singleton
+public class GaugeMethodBean {
+
+    private long gauge;
+
+    @Gauge(name = "gaugeMethod")
+    public long getGauge() {
+        return gauge;
+    }
+
+    public void setGauge(long gauge) {
+        this.gauge = gauge;
     }
 }

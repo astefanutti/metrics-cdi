@@ -15,9 +15,9 @@
  */
 package fr.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Interceptor
@@ -48,20 +49,52 @@ class MetricsInterceptor {
         for (Method method : bean.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ExceptionMetered.class)) {
                 ExceptionMetered metered = method.getAnnotation(ExceptionMetered.class);
-                String finalName = metered.name().isEmpty() ? method.getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
-                registry.meter(metered.absolute() ? finalName : MetricRegistry.name(bean, finalName));
+                String name = metered.name().isEmpty() ? method.getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
+                registry.meter(metered.absolute() ? name : MetricRegistry.name(bean, name));
+            }
+            if (method.isAnnotationPresent(Gauge.class)) {
+                Gauge gauge = method.getAnnotation(Gauge.class);
+                String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
+                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget()));
             }
             if (method.isAnnotationPresent(Metered.class)) {
                 Metered metered = method.getAnnotation(Metered.class);
-                String finalName = metered.name().isEmpty() ? method.getName() : metered.name();
-                registry.meter(metered.absolute() ? finalName : MetricRegistry.name(bean, finalName));
+                String name = metered.name().isEmpty() ? method.getName() : metered.name();
+                registry.meter(metered.absolute() ? name : MetricRegistry.name(bean, name));
             }
             if (method.isAnnotationPresent(Timed.class)) {
                 Timed timed = method.getAnnotation(Timed.class);
-                String finalName = timed.name().isEmpty() ? method.getName() : timed.name();
-                registry.timer(timed.absolute() ? finalName : MetricRegistry.name(bean, finalName));
+                String name = timed.name().isEmpty() ? method.getName() : timed.name();
+                registry.timer(timed.absolute() ? name : MetricRegistry.name(bean, name));
             }
         }
         context.proceed();
+    }
+
+    private static class ForwardingGauge implements com.codahale.metrics.Gauge<Object> {
+
+        final Method method;
+        final Object object;
+
+        private ForwardingGauge(Method method, Object object) {
+            this.method = method;
+            this.object = object;
+            method.setAccessible(true);
+        }
+
+        @Override
+        public Object getValue() {
+            return invokeMethod(method, object);
+        }
+    }
+
+    private static Object invokeMethod(Method method, Object object) {
+        try {
+            return method.invoke(object);
+        } catch (IllegalAccessException cause) {
+            throw new IllegalStateException("Error while calling method [" + method + "]", cause);
+        } catch (InvocationTargetException cause) {
+            throw new IllegalStateException("Error while calling method [" + method + "]", cause);
+        }
     }
 }

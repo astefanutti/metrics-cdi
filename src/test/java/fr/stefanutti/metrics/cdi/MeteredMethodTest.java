@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class MeteredMethodTest {
 
-    private final static String METER_NAME = MeteredMethodBean.class.getName() + "." + "meteredMethod";
+    private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean.class, "meteredMethod");
 
     @Deployment
     private static Archive<?> createTestArchive() {
