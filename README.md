@@ -1,4 +1,4 @@
-CDI Extension for Metrics
+CDI Extension for Metrics [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi)
 ===========
 
 [CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/) compliant
