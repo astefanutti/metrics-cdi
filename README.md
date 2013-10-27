@@ -1,5 +1,4 @@
-CDI Extension for Metrics [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi)
-[![Coverage Status](https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master)](https://coveralls.io/r/astefanutti/metrics-cdi?branch=master)
+CDI Extension for Metrics [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi) [![Coverage Status](https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master)](https://coveralls.io/r/astefanutti/metrics-cdi?branch=master)
 ===========
 
 [CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/) compliant
