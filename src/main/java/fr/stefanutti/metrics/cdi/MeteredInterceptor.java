@@ -17,15 +17,12 @@ package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.Metered;
-import com.codahale.metrics.annotation.Timed;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.util.Arrays;
 
 @Interceptor
 @MeteredBinding
