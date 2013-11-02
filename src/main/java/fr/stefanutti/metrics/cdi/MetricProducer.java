@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 class MetricProducer {
 
     @Produces
-    Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
+    private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
         String finalName;
         if (point.getAnnotated().isAnnotationPresent(Metric.class)) {
             Metric metric = point.getAnnotated().getAnnotation(Metric.class);
