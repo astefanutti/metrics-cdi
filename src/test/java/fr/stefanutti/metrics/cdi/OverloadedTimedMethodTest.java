@@ -58,8 +58,6 @@ public class OverloadedTimedMethodTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(OverloadedTimedMethodBean.class)
-            // DeltaSpike
-            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
             .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)

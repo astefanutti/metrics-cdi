@@ -60,8 +60,6 @@ public class TimerFieldTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(TimerFieldBean.class)
-            // DeltaSpike
-            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
             .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)

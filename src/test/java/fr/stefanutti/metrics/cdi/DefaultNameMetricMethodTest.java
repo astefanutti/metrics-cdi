@@ -56,8 +56,6 @@ public class DefaultNameMetricMethodTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(DefaultNameMetricMethodBean.class)
-            // DeltaSpike
-            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
             .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)

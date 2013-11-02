@@ -50,8 +50,6 @@ public class MeteredMethodTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(MeteredMethodBean.class)
-            // DeltaSpike
-            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
             .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)

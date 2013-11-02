@@ -60,8 +60,6 @@ public class ExceptionMeteredMethodTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(ExceptionMeteredMethodBean.class)
-            // DeltaSpike
-            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Metrics CDI extension
             .addPackages(false, Filters.exclude(".*Test.*"), MetricsExtension.class.getPackage())
             .addAsServiceProvider(Extension.class, MetricsExtension.class)

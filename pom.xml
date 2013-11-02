@@ -42,7 +42,6 @@
         <metrics.version>3.0.1</metrics.version>
         <cdi.version>1.1</cdi.version>
         <weld.version>2.1.0.Final</weld.version>
-        <deltaspike.version>0.5</deltaspike.version>
     </properties>
 
     <build>
@@ -136,21 +135,6 @@
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.deltaspike.core</groupId>
-                <artifactId>deltaspike-core-api</artifactId>
-                <version>${deltaspike.version}</version>
-            </dependency>
-
-            <!-- runtime dependencies -->
-
-            <dependency>
-                <groupId>org.apache.deltaspike.core</groupId>
-                <artifactId>deltaspike-core-impl</artifactId>
-                <version>${deltaspike.version}</version>
-                <scope>runtime</scope>
             </dependency>
 
             <!-- provided dependencies -->
@@ -267,21 +251,11 @@
             <artifactId>metrics-annotation</artifactId>
         </dependency>
 
+        <!-- provided dependencies -->
+
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.deltaspike.core</groupId>
-            <artifactId>deltaspike-core-api</artifactId>
-        </dependency>
-
-        <!-- runtime dependencies -->
-
-        <dependency>
-            <groupId>org.apache.deltaspike.core</groupId>
-            <artifactId>deltaspike-core-impl</artifactId>
         </dependency>
 
         <!-- test dependencies -->
