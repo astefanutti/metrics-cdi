@@ -20,21 +20,15 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-class AnnotatedMethodDecorator<X> implements AnnotatedMethod<X> {
+final class AnnotatedMethodDecorator<X> extends AnnotatedDecorator implements AnnotatedMethod<X> {
 
     private final AnnotatedMethod<X> decoratedMethod;
 
-    private final Annotation decoratingAnnotation;
-
     AnnotatedMethodDecorator(AnnotatedMethod<X> decoratedMethod, Annotation decoratingAnnotation) {
+        super(decoratedMethod, decoratingAnnotation);
         this.decoratedMethod = decoratedMethod;
-        this.decoratingAnnotation = decoratingAnnotation;
     }
 
     @Override
@@ -55,35 +49,5 @@ class AnnotatedMethodDecorator<X> implements AnnotatedMethod<X> {
     @Override
     public List<AnnotatedParameter<X>> getParameters() {
         return decoratedMethod.getParameters();
-    }
-
-    @Override
-    public Type getBaseType() {
-        return decoratedMethod.getBaseType();
-    }
-
-    @Override
-    public Set<Type> getTypeClosure() {
-        return decoratedMethod.getTypeClosure();
-    }
-
-    @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        if (annotationType.isAssignableFrom(decoratingAnnotation.annotationType()))
-            return (T) decoratingAnnotation;
-        else
-            return decoratedMethod.getAnnotation(annotationType);
-    }
-
-    @Override
-    public Set<Annotation> getAnnotations() {
-        Set<Annotation> annotations = new HashSet<Annotation>(decoratedMethod.getAnnotations());
-        annotations.add(decoratingAnnotation);
-        return Collections.unmodifiableSet(annotations);
-    }
-
-    @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return annotationType.equals(decoratingAnnotation.annotationType()) || decoratedMethod.isAnnotationPresent(annotationType);
     }
 }

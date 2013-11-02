@@ -20,20 +20,15 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
-class AnnotatedTypeDecorator<X> implements AnnotatedType<X> {
+final class AnnotatedTypeDecorator<X> extends AnnotatedDecorator implements AnnotatedType<X> {
 
     private final AnnotatedType<X> decoratedType;
 
-    private final Annotation decoratingAnnotation;
-
     AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation) {
+        super(decoratedType, decoratingAnnotation);
         this.decoratedType = decoratedType;
-        this.decoratingAnnotation = decoratingAnnotation;
     }
 
     @Override
@@ -54,35 +49,5 @@ class AnnotatedTypeDecorator<X> implements AnnotatedType<X> {
     @Override
     public Set<AnnotatedField<? super X>> getFields() {
         return decoratedType.getFields();
-    }
-
-    @Override
-    public Type getBaseType() {
-        return decoratedType.getBaseType();
-    }
-
-    @Override
-    public Set<Type> getTypeClosure() {
-        return decoratedType.getTypeClosure();
-    }
-
-    @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        if (annotationType.isAssignableFrom(decoratingAnnotation.annotationType()))
-            return (T) decoratingAnnotation;
-        else
-            return decoratedType.getAnnotation(annotationType);
-    }
-
-    @Override
-    public Set<Annotation> getAnnotations() {
-        Set<Annotation> annotations = new HashSet<Annotation>(decoratedType.getAnnotations());
-        annotations.add(decoratingAnnotation);
-        return Collections.unmodifiableSet(annotations);
-    }
-
-    @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return annotationType.equals(decoratingAnnotation.annotationType()) || decoratedType.isAnnotationPresent(annotationType);
     }
 }

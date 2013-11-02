@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
+final class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
 
     private final AnnotatedType<X> decoratedType;
 
