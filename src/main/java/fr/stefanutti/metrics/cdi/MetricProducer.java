@@ -15,6 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -27,13 +28,18 @@ import javax.inject.Singleton;
 class MetricProducer {
 
     @Produces
-    private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
-        return registry.timer(metricName(point));
+    private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
+        return registry.counter(metricName(point));
     }
 
     @Produces
     private Meter produceMeter(MetricRegistry registry, InjectionPoint point) {
         return registry.meter(metricName(point));
+    }
+
+    @Produces
+    private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
+        return registry.timer(metricName(point));
     }
 
     private String metricName(InjectionPoint point) {
