@@ -21,12 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to provide metadata for a {@link Metric} injection.
+ * An annotation to provide metadata for a {@code com.codahale.metrics.Metric} injection.
  * <p/>
  * Given the declared field:
  * <pre><code>
- *     \@Metric
  *     \@Inject
+ *     \@Metric
  *     public Timer timer;
  * </code></pre>
  * <p/>

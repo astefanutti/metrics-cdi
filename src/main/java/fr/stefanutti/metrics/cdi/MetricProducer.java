@@ -15,6 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -27,15 +28,21 @@ class MetricProducer {
 
     @Produces
     private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
-        String finalName;
+        return registry.timer(metricName(point));
+    }
+
+    @Produces
+    private Meter produceMeter(MetricRegistry registry, InjectionPoint point) {
+        return registry.meter(metricName(point));
+    }
+
+    private String metricName(InjectionPoint point) {
         if (point.getAnnotated().isAnnotationPresent(Metric.class)) {
             Metric metric = point.getAnnotated().getAnnotation(Metric.class);
             String name = metric.name().isEmpty() ? point.getMember().getName() : metric.name();
-            finalName = metric.absolute() ? name : MetricRegistry.name(point.getMember().getDeclaringClass(), name);
+            return metric.absolute() ? name : MetricRegistry.name(point.getMember().getDeclaringClass(), name);
         } else {
-            finalName = MetricRegistry.name(point.getMember().getDeclaringClass(), point.getMember().getName());
+            return MetricRegistry.name(point.getMember().getDeclaringClass(), point.getMember().getName());
         }
-
-        return registry.timer(finalName);
     }
 }
