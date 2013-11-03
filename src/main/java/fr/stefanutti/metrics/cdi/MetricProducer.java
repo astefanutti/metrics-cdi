@@ -15,10 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.*;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -30,6 +27,11 @@ class MetricProducer {
     @Produces
     private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
         return registry.counter(metricName(point));
+    }
+
+    @Produces
+    private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point) {
+        return registry.histogram(metricName(point));
     }
 
     @Produces
