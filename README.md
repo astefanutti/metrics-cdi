@@ -20,7 +20,8 @@ It implements the contract specified by these annotations with the following lev
   [`Meter`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Meter.html) and
   [`Timer`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html) instances
 + Register or retrieve the associated [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html) instances
-  in the `MetricRegistry` bean available in the CDI container
+  in the [`MetricRegistry`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html) bean
+  available in the CDI container.
 
 _Metrics CDI_ is compatible with _Metrics_ version 3.0.
 
