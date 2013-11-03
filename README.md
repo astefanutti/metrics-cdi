@@ -72,6 +72,24 @@ public class TimedMethodBean {
 
 ## Limitations
 
+[CDI 1.1][] is leveraging on [Java Interceptors Specification 1.2][] to provide the ability to associate interceptors
+to objects via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from business logic
+and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
+
+[CDI 1.1][] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user
+perspective, that implies that the managed beans to be monitored with _Metrics_ (i.e. having at least one member method annotated
+with one of the _Metrics_ annotations) must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
+> + classes which don’t have a non-private constructor with no parameters,
+> + classes which are declared final,
+> + classes which have non-static, final methods with public, protected or default visibility,
+> + primitive types,
+> + and array types.
+
+[CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
+[Java Interceptors Specification 1.2]: http://download.oracle.com/otndocs/jcp/interceptors-1_2-mrel2-eval-spec/
+[Binding an interceptor to a bean]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#binding_interceptor_to_bean
+[Unproxyable bean types]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#unproxyable
+
 License
 -------
 
