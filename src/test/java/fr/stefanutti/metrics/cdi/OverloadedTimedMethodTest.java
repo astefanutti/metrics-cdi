@@ -16,9 +16,7 @@
 package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
-import fr.stefanutti.metrics.cdi.bean.DefaultNameMetricMethodBean;
 import fr.stefanutti.metrics.cdi.bean.OverloadedTimedMethodBean;
 import fr.stefanutti.metrics.cdi.util.MetricsUtil;
 import org.hamcrest.Matchers;
@@ -41,7 +39,6 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)

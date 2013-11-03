@@ -16,14 +16,10 @@
 package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import fr.stefanutti.metrics.cdi.bean.DefaultNameMetricMethodBean;
-import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
 import fr.stefanutti.metrics.cdi.bean.TimerFieldBean;
 import fr.stefanutti.metrics.cdi.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

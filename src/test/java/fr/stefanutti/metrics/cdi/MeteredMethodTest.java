@@ -17,10 +17,7 @@ package fr.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.bean.MeteredMethodBean;
-import fr.stefanutti.metrics.cdi.bean.TimedMethodBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -37,7 +34,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)

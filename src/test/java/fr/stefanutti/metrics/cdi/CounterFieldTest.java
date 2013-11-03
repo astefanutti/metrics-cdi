@@ -18,9 +18,6 @@ package fr.stefanutti.metrics.cdi;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import fr.stefanutti.metrics.cdi.bean.CounterFieldBean;
-import fr.stefanutti.metrics.cdi.bean.GaugeMethodBean;
-import fr.stefanutti.metrics.cdi.bean.TimerFieldBean;
-import fr.stefanutti.metrics.cdi.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -35,8 +32,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
