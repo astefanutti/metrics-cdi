@@ -23,30 +23,23 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.*;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
 class MetricsExtension implements Extension {
 
-    private <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> event) {
+    private <T> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<T> event) {
+        Set<AnnotatedMethod<? super T>> decoratedMethods = new HashSet<AnnotatedMethod<? super T>>(4);
         for (AnnotatedMethod<? super T> method : event.getAnnotatedType().getMethods()) {
-            if (method.isAnnotationPresent(ExceptionMetered.class)) {
-                AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
-                AnnotatedMethod<? super T> annotatedMethod = getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE);
-                event.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, annotatedMethod));
-            }
-            if (method.isAnnotationPresent(Gauge.class)) {
-                event.setAnnotatedType(new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE));
-            }
-            if (method.isAnnotationPresent(Metered.class)) {
-                AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
-                AnnotatedMethod<? super T> annotatedMethod = getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE);
-                event.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, annotatedMethod));
-            }
-            if (method.isAnnotationPresent(Timed.class)) {
-                AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
-                AnnotatedMethod<? super T> annotatedMethod = getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE);
-                event.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, annotatedMethod));
-            }
+            if (method.isAnnotationPresent(ExceptionMetered.class))
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
+            if (method.isAnnotationPresent(Metered.class))
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
+            if (method.isAnnotationPresent(Timed.class))
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
         }
+        AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
+        event.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, decoratedMethods));
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {

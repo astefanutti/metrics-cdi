@@ -15,10 +15,13 @@
  */
 package fr.stefanutti.metrics.cdi;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
+import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Gauge;
+import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Timed;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -29,11 +32,11 @@ final class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
 
     private final AnnotatedType<X> decoratedType;
 
-    private final AnnotatedMethod<? super X> decoratingMethod;
+    private final Set<AnnotatedMethod<? super X>> decoratedMethods;
 
-    AnnotatedTypeMethodDecorator(AnnotatedType<X> decoratedType, AnnotatedMethod<? super X> decoratingMethod) {
+    AnnotatedTypeMethodDecorator(AnnotatedType<X> decoratedType, Set<AnnotatedMethod<? super X>> decoratedMethods) {
         this.decoratedType = decoratedType;
-        this.decoratingMethod = decoratingMethod;
+        this.decoratedMethods = decoratedMethods;
     }
 
     @Override
@@ -49,7 +52,8 @@ final class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods() {
         Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>(decoratedType.getMethods());
-        methods.add(decoratingMethod);
+        for (AnnotatedMethod<? super X> annotatedMethod : decoratedMethods)
+            methods.add(annotatedMethod);
         return Collections.unmodifiableSet(methods);
     }
 
