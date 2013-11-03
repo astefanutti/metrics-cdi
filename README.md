@@ -6,20 +6,21 @@ with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1](h
 
 ## About
 
-_Metrics CDI_ provides support for the [_Metrics_ annotations](https://github.com/codahale/metrics/tree/master/metrics-annotation)
+_Metrics CDI_ provides the support of [_Metrics_ annotations](https://github.com/codahale/metrics/tree/master/metrics-annotation)
 in [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
 + Intercept invocations of managed bean methods annotated with
   [`@ExceptionMetered`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html),
   [`@Metered`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html) and
   [`@Timed`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html))
-+ Register the associated [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html) instances
-  in the `MetricRegistry` bean available in the CDI container
-+ Register [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html) instances
++ Create [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html) instances
   for bean methods annotated with [`@Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html)
-+ Inject by name [`Gauge`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html),
++ Inject [`Counter`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Counter.html),
+  [`Histogram`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Histogram.html),
   [`Meter`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Meter.html) and
   [`Timer`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html) instances
++ Register or retrieve the associated [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html) instances
+  in the `MetricRegistry` bean available in the CDI container
 
 _Metrics CDI_ is compatible with _Metrics_ version 3.0.
 
@@ -73,7 +74,7 @@ public class TimedMethodBean {
 ## Limitations
 
 [CDI 1.1][] is leveraging on [Java Interceptors Specification 1.2][] to provide the ability to associate interceptors
-to objects via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from business logic
+to objects via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from the business logic
 and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
 
 [CDI 1.1][] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user
