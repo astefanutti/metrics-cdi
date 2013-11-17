@@ -43,8 +43,11 @@ Add the `metrics-cdi` library as a dependency:
 ### Required Dependencies
 
 Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules), _Metrics CDI_ requires
-a [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) enabled environment. _Metrics CDI_ is currently successfully
-tested with the following containers:
+a [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) enabled environment.
+
+### Supported Containers
+
+_Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container                                       | Version       | Specification                                  | Artifact Id                                 |
 | ----------------------------------------------- | ------------- | ---------------------------------------------- | ------------------------------------------- |
