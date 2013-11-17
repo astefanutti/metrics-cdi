@@ -3,10 +3,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.stefanutti</groupId>
-    <artifactId>metrics-cdi</artifactId>
+    <groupId>fr.stefanutti.metrics</groupId>
+    <artifactId>metrics-cdi-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>Metrics CDI</name>
     <inceptionYear>2013</inceptionYear>
@@ -42,14 +42,72 @@
         <metrics.version>3.0.1</metrics.version>
         <cdi.version>1.1</cdi.version>
         <weld.version>2.1.0.Final</weld.version>
+        <owb.version>1.2.1</owb.version>
+        <arquillian.version>1.1.1.Final</arquillian.version>
+        <shrinkwrap.version>2.0.0-alpha-5</shrinkwrap.version>
     </properties>
 
+    <modules>
+        <module>lib</module>
+        <module>samples</module>
+    </modules>
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.16</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.16</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.6.3.201306030806</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>2.0.1</version>
+                    <configuration>
+                        <coverageFile>${project.basedir}/lib/target/site/jacoco/jacoco.xml</coverageFile>
+                        <coverallsFile>${project.basedir}/lib/target/coveralls.json</coverallsFile>
+                        <sourceDirectories>
+                            <sourceDirectory>${project.basedir}/lib/src/main/java</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/samples/se/src/main/java</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.5</version>
                 <configuration>
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                     <properties>
@@ -74,7 +132,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -82,37 +139,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>env.TRAVIS</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>cobertura-maven-plugin</artifactId>
-                        <version>2.5.2</version>
-                        <configuration>
-                            <format>xml</format>
-                            <maxmem>256m</maxmem>
-                            <aggregate>true</aggregate>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.eluder.coveralls</groupId>
-                        <artifactId>coveralls-maven-plugin</artifactId>
-                        <version>2.0.1</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -152,12 +178,47 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-el_2.2_spec</artifactId>
+                <version>1.0.4</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- test dependencies -->
 
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>1.0.13</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>1.7.5</version>
                 <scope>test</scope>
             </dependency>
 
@@ -189,10 +250,12 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- ShrinkWrap -->
+
             <dependency>
                 <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                 <artifactId>shrinkwrap-descriptors-bom</artifactId>
-                <version>2.0.0-alpha-5</version>
+                <version>${shrinkwrap.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -201,25 +264,22 @@
             <dependency>
                 <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                 <artifactId>shrinkwrap-descriptors-depchain</artifactId>
-                <version>2.0.0-alpha-5</version>
+                <version>${shrinkwrap.version}</version>
                 <scope>test</scope>
                 <type>pom</type>
             </dependency>
+
+            <!-- Arquillian -->
 
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.1.1.Final</version>
+                <version>${arquillian.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
 
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-                <version>1.0.0.CR7</version>
-                <scope>test</scope>
-            </dependency>
+            <!-- Weld -->
 
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
@@ -234,79 +294,30 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                <version>1.0.0.CR7</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- OpenWebBeans -->
+
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-impl</artifactId>
+                <version>${owb.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.openwebbeans.arquillian</groupId>
+                <artifactId>owb-arquillian-standalone</artifactId>
+                <version>${owb.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-
-        <!-- compile dependencies -->
-
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-annotation</artifactId>
-        </dependency>
-
-        <!-- provided dependencies -->
-
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-        </dependency>
-
-        <!-- test dependencies -->
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-reflect</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-            <artifactId>shrinkwrap-descriptors-depchain</artifactId>
-            <type>pom</type>
-        </dependency>
-
-    </dependencies>
 
 </project>

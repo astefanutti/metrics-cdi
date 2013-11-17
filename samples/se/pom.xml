@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.stefanutti.metrics</groupId>
+        <artifactId>metrics-cdi-samples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>metrics-cdi-se-samples</artifactId>
+    <name>Metrics CDI Java SE Samples</name>
+
+    <dependencies>
+
+        <!-- compile dependencies -->
+
+        <dependency>
+            <groupId>fr.stefanutti.metrics</groupId>
+            <artifactId>metrics-cdi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- provided dependencies -->
+
+        <!-- test dependencies -->
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-depchain</artifactId>
+            <type>pom</type>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>owb</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!-- JUL configuration for OWB -->
+                            <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <dependencies>
+
+                <!-- provided dependencies -->
+
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-el_2.2_spec</artifactId>
+                </dependency>
+
+                <!-- test dependencies -->
+
+                <dependency>
+                    <groupId>org.apache.openwebbeans.arquillian</groupId>
+                    <artifactId>owb-arquillian-standalone</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-impl</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jul-to-slf4j</artifactId>
+                </dependency>
+
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>weld</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+
+                <!-- provided dependencies -->
+
+                <dependency>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </dependency>
+
+                <!-- test dependencies -->
+
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jboss.weld.se</groupId>
+                    <artifactId>weld-se-core</artifactId>
+                </dependency>
+
+            </dependencies>
+        </profile>
+    </profiles>
+
+</project>
