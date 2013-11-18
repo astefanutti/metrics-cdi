@@ -1,6 +1,9 @@
 language: java
 
-script: mvn clean verify -Pit
+script:
+  - mvn clean package -Dmaven.test.skip.exec
+  - mvn test -Pjacoco
+  - mvn test -Pjacoco -Powb
 
 jdk:
     - oraclejdk7
@@ -12,5 +15,5 @@ notifications:
       - antonin.stefanutti@gmail.com
 
 after_success:
-  - mvn jacoco:report -Pit
+  - mvn jacoco:report -pl lib
   - mvn -N coveralls:jacoco

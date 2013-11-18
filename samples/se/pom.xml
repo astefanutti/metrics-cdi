@@ -52,6 +52,8 @@
                         <configuration>
                             <!-- JUL configuration for OWB -->
                             <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
+                            <!-- JaCoCo agent if activated -->
+                            <argLine>${jacoco.agent.arg}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>

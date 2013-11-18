@@ -20,15 +20,12 @@
 
     <profiles>
         <profile>
-            <id>it</id>
+            <id>jacoco</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>false</skip>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>
@@ -46,22 +43,10 @@
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>verify</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <argLine>${jacoco.agent.arg}</argLine>
-                                    <includes>
-                                        <include>**/*Test.java</include>
-                                    </includes>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${jacoco.agent.arg}</argLine>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
