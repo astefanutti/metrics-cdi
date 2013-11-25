@@ -15,24 +15,14 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.annotation.Timed;
+import com.codahale.metrics.MetricRegistry;
 
-public class VisibilityTimedMethodBean {
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
-    @Timed
-    public void publicTimedMethod() {
-    }
+public class MetricRegistryProducerFieldBean {
 
-    @Timed
-    void packagePrivateTimedMethod() {
-    }
-
-    @Timed
-    protected void protectedTimedMethod() {
-    }
-
-    // FIXME: check the interceptors specification for private method interception
-    @Timed
-    private void privateTimedMethod() {
-    }
+    @Produces
+    @Singleton
+    private final MetricRegistry registry = new MetricRegistry();
 }

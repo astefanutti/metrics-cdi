@@ -27,9 +27,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -51,9 +49,8 @@ public class TimedMethodTest {
             .addAsManifestResource("beans.xml");
     }
 
-    @Produces
-    @Singleton
-    private static MetricRegistry registry = new MetricRegistry();
+    @Inject
+    private MetricRegistry registry;
 
     @Inject
     private TimedMethodBean bean;

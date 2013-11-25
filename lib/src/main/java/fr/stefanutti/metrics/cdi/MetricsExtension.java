@@ -15,27 +15,26 @@
  */
 package fr.stefanutti.metrics.cdi;
 
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.WithAnnotations;
+import javax.enterprise.inject.spi.*;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
 public class MetricsExtension implements Extension {
 
-    private <T> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<T> event) {
+    private boolean hasMetricRegistry;
+
+    private <T> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<T> pat) {
         boolean gauge = false;
         Set<AnnotatedMethod<? super T>> decoratedMethods = new HashSet<AnnotatedMethod<? super T>>(4);
-        for (AnnotatedMethod<? super T> method : event.getAnnotatedType().getMethods()) {
+        for (AnnotatedMethod<? super T> method : pat.getAnnotatedType().getMethods()) {
             if (method.isAnnotationPresent(ExceptionMetered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(Metered.class))
@@ -45,12 +44,22 @@ public class MetricsExtension implements Extension {
             if (method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
-        AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(event.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
+        AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
         // FIXME: removed when OWB will be CDI 1.1 compliant
         if (gauge /*decoratedMethods.isEmpty()*/)
-            event.setAnnotatedType(annotatedType);
+            pat.setAnnotatedType(annotatedType);
         else if (!decoratedMethods.isEmpty())
-            event.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, decoratedMethods));
+            pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, decoratedMethods));
+    }
+
+    private <X> void processBean(@Observes ProcessBean<X> pb) {
+        if (pb.getBean().getTypes().contains(MetricRegistry.class))
+            hasMetricRegistry = true;
+    }
+
+    private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        if (!hasMetricRegistry)
+            abd.addBean(new MetricRegistryBean(manager));
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {

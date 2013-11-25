@@ -19,9 +19,11 @@ It implements the contract specified by these annotations with the following lev
   [`Histogram`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Histogram.html),
   [`Meter`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Meter.html) and
   [`Timer`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html) instances,
-+ Register or retrieve the associated [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html) instances
-  in the [`MetricRegistry`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html) bean
-  available in the CDI container.
++ Register or retrieve the produced [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html)
+  instances in the [`MetricRegistry`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html) bean
+  available in the CDI container,
++ Automatically declare a default [`MetricRegistry`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html) bean
+  if no one exists in the CDI container.
 
 _Metrics CDI_ is compatible with _Metrics_ version 3.0.
 
@@ -70,7 +72,6 @@ For example, a method on a bean can be annotated with the `@Timed` annotation so
 ```java
 import com.codahale.metrics.annotation.Timed;
 
-...
 public class TimedMethodBean {
 
     @Timed(name = "timerName")
@@ -79,9 +80,65 @@ public class TimedMethodBean {
 }
 ```
 
-### Metrics injection
+### Metrics Injection and the `@Metric` Annotation
 
 ### _Metrics_ Registry Resolution
+
+_Metrics CDI_ gets a contextual instance of the [`MetricRegistry`][] bean declared in the CDI container
+to register any [`Metric`](http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html) instances
+produced. For example, it can be declared as a producer field:
+
+```java
+import com.codahale.metrics.MetricRegistry;
+
+    @Produces
+    @Singleton
+    private final MetricRegistry registry = new MetricRegistry();
+ }
+```
+
+Or a producer method:
+```java
+import com.codahale.metrics.MetricRegistry;
+
+public final class MetricRegistryFactoryBean {
+
+    @Produces
+    @Singleton
+    public MetricRegistry metricRegistry() {
+        return new MetricRegistry();
+    }
+}
+```
+
+Otherwise, _Metrics CDI_ automatically registers a [`MetricRegistry`][] bean into the CDI container
+so that it can be injected in any valid injection point, for example, by declaring an injected field:
+
+```java
+import com.codahale.metrics.MetricRegistry;
+
+     @Inject
+     MetricRegistry registry;
+ }
+```
+
+Or by declaring an initializer method:
+
+```java
+import com.codahale.metrics.MetricRegistry;
+
+public final class MetricRegistryBean {
+
+    private final MetricRegistry registry;
+
+    @Inject
+    public void MetricRegistry(MetricRegistry registry) {
+        this.registry = registry;
+    }
+}
+```
+
+[`MetricRegistry`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html
 
 ## Limitations
 

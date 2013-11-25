@@ -29,9 +29,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Set;
 
 import static org.fest.reflect.core.Reflection.method;
@@ -54,14 +52,12 @@ public class VisibilityTimedMethodTest {
             .addClass(VisibilityTimedMethodBean.class)
             // Metrics CDI extension
             .addPackages(false, MetricsExtension.class.getPackage())
-            //.addAsServiceProvider(Extension.class, MetricsExtension.class)
             // Bean archive deployment descriptor
             .addAsManifestResource("beans.xml");
     }
 
-    @Produces
-    @Singleton
-    private static MetricRegistry registry = new MetricRegistry();
+    @Inject
+    private MetricRegistry registry;
 
     @Inject
     private VisibilityTimedMethodBean bean;

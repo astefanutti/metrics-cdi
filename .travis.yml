@@ -6,8 +6,8 @@ script:
   - mvn test -Pjacoco -Powb
 
 jdk:
-    - oraclejdk7
-    - openjdk7
+  - oraclejdk7
+  - openjdk7
 
 notifications:
   email:

@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.stefanutti.metrics.cdi.se;
+package fr.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Vetoed;
+import javax.enterprise.util.AnnotationLiteral;
 
-public class VisibilityTimedMethodBean {
+@Vetoed
+class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 
-    @Timed
-    public void publicTimedMethod() {
-    }
+    private static final long serialVersionUID = 1L;
 
-    @Timed
-    void packagePrivateTimedMethod() {
-    }
+    static final Any INSTANCE = new AnyLiteral();
 
-    @Timed
-    protected void protectedTimedMethod() {
-    }
-
-    // FIXME: check the interceptors specification for private method interception
-    @Timed
-    private void privateTimedMethod() {
+    private AnyLiteral() {
     }
 }
