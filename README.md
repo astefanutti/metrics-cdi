@@ -2,6 +2,7 @@ CDI Extension for Metrics
 ===========
 [CDI](http://www.cdi-spec.org/) portable extension for [Metrics](http://metrics.codahale.com/) compliant
 with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1](http://jcp.org/en/jsr/detail?id=346).
+
 [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi) [![Coverage Status](https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master)](https://coveralls.io/r/astefanutti/metrics-cdi?branch=master) [![Dependency Status](https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.png)](https://www.versioneye.com/user/projects/52a633be632bacbded00001c)
 
 ## About
