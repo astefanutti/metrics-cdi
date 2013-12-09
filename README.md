@@ -1,7 +1,7 @@
-CDI Extension for Metrics [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi) [![Coverage Status](https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master)](https://coveralls.io/r/astefanutti/metrics-cdi?branch=master)
+CDI Extension for Metrics [![Build Status](https://secure.travis-ci.org/astefanutti/metrics-cdi.png)](http://travis-ci.org/astefanutti/metrics-cdi) [![Coverage Status](https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master)](https://coveralls.io/r/astefanutti/metrics-cdi?branch=master) [![Dependency Status](https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.png)](https://www.versioneye.com/user/projects/52a633be632bacbded00001c)
 ===========
 
-[CDI](http://www.cdi-spec.org/) portable extension for [Yammer's Metrics](http://metrics.codahale.com/) compliant
+[CDI](http://www.cdi-spec.org/) portable extension for [Metrics](http://metrics.codahale.com/) compliant
 with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1](http://jcp.org/en/jsr/detail?id=346).
 
 ## About
@@ -98,7 +98,7 @@ import com.codahale.metrics.MetricRegistry;
  }
 ```
 
-Or a producer method:
+or a producer method:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -126,7 +126,7 @@ public final class MetricRegistryBean {
  }
 ```
 
-Or by declaring an initializer method:
+or by declaring an initializer method:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -154,7 +154,7 @@ and _Metrics CDI_ is relying on interceptors to implement the support of _Metric
 perspective, that implies that the managed beans to be monitored with _Metrics_ (i.e. having at least one member method annotated
 with one of the _Metrics_ annotations) must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
 > + Classes which don’t have a non-private constructor with no parameters,
-> + Classes which are declared final,
+> + Classes which are declared `final`,
 > + Classes which have non-static, final methods with public, protected or default visibility,
 > + Primitive types,
 > + And array types.
