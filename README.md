@@ -55,7 +55,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container                                       | Version       | Specification                                  | Artifact Id                                 |
 | ----------------------------------------------- | ------------- | ---------------------------------------------- | ------------------------------------------- |
-| [Weld SE](http://weld.cdi-spec.org/)            | `2.1.0.Final` | [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) | `org.jboss.weld.se:weld-se-core`            |
+| [Weld SE](http://weld.cdi-spec.org/)            | `2.1.1.Final` | [CDI 1.1](http://jcp.org/en/jsr/detail?id=346) | `org.jboss.weld.se:weld-se-core`            |
 | [OpenWebBeans](http://openwebbeans.apache.org/) | `1.2.1`       | [CDI 1.0](http://jcp.org/en/jsr/detail?id=299) | `org.apache.openwebbeans:openwebbeans-impl` |
 
 ## Usage

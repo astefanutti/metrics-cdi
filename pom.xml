@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.0.1</metrics.version>
         <cdi.version>1.1</cdi.version>
-        <weld.version>2.1.0.Final</weld.version>
+        <weld.version>2.1.1.Final</weld.version>
         <owb.version>1.2.1</owb.version>
         <arquillian.version>1.1.2.Final</arquillian.version>
         <shrinkwrap.version>2.0.0-alpha-5</shrinkwrap.version>
