@@ -53,7 +53,7 @@ public class VisibilityTimedMethodTest {
             // Metrics CDI extension
             .addPackages(false, MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
-            .addAsManifestResource("beans.xml");
+            .addAsManifestResource("META-INF/beans.xml", "beans.xml");
     }
 
     @Inject

@@ -46,7 +46,7 @@ public class TimedMethodTest {
             .addPackages(false, MetricsExtension.class.getPackage())
             //.addAsServiceProvider(Extension.class, MetricsExtension.class)
             // Bean archive deployment descriptor
-            .addAsManifestResource("beans.xml");
+            .addAsManifestResource("META-INF/beans.xml", "beans.xml");
     }
 
     @Inject
