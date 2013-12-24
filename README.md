@@ -190,3 +190,6 @@ License
 Copyright (c) 2013 Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/astefanutti/metrics-cdi/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
