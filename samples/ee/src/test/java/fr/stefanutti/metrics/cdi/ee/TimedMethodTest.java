@@ -42,7 +42,7 @@ public class TimedMethodTest {
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(EnterpriseArchive.class)
-            .addAsModule(
+            .addAsLibrary(
                 Maven.resolver()
                     .offline()
                     .loadPomFromFile("pom.xml")
