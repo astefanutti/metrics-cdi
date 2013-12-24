@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <!--<module>ee</module>-->
+        <module>ee</module>
         <module>se</module>
     </modules>
 
