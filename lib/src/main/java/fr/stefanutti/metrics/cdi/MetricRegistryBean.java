@@ -30,10 +30,11 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.PassivationCapable;
 
 import com.codahale.metrics.MetricRegistry;
 
-final class MetricRegistryBean implements Bean<MetricRegistry> {
+final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
 
     private final Set<Type> types;
 
@@ -108,5 +109,10 @@ final class MetricRegistryBean implements Bean<MetricRegistry> {
     @Override
     public boolean isNullable() {
         return false;
+    }
+
+    @Override
+    public String getId() {
+        return getClass().getName();
     }
 }
