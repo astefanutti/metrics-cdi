@@ -1,7 +1,7 @@
 CDI Extension for Metrics
 ===========
 
-[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build]
+[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build] [![Trend][Bitdeli Badge]][Bitdeli link]
 
 [Travis badge]: https://secure.travis-ci.org/astefanutti/metrics-cdi.png
 [Travis build]: http://travis-ci.org/astefanutti/metrics-cdi
@@ -9,6 +9,8 @@ CDI Extension for Metrics
 [Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi?branch=master
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.png
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
+[Bitdeli badge]: https://d2weczhvl823v0.cloudfront.net/astefanutti/metrics-cdi/trend.png
+[Bitdeli link]: https://bitdeli.com/free "Bitdeli Badge"
 
 [CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1][CDI 1.1].
 
@@ -190,6 +192,3 @@ License
 Copyright (c) 2013 Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/astefanutti/metrics-cdi/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
