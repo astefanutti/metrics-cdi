@@ -156,12 +156,6 @@
                 </exclusions>
             </dependency>
 
-            <dependency>
-                <groupId>fr.stefanutti.metrics</groupId>
-                <artifactId>metrics-cdi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
             <!-- provided dependencies -->
 
             <dependency>
