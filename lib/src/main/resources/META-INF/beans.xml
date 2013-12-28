@@ -5,11 +5,4 @@
                            http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
        version="1.1" bean-discovery-mode="all">
 
-    <interceptors>
-        <class>fr.stefanutti.metrics.cdi.MetricsInterceptor</class>
-        <class>fr.stefanutti.metrics.cdi.TimedInterceptor</class>
-        <class>fr.stefanutti.metrics.cdi.MeteredInterceptor</class>
-        <class>fr.stefanutti.metrics.cdi.ExceptionMeteredInterceptor</class>
-    </interceptors>
-
 </beans>

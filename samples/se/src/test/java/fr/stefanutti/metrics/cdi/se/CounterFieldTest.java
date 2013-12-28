@@ -40,14 +40,15 @@ public class CounterFieldTest {
     private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldBean.class, "counterName");
 
     @Deployment
-    static Archive<?> createTestArchive() {
+    public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(CounterFieldBean.class)
             // Metrics CDI extension
             .addPackages(false, MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
-            .addAsManifestResource("META-INF/beans.xml", "beans.xml");
+            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
+            .addAsManifestResource("beans.xml");
     }
 
     @Inject

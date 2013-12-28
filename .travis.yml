@@ -3,7 +3,7 @@ language: java
 script:
   - mvn clean package -Dmaven.test.skip.exec
   - mvn test -Pjacoco
-  - mvn test -Pjacoco -Powb
+  - mvn test -Pjacoco -Powb -pl samples/se
 
 jdk:
   - oraclejdk7

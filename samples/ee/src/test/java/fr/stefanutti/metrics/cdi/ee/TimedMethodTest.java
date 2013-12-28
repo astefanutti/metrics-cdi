@@ -40,21 +40,23 @@ public class TimedMethodTest {
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
     @Deployment
-    static Archive<?> createTestArchive() {
+    public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(EnterpriseArchive.class)
-            .addAsLibrary(
+            .addAsLibraries(
                 Maven.resolver()
                     .offline()
                     .loadPomFromFile("pom.xml")
                     .resolve("fr.stefanutti.metrics:metrics-cdi")
-                    .withoutTransitivity()
-                    .asSingle(JavaArchive.class))
-            .addAsModule(
+                    .withTransitivity()
+                    .as(JavaArchive.class))
+            .addAsLibrary(
                 ShrinkWrap.create(JavaArchive.class)
                     .addClass(TimedMethodBean.class)
+                    // FIXME: Test class must be added until ARQ-659 is fixed
+                    .addClass(TimedMethodTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
-
+    
     @Inject
     private TimedMethodBean bean;
 

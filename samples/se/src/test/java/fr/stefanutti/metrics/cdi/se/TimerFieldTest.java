@@ -55,7 +55,8 @@ public class TimerFieldTest {
             // Metrics CDI extension
             .addPackages(false, MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
-            .addAsManifestResource("META-INF/beans.xml", "beans.xml");
+            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
+            .addAsManifestResource("beans.xml");
     }
 
     @Inject

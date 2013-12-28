@@ -40,9 +40,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.0.1</metrics.version>
-        <cdi.version>1.1</cdi.version>
+        <cdi.version>1.1-20130918</cdi.version>
+        <javaee.version>7.0</javaee.version>
         <weld.version>2.1.1.Final</weld.version>
         <owb.version>1.2.1</owb.version>
+        <wildfly.version>8.0.0.CR1</wildfly.version>
         <arquillian.version>1.1.2.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR7</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.0-alpha-1</shrinkwrap.resolver.version>
@@ -163,12 +165,6 @@
                 <artifactId>cdi-api</artifactId>
                 <version>${cdi.version}</version>
                 <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>jsr250-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -196,6 +192,13 @@
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-el_2.2_spec</artifactId>
                 <version>1.0.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javaee.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -318,6 +321,21 @@
                 <artifactId>owb-arquillian-standalone</artifactId>
                 <version>${owb.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- WildFly -->
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${wildfly.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.logmanager</groupId>
+                        <artifactId>log4j-jboss-logmanager</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
         </dependencies>

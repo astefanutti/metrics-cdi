@@ -22,6 +22,7 @@ import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Priority;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 
 @Interceptor
 @MetricsBinding
+@Priority(Interceptor.Priority.LIBRARY_BEFORE)
 class MetricsInterceptor {
 
     private final Class<?> bean;

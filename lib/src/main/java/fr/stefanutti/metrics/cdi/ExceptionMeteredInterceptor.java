@@ -19,6 +19,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -26,6 +27,7 @@ import javax.interceptor.InvocationContext;
 
 @Interceptor
 @ExceptionMeteredBinding
+@Priority(Interceptor.Priority.LIBRARY_BEFORE)
 class ExceptionMeteredInterceptor {
 
     @Inject
