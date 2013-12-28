@@ -12,6 +12,15 @@
     <artifactId>metrics-cdi-ee-samples</artifactId>
     <name>Metrics CDI Java EE Samples</name>
 
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
+
     <dependencies>
 
         <!-- compile dependencies -->
@@ -56,6 +65,11 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
 
+            <!-- FIXME: remove when ARQ-579 is fixed -->
+            <properties>
+                <arquillian.protocol>Local</arquillian.protocol>
+            </properties>
+
             <dependencies>
 
                 <!-- provided dependencies -->
@@ -83,6 +97,12 @@
 
         <profile>
             <id>wildfly</id>
+
+            <!-- FIXME: remove when ARQ-579 is fixed -->
+            <properties>
+                <arquillian.protocol>Servlet 3.0</arquillian.protocol>
+            </properties>
+
             <build>
                 <plugins>
                     <plugin>
@@ -102,7 +122,7 @@
                                             <version>${wildfly.version}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>target</outputDirectory>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
     <!-- FIXME: remove when ARQ-579 is fixed -->
-    <!--<defaultProtocol type="Servlet 3.0"/>-->
+    <defaultProtocol type="${arquillian.protocol}"/>
 
     <engine>
         <!-- -Darquillian.deploymentExportPath=target/deployments/ -->
@@ -14,14 +14,14 @@
 
     <container qualifier="wildfly-managed" default="false">
         <configuration>
-            <property name="jbossHome">target/wildfly-8.0.0.CR1</property>
-            <!-- TODO: test default JMX protocol when Wildfly uses Shrinkwrap descriptor 2.x -->
+            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly.version}</property>
+            <!-- FIXME: use when ARQ-579 is fixed -->
+            <!-- TODO: understand why default JMX protocol does not work -->
             <!--<protocol type="Servlet 3.0"/>-->
             <!-- ARQ-649 workaround -->
             <property name="outputToConsole">true</property>
             <property name="allowConnectingToRunningServer">false</property>
             <property name="javaVmArguments">-Xms128m -Xmx256m -XX:MaxPermSize=128m ${jacoco.agent}</property>
-            <!--<property name="javaVmArguments">-Xms128m -Xmx768m -XX:MaxPermSize=256m</property>-->
             <!--<property name="javaVmArguments">-Xmx256m -XX:MaxPermSize=128m -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</property>-->
         </configuration>
     </container>
