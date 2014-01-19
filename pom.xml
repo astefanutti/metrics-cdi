@@ -42,7 +42,7 @@
         <metrics.version>3.0.1</metrics.version>
         <cdi.version>1.1-20130918</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.1.1.Final</weld.version>
+        <weld.version>2.1.2.Final</weld.version>
         <owb.version>1.2.1</owb.version>
         <wildfly.version>8.0.0.CR1</wildfly.version>
         <arquillian.version>1.1.2.Final</arquillian.version>
