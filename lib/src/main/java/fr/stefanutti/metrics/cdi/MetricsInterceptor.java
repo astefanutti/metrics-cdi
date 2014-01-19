@@ -36,18 +36,20 @@ import java.lang.reflect.Method;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 class MetricsInterceptor {
 
-    private final Class<?> bean;
-
     private final MetricRegistry registry;
 
     @Inject
     private MetricsInterceptor(BeanManager manager, MetricRegistry registry, InjectionPoint point) {
-        this.bean = manager.resolve(manager.getBeans(point.getType())).getBeanClass();
         this.registry = registry;
     }
 
     @PostConstruct
     private void metrics(InvocationContext context) throws Exception {
+        // InvocationContext.getTarget() returns the intercepted (proxied) target instance in Weld
+        // see WELD-557, CDI-6
+        // TODO: should it return the non-intercepted target instance?
+        Class<?> bean = context.getTarget().getClass().getClassLoader().loadClass(context.getTarget().getClass().getName().split("\\$")[0]);
+
         for (Method method : bean.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ExceptionMetered.class)) {
                 ExceptionMetered metered = method.getAnnotation(ExceptionMetered.class);
@@ -76,6 +78,7 @@ class MetricsInterceptor {
     private static class ForwardingGauge implements com.codahale.metrics.Gauge<Object> {
 
         final Method method;
+
         final Object object;
 
         private ForwardingGauge(Method method, Object object) {
