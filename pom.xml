@@ -264,7 +264,8 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- TODO: should be removed when the depchain is included in the BOM -->
+            <!-- TODO: should be removed when the depchain is included in the BOM
+            see https://github.com/shrinkwrap/descriptors/pull/94 -->
             <dependency>
                 <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                 <artifactId>shrinkwrap-descriptors-depchain</artifactId>

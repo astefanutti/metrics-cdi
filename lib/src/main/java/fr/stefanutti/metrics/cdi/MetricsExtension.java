@@ -31,10 +31,10 @@ public class MetricsExtension implements Extension {
 
     private boolean hasMetricRegistry;
 
-    private <T> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<T> pat) {
+    private <X> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
-        Set<AnnotatedMethod<? super T>> decoratedMethods = new HashSet<AnnotatedMethod<? super T>>(4);
-        for (AnnotatedMethod<? super T> method : pat.getAnnotatedType().getMethods()) {
+        Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
+        for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             if (method.isAnnotationPresent(ExceptionMetered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(Metered.class))
@@ -44,12 +44,12 @@ public class MetricsExtension implements Extension {
             if (method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
-        AnnotatedType<T> annotatedType = new AnnotatedTypeDecorator<T>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
+        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
         // FIXME: removed when OWB will be CDI 1.1 compliant
         if (gauge /*decoratedMethods.isEmpty()*/)
             pat.setAnnotatedType(annotatedType);
         else if (!decoratedMethods.isEmpty())
-            pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<T>(annotatedType, decoratedMethods));
+            pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<X>(annotatedType, decoratedMethods));
     }
 
     private <X> void processBean(@Observes ProcessBean<X> pb) {

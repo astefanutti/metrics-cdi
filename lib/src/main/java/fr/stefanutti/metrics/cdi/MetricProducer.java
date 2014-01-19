@@ -62,7 +62,7 @@ import java.util.regex.Pattern;
             } else {
                 Matcher matcher = expression.matcher(metric.name());
                 if (matcher.matches()) {
-                    //FIXME
+                    // TODO: add support for EL evaluation
                     return null;
                 } else {
                     return metric.absolute() ? metric.name() : MetricRegistry.name(point.getMember().getDeclaringClass(), metric.name());
