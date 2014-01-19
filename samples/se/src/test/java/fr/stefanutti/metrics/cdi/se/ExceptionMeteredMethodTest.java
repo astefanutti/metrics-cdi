@@ -15,11 +15,13 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
 import fr.stefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -70,6 +73,7 @@ public class ExceptionMeteredMethodTest {
     private ExceptionMeteredMethodBean bean;
 
     @Test
+    @InSequence(1)
     public void callExceptionMeteredMethodsOnceWithoutThrowing() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
@@ -88,6 +92,7 @@ public class ExceptionMeteredMethodTest {
     }
 
     @Test
+    @InSequence(2)
     public void callExceptionMeteredMethodOnceWithThrowingExpectedException() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
@@ -113,6 +118,7 @@ public class ExceptionMeteredMethodTest {
     }
 
     @Test
+    @InSequence(3)
     public void callExceptionMeteredStaticMethodOnceWithThrowingNonExpectedException() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
@@ -138,6 +144,7 @@ public class ExceptionMeteredMethodTest {
     }
 
     @Test
+    @InSequence(4)
     public void callExceptionMeteredStaticMethodOnceWithThrowingInstanceOfExpectedException() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
@@ -157,6 +164,38 @@ public class ExceptionMeteredMethodTest {
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].get())));
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].incrementAndGet())));
             assertSame("Exception thrown is incorrect", cause, exception);
+            return;
+        }
+
+        fail("No exception has been re-thrown!");
+    }
+
+    @Test
+    @InSequence(5)
+    public void removeMeterFromRegistry() {
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
+
+        Meter meter = registry.getMeters().get(absoluteMetricName(0));
+
+        // Remove the meter from metrics registry
+        registry.remove(absoluteMetricName(0));
+
+        final RuntimeException exception = new IllegalArgumentException("message");
+        Runnable runnableThatThrowsIllegalArgumentException = new Runnable() {
+            @Override
+            public void run() {
+                throw exception;
+            }
+        };
+
+        try {
+            // Call the metered method and assert an exception is thrown
+            bean.illegalArgumentExceptionMeteredMethod(runnableThatThrowsIllegalArgumentException);
+        } catch (RuntimeException cause) {
+            assertThat(cause, is(instanceOf(IllegalStateException.class)));
+            assertThat(cause.getMessage(), is(equalTo("No meter with name [" + absoluteMetricName(0) + "] found in registry [" + registry + "]")));
+            // Make sure that the meter hasn't been marked
+            assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNTS[0].get())));
             return;
         }
 

@@ -17,6 +17,7 @@ package fr.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,13 +30,19 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
 public class MeteredMethodTest {
 
     private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean.class, "meteredMethod");
+
+    private final static AtomicLong METER_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -61,8 +68,8 @@ public class MeteredMethodTest {
         assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
         Meter meter = registry.getMeters().get(METER_NAME);
 
-        // Make sure that the meter hasn't been called yet
-        assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(0L)));
+        // Make sure that the meter hasn't been marked yet
+        assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
     }
 
     @Test
@@ -74,7 +81,30 @@ public class MeteredMethodTest {
         // Call the metered method and assert it's been marked
         bean.meteredMethod();
 
-        // Make sure that the meter has been called
-        assertThat("Timer count is incorrect", meter.getCount(), is(equalTo(1L)));
+        // Make sure that the meter has been marked
+        assertThat("Timer count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.incrementAndGet())));
+    }
+
+    @Test
+    @InSequence(3)
+    public void removeMeterFromRegistry() {
+        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
+        Meter meter = registry.getMeters().get(METER_NAME);
+
+        // Remove the meter from metrics registry
+        registry.remove(METER_NAME);
+
+        try {
+            // Call the metered method and assert an exception is thrown
+            bean.meteredMethod();
+        } catch (RuntimeException cause) {
+            assertThat(cause, is(instanceOf(IllegalStateException.class)));
+            assertThat(cause.getMessage(), is(equalTo("No meter with name [" + METER_NAME + "] found in registry [" + registry + "]")));
+            // Make sure that the meter hasn't been marked
+            assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
+            return;
+        }
+
+        fail("No exception has been re-thrown!");
     }
 }

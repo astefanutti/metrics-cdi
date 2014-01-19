@@ -36,8 +36,12 @@ import javax.interceptor.InvocationContext;
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
         Timed timed = context.getMethod().getAnnotation(Timed.class);
-        String finalName = timed.name().isEmpty() ? context.getMethod().getName() : timed.name();
-        Timer timer = registry.timer(timed.absolute() ? finalName : MetricRegistry.name(context.getMethod().getDeclaringClass(), finalName));
+        String name = timed.name().isEmpty() ? context.getMethod().getName() : timed.name();
+        String finalName = timed.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
+        Timer timer = (Timer) registry.getMetrics().get(finalName);
+        if (timer == null)
+            throw new IllegalStateException("No timer with name [" + finalName + "] found in registry [" + registry + "]");
+
         Timer.Context time = timer.time();
         try {
             return context.proceed();

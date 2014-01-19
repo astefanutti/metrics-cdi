@@ -36,8 +36,12 @@ import javax.interceptor.InvocationContext;
     @AroundInvoke
     private Object exceptionMeteredMethod(InvocationContext context) throws Throwable {
         ExceptionMetered metered = context.getMethod().getAnnotation(ExceptionMetered.class);
-        String finalName = metered.name().isEmpty() ? context.getMethod().getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
-        Meter meter = registry.meter(metered.absolute() ? finalName : MetricRegistry.name(context.getMethod().getDeclaringClass(), finalName));
+        String name = metered.name().isEmpty() ? context.getMethod().getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
+        String finalName = metered.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
+        Meter meter = (Meter) registry.getMetrics().get(finalName);
+        if (meter == null)
+            throw new IllegalStateException("No meter with name [" + finalName + "] found in registry [" + registry + "]");
+
         try {
             return context.proceed();
         } catch (Throwable throwable) {

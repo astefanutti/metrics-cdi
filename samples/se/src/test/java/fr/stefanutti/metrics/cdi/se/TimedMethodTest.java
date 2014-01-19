@@ -29,13 +29,18 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
 public class TimedMethodTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
+
+    private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -62,7 +67,7 @@ public class TimedMethodTest {
         Timer timer = registry.getTimers().get(TIMER_NAME);
 
         // Make sure that the timer hasn't been called yet
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
     }
 
     @Test
@@ -75,6 +80,29 @@ public class TimedMethodTest {
         bean.timedMethod();
 
         // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
+    }
+
+    @Test
+    @InSequence(3)
+    public void removeTimerFromRegistry() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
+
+        // Remove the timer from metrics registry
+        registry.remove(TIMER_NAME);
+
+        try {
+            // Call the timed method and assert an exception is thrown
+            bean.timedMethod();
+        } catch (RuntimeException cause) {
+            assertThat(cause, is(instanceOf(IllegalStateException.class)));
+            assertThat(cause.getMessage(), is(equalTo("No timer with name [" + TIMER_NAME + "] found in registry [" + registry + "]")));
+            // Make sure that the timer hasn't been called
+            assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
+            return;
+        }
+
+        fail("No exception has been re-thrown!");
     }
 }
