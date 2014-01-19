@@ -19,7 +19,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-class MetricsBindingLiteral extends AnnotationLiteral<MetricsBinding> implements MetricsBinding {
+/* packaged-protected */ class MetricsBindingLiteral extends AnnotationLiteral<MetricsBinding> implements MetricsBinding {
 
     private static final long serialVersionUID = 1L;
 

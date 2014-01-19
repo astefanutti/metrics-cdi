@@ -34,7 +34,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import com.codahale.metrics.MetricRegistry;
 
-final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
+/* packaged-protected */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
 
     private final Set<Type> types;
 

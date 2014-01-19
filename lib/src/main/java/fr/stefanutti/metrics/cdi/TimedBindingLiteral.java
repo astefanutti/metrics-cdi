@@ -19,7 +19,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-class TimedBindingLiteral extends AnnotationLiteral<TimedBinding> implements TimedBinding {
+/* packaged-protected */ class TimedBindingLiteral extends AnnotationLiteral<TimedBinding> implements TimedBinding {
 
     private static final long serialVersionUID = 1L;
 
