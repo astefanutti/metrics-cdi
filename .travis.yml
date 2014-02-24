@@ -3,8 +3,8 @@ language: java
 script:
   - mvn clean package -Dmaven.test.skip.exec
   - mvn test -Pjacoco
-  - mvn test -Pjacoco -Powb -pl samples/se
-  - mvn test -Pjacoco -Pwildfly -pl samples/ee
+  - mvn test -Pjacoco -Powb -pl envs/se
+  - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:
   - oraclejdk7
@@ -16,5 +16,5 @@ notifications:
       - antonin.stefanutti@gmail.com
 
 after_success:
-  - mvn jacoco:report -pl lib
+  - mvn jacoco:report -pl impl
   - mvn -N coveralls:jacoco

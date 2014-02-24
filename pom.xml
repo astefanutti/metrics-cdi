@@ -52,8 +52,8 @@
     </properties>
 
     <modules>
-        <module>lib</module>
-        <module>samples</module>
+        <module>impl</module>
+        <module>envs</module>
     </modules>
 
     <build>
@@ -88,11 +88,10 @@
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>2.1.0</version>
                     <configuration>
-                        <coverageFile>${project.basedir}/lib/target/site/jacoco/jacoco.xml</coverageFile>
-                        <coverallsFile>${project.basedir}/lib/target/coveralls.json</coverallsFile>
+                        <coverageFile>${project.basedir}/impl/target/site/jacoco/jacoco.xml</coverageFile>
+                        <coverallsFile>${project.basedir}/impl/target/coveralls.json</coverallsFile>
                         <sourceDirectories>
-                            <sourceDirectory>${project.basedir}/lib/src/main/java</sourceDirectory>
-                            <sourceDirectory>${project.basedir}/samples/se/src/main/java</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/impl/src/main/java</sourceDirectory>
                         </sourceDirectories>
                     </configuration>
                 </plugin>

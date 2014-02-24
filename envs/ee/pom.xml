@@ -5,12 +5,12 @@
 
     <parent>
         <groupId>fr.stefanutti.metrics</groupId>
-        <artifactId>metrics-cdi-samples</artifactId>
+        <artifactId>metrics-cdi-envs</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>metrics-cdi-ee-samples</artifactId>
-    <name>Metrics CDI Java EE Samples</name>
+    <artifactId>metrics-cdi-ee</artifactId>
+    <name>Metrics CDI Java EE Environment</name>
 
     <build>
         <testResources>

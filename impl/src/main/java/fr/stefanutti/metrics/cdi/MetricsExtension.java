@@ -45,7 +45,7 @@ public class MetricsExtension implements Extension {
                 gauge = true;
         }
         AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
-        // FIXME: removed when OWB will be CDI 1.1 compliant
+        // FIXME: remove when OWB will be CDI 1.1 compliant
         if (gauge /*decoratedMethods.isEmpty()*/)
             pat.setAnnotatedType(annotatedType);
         else if (!decoratedMethods.isEmpty())
