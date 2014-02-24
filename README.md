@@ -69,10 +69,10 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container        | Version       | Specification | Arquillian Container Adapter                |
 | ---------------- | ------------- | ------------- | ------------------------------------------- |
-| [Weld SE][]      | `2.1.1.Final` | [CDI 1.1][]   | `arquillian-weld-se-embedded-1.1`           |
-| [Weld EE][]      | `2.1.1.Final` | [CDI 1.1][]   | `arquillian-weld-ee-embedded-1.1`           |
-| [OpenWebBeans][] | `1.2.1`       | [CDI 1.0][]   | `owb-arquillian-standalone`                 |
-| [WildFly][]      | `8.0.0.CR1`   | [Java EE 7][] | `wildfly-arquillian-container-managed`      |
+| [Weld SE][]      | `2.1.2.Final` | [CDI 1.1][]   | `arquillian-weld-se-embedded-1.1`           |
+| [Weld EE][]      | `2.1.2.Final` | [CDI 1.1][]   | `arquillian-weld-ee-embedded-1.1`           |
+| [OpenWebBeans][] | `1.2.2`       | [CDI 1.0][]   | `owb-arquillian-standalone`                 |
+| [WildFly][]      | `8.0.0.Final` | [Java EE 7][] | `wildfly-arquillian-container-managed`      |
 
 Note that the support of [CDI 1.0][] will be discontinued once [OpenWebBeans][] becomes [CDI 1.1][] compliant.
 
@@ -194,11 +194,6 @@ with one of the _Metrics_ annotations) must be _proxyable_ bean types, as define
 License
 -------
 
-Copyright (c) 2013 Antonin Stefanutti
+Copyright (c) 2014 Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
-
-[![Trend][Bitdeli Badge]][Bitdeli link]
-
-[Bitdeli badge]: https://d2weczhvl823v0.cloudfront.net/astefanutti/metrics-cdi/trend.png
-[Bitdeli link]: https://bitdeli.com/free "Bitdeli Badge"
