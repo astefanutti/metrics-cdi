@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
-public class ExceptionMeteredMethodTest {
+public class ExceptionMeteredMethodBeanTest {
 
     private final static String[] METER_NAMES = {"illegalArgumentExceptionMeteredMethod", "exceptionMeteredMethod"};
 
@@ -60,7 +60,7 @@ public class ExceptionMeteredMethodTest {
             // Test bean
             .addClass(ExceptionMeteredMethodBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");

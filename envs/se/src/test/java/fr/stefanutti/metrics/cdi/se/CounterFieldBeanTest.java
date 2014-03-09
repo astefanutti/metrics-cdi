@@ -15,7 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -29,21 +29,23 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class HistogramFieldTest {
+public class CounterFieldBeanTest {
 
-    private final static String HISTOGRAM_NAME = MetricRegistry.name(HistogramFieldBean.class, "histogramName");
+    private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldBean.class, "counterName");
 
     @Deployment
-    static Archive<?> createTestArchive() {
+    public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(HistogramFieldBean.class)
+            .addClass(CounterFieldBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -53,26 +55,23 @@ public class HistogramFieldTest {
     private MetricRegistry registry;
 
     @Inject
-    private HistogramFieldBean bean;
+    private CounterFieldBean bean;
 
     @Test
     @InSequence(1)
-    public void histogramFieldRegistered() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
+    public void counterFieldRegistered() {
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
     }
 
     @Test
     @InSequence(2)
-    public void updateHistogramField() {
-        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
-        Histogram histogram = registry.getHistograms().get(HISTOGRAM_NAME);
+    public void incrementCounterField() {
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
+        Counter counter = registry.getCounters().get(COUNTER_NAME);
 
-        // Call the update method and assert the histogram is up-to-date
+        // Call the increment method and assert the counter is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
-        bean.update(value);
-        assertThat("Histogram count is incorrect", histogram.getCount(), is(equalTo(1L)));
-        assertThat("Histogram size is incorrect", histogram.getSnapshot().size(), is(equalTo(1)));
-        assertThat("Histogram min value is incorrect", histogram.getSnapshot().getMin(), is(equalTo(value)));
-        assertThat("Histogram max value is incorrect", histogram.getSnapshot().getMax(), is(equalTo(value)));
+        bean.increment(value);
+        assertThat("Counter value is incorrect", counter.getCount(), is(equalTo(value)));
     }
 }

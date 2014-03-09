@@ -194,6 +194,6 @@ with one of the _Metrics_ annotations) must be _proxyable_ bean types, as define
 License
 -------
 
-Copyright (c) 2014 Antonin Stefanutti
+Copyright © 2013-2014 Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE

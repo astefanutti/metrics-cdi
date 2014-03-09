@@ -16,35 +16,44 @@
 package fr.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
+import fr.stefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
+import java.util.Set;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class ApplicationScopedTimedMethodTest {
+public class TimerFieldBeanTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(ApplicationScopedTimedMethodBean.class, "applicationScopedTimedMethod");
+    private final static String[] METRIC_NAMES = {"timerWithoutAnnotation", "timerWithNoName", "timerName"};
+
+    private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithAbsoluteDefaultName", "timerAbsoluteName"};
+
+    private Set<String> metricNames() {
+        Set<String> names = MetricsUtil.absoluteMetricNameSet(TimerFieldBean.class, METRIC_NAMES);
+        names.addAll(Arrays.asList(ABSOLUTE_METRIC_NAMES));
+        return names;
+    }
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(ApplicationScopedTimedMethodBean.class)
+            .addClass(TimerFieldBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -54,35 +63,10 @@ public class ApplicationScopedTimedMethodTest {
     private MetricRegistry registry;
 
     @Inject
-    private ApplicationScopedTimedMethodBean bean;
-
-    @Before
-    public void instantiateApplicationScopedBean() {
-        // Let's trigger the instantiation of the application scoped bean explicitly
-        // as only a proxy gets injected otherwise
-        bean.toString();
-    }
+    private TimerFieldBean bean;
 
     @Test
-    @InSequence(1)
-    public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
-
-        // Make sure that the timer hasn't been called yet
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
-    }
-
-    @Test
-    @InSequence(2)
-    public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
-
-        // Call the timed method and assert it's been timed
-        bean.applicationScopedTimedMethod();
-
-        // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
+    public void timerFieldsWithDefaultNamingConvention() {
+        assertThat("Timers are not registered correctly", registry.getMetrics().keySet(), is(equalTo(metricNames())));
     }
 }

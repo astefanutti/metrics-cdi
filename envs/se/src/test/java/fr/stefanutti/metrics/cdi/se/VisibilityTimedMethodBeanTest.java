@@ -30,29 +30,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Set;
 
+import static org.fest.reflect.core.Reflection.method;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.everyItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class OverloadedTimedMethodTest {
+public class VisibilityTimedMethodBeanTest {
 
-    private final static String[] TIMER_NAMES = {"overloadedTimedMethodWithNoArguments", "overloadedTimedMethodWithStringArgument", "overloadedTimedMethodWithListOfStringArgument", "overloadedTimedMethodWithObjectArgument"};
+    private final static String[] TIMER_NAMES = {"publicTimedMethod", "packagePrivateTimedMethod", "protectedTimedMethod", "privateTimedMethod"};
 
     private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(OverloadedTimedMethodBean.class, TIMER_NAMES);
+        return MetricsUtil.absoluteMetricNameSet(VisibilityTimedMethodBean.class, TIMER_NAMES);
     }
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(OverloadedTimedMethodBean.class)
+            .addClass(VisibilityTimedMethodBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -62,11 +61,11 @@ public class OverloadedTimedMethodTest {
     private MetricRegistry registry;
 
     @Inject
-    private OverloadedTimedMethodBean bean;
+    private VisibilityTimedMethodBean bean;
 
     @Test
     @InSequence(1)
-    public void overloadedTimedMethodNotCalledYet() {
+    public void timedMethodsNotCalledYet() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
 
         // Make sure that all the timers haven't been called yet
@@ -75,14 +74,18 @@ public class OverloadedTimedMethodTest {
 
     @Test
     @InSequence(2)
-    public void callOverloadedTimedMethodOnce() {
+    public void callTimedMethodsOnce() {
         assertThat("Timers are not registered correctly", registry.getTimers().keySet(), is(equalTo(absoluteMetricNames())));
 
         // Call the timed methods and assert they've all been timed once
-        bean.overloadedTimedMethod();
-        bean.overloadedTimedMethod("string");
-        bean.overloadedTimedMethod(new Object());
-        bean.overloadedTimedMethod(Arrays.asList("string1", "string2"));
-        assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
+        bean.publicTimedMethod();
+        bean.protectedTimedMethod();
+        bean.packagePrivateTimedMethod();
+        method("privateTimedMethod").in(bean).invoke();
+        // FIXME: check the interceptors specification for private method interception
+        //assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
+        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "publicTimedMethod")).getCount(), is(equalTo(1L)));
+        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "packagePrivateTimedMethod")).getCount(), is(equalTo(1L)));
+        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "protectedTimedMethod")).getCount(), is(equalTo(1L)));
     }
 }

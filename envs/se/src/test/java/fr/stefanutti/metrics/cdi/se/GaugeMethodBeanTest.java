@@ -15,7 +15,7 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -29,23 +29,21 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class CounterFieldTest {
+public class GaugeMethodBeanTest {
 
-    private final static String COUNTER_NAME = MetricRegistry.name(CounterFieldBean.class, "counterName");
+    private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
 
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(CounterFieldBean.class)
+            .addClass(GaugeMethodBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -55,23 +53,29 @@ public class CounterFieldTest {
     private MetricRegistry registry;
 
     @Inject
-    private CounterFieldBean bean;
+    private GaugeMethodBean bean;
 
     @Test
     @InSequence(1)
-    public void counterFieldRegistered() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
+    public void gaugeCalledWithDefaultValue() {
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
+
+        // Make sure that the gauge has the expected value
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
     }
 
     @Test
     @InSequence(2)
-    public void incrementCounterField() {
-        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
-        Counter counter = registry.getCounters().get(COUNTER_NAME);
+    public void callGaugeAfterSetterCall() {
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
+        @SuppressWarnings("unchecked")
+        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
 
-        // Call the increment method and assert the counter is up-to-date
+        // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
-        bean.increment(value);
-        assertThat("Counter value is incorrect", counter.getCount(), is(equalTo(value)));
+        bean.setGauge(value);
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(value)));
     }
 }

@@ -17,6 +17,7 @@ package fr.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import fr.stefanutti.metrics.cdi.Metric;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,18 +30,11 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
-public class TimedMethodTest {
-
-    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
-
-    private final static AtomicLong TIMER_COUNT = new AtomicLong();
+public class TimerInjectionBeanTest {
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -48,7 +42,7 @@ public class TimedMethodTest {
             // Test bean
             .addClass(TimedMethodBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -60,49 +54,24 @@ public class TimedMethodTest {
     @Inject
     private TimedMethodBean bean;
 
+    @Inject
+    @Metric(absolute = true, name = "fr.stefanutti.metrics.cdi.se.TimedMethodBean.timedMethod")
+    private Timer timer;
+
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
-
         // Make sure that the timer hasn't been called yet
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
     }
 
     @Test
     @InSequence(2)
     public void callTimedMethodOnce() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
-
         // Call the timed method and assert it's been timed
         bean.timedMethod();
 
         // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
-    }
-
-    @Test
-    @InSequence(3)
-    public void removeTimerFromRegistry() {
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
-
-        // Remove the timer from metrics registry
-        registry.remove(TIMER_NAME);
-
-        try {
-            // Call the timed method and assert an exception is thrown
-            bean.timedMethod();
-        } catch (RuntimeException cause) {
-            assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No timer with name [" + TIMER_NAME + "] found in registry [" + registry + "]")));
-            // Make sure that the timer hasn't been called
-            assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
-            return;
-        }
-
-        fail("No exception has been re-thrown!");
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
     }
 }

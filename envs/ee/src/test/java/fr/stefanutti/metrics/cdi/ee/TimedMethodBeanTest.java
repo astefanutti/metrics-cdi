@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.stefanutti.metrics.cdi.se;
+package fr.stefanutti.metrics.cdi.ee;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import fr.stefanutti.metrics.cdi.Metric;
-import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,40 +35,47 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimerInjectionTest {
+public class TimedMethodBeanTest {
+
+    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
     @Deployment
-    static Archive<?> createTestArchive() {
-        return ShrinkWrap.create(JavaArchive.class)
-            // Test bean
-            .addClass(TimedMethodBean.class)
-            // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
-            // Bean archive deployment descriptor
-            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
-            .addAsManifestResource("beans.xml");
+    public static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(EnterpriseArchive.class)
+            .addAsLibraries(
+                Maven.resolver()
+                    .offline()
+                    .loadPomFromFile("pom.xml")
+                    .resolve("fr.stefanutti.metrics:metrics-cdi")
+                    .withTransitivity()
+                    .as(JavaArchive.class))
+            .addAsLibrary(
+                ShrinkWrap.create(JavaArchive.class)
+                    .addClass(TimedMethodBean.class)
+                    // FIXME: Test class must be added until ARQ-659 is fixed
+                    .addClass(TimedMethodBeanTest.class)
+                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
-
-    @Inject
-    private MetricRegistry registry;
-
+    
     @Inject
     private TimedMethodBean bean;
 
-    @Inject
-    @Metric(absolute = true, name = "fr.stefanutti.metrics.cdi.se.TimedMethodBean.timedMethod")
-    private Timer timer;
-
     @Test
     @InSequence(1)
-    public void timedMethodNotCalledYet() {
+    public void timedMethodNotCalledYet(MetricRegistry registry) {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
+
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
     }
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce() {
+    public void callTimedMethodOnce(MetricRegistry registry) {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
+
         // Call the timed method and assert it's been timed
         bean.timedMethod();
 

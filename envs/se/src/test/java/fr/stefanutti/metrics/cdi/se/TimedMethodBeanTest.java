@@ -15,7 +15,6 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
@@ -33,24 +32,23 @@ import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
-public class MeteredMethodTest {
+public class TimedMethodBeanTest {
 
-    private final static String METER_NAME = MetricRegistry.name(MeteredMethodBean.class, "meteredMethod");
+    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
-    private final static AtomicLong METER_COUNT = new AtomicLong();
+    private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(MeteredMethodBean.class)
+            .addClass(TimedMethodBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -60,48 +58,48 @@ public class MeteredMethodTest {
     private MetricRegistry registry;
 
     @Inject
-    private MeteredMethodBean bean;
+    private TimedMethodBean bean;
 
     @Test
     @InSequence(1)
-    public void meteredMethodNotCalledYet() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+    public void timedMethodNotCalledYet() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
 
-        // Make sure that the meter hasn't been marked yet
-        assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
+        // Make sure that the timer hasn't been called yet
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
     }
 
     @Test
     @InSequence(2)
-    public void callMeteredMethodOnce() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+    public void callTimedMethodOnce() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
 
-        // Call the metered method and assert it's been marked
-        bean.meteredMethod();
+        // Call the timed method and assert it's been timed
+        bean.timedMethod();
 
-        // Make sure that the meter has been marked
-        assertThat("Timer count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.incrementAndGet())));
+        // Make sure that the timer has been called
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
     }
 
     @Test
     @InSequence(3)
-    public void removeMeterFromRegistry() {
-        assertThat("Meter is not registered correctly", registry.getMeters(), hasKey(METER_NAME));
-        Meter meter = registry.getMeters().get(METER_NAME);
+    public void removeTimerFromRegistry() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
+        Timer timer = registry.getTimers().get(TIMER_NAME);
 
-        // Remove the meter from metrics registry
-        registry.remove(METER_NAME);
+        // Remove the timer from metrics registry
+        registry.remove(TIMER_NAME);
 
         try {
-            // Call the metered method and assert an exception is thrown
-            bean.meteredMethod();
+            // Call the timed method and assert an exception is thrown
+            bean.timedMethod();
         } catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
-            assertThat(cause.getMessage(), is(equalTo("No meter with name [" + METER_NAME + "] found in registry [" + registry + "]")));
-            // Make sure that the meter hasn't been marked
-            assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNT.get())));
+            assertThat(cause.getMessage(), is(equalTo("No timer with name [" + TIMER_NAME + "] found in registry [" + registry + "]")));
+            // Make sure that the timer hasn't been called
+            assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.get())));
             return;
         }
 

@@ -15,11 +15,12 @@
  */
 package fr.stefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import fr.stefanutti.metrics.cdi.MetricsExtension;
-import fr.stefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -28,32 +29,21 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import java.util.Arrays;
-import java.util.Set;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimerFieldTest {
+public class HistogramFieldBeanTest {
 
-    private final static String[] METRIC_NAMES = {"timerWithoutAnnotation", "timerWithNoName", "timerName"};
-
-    private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithAbsoluteDefaultName", "timerAbsoluteName"};
-
-    private Set<String> metricNames() {
-        Set<String> names = MetricsUtil.absoluteMetricNameSet(TimerFieldBean.class, METRIC_NAMES);
-        names.addAll(Arrays.asList(ABSOLUTE_METRIC_NAMES));
-        return names;
-    }
+    private final static String HISTOGRAM_NAME = MetricRegistry.name(HistogramFieldBean.class, "histogramName");
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimerFieldBean.class)
+            .addClass(HistogramFieldBean.class)
             // Metrics CDI extension
-            .addPackages(false, MetricsExtension.class.getPackage())
+            .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
             .addAsManifestResource("beans.xml");
@@ -63,10 +53,26 @@ public class TimerFieldTest {
     private MetricRegistry registry;
 
     @Inject
-    private TimerFieldBean bean;
+    private HistogramFieldBean bean;
 
     @Test
-    public void timerFieldsWithDefaultNamingConvention() {
-        assertThat("Timers are not registered correctly", registry.getMetrics().keySet(), is(equalTo(metricNames())));
+    @InSequence(1)
+    public void histogramFieldRegistered() {
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
+    }
+
+    @Test
+    @InSequence(2)
+    public void updateHistogramField() {
+        assertThat("Histogram is not registered correctly", registry.getHistograms(), hasKey(HISTOGRAM_NAME));
+        Histogram histogram = registry.getHistograms().get(HISTOGRAM_NAME);
+
+        // Call the update method and assert the histogram is up-to-date
+        long value = Math.round(Math.random() * Long.MAX_VALUE);
+        bean.update(value);
+        assertThat("Histogram count is incorrect", histogram.getCount(), is(equalTo(1L)));
+        assertThat("Histogram size is incorrect", histogram.getSnapshot().size(), is(equalTo(1)));
+        assertThat("Histogram min value is incorrect", histogram.getSnapshot().getMin(), is(equalTo(value)));
+        assertThat("Histogram max value is incorrect", histogram.getSnapshot().getMax(), is(equalTo(value)));
     }
 }

@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.stefanutti.metrics.cdi.ee;
+package fr.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import fr.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,34 +34,38 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimedMethodTest {
+public class ApplicationScopedTimedMethodBeanTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
+    private final static String TIMER_NAME = MetricRegistry.name(ApplicationScopedTimedMethodBean.class, "applicationScopedTimedMethod");
 
     @Deployment
-    public static Archive<?> createTestArchive() {
-        return ShrinkWrap.create(EnterpriseArchive.class)
-            .addAsLibraries(
-                Maven.resolver()
-                    .offline()
-                    .loadPomFromFile("pom.xml")
-                    .resolve("fr.stefanutti.metrics:metrics-cdi")
-                    .withTransitivity()
-                    .as(JavaArchive.class))
-            .addAsLibrary(
-                ShrinkWrap.create(JavaArchive.class)
-                    .addClass(TimedMethodBean.class)
-                    // FIXME: Test class must be added until ARQ-659 is fixed
-                    .addClass(TimedMethodTest.class)
-                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
+    static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(JavaArchive.class)
+            // Test bean
+            .addClass(ApplicationScopedTimedMethodBean.class)
+            // Metrics CDI extension
+            .addPackage(MetricsExtension.class.getPackage())
+            // Bean archive deployment descriptor
+            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
+            .addAsManifestResource("beans.xml");
     }
-    
+
     @Inject
-    private TimedMethodBean bean;
+    private MetricRegistry registry;
+
+    @Inject
+    private ApplicationScopedTimedMethodBean bean;
+
+    @Before
+    public void instantiateApplicationScopedBean() {
+        // Let's trigger the instantiation of the application scoped bean explicitly
+        // as only a proxy gets injected otherwise
+        bean.toString();
+    }
 
     @Test
     @InSequence(1)
-    public void timedMethodNotCalledYet(MetricRegistry registry) {
+    public void timedMethodNotCalledYet() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);
 
@@ -72,12 +75,12 @@ public class TimedMethodTest {
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce(MetricRegistry registry) {
+    public void callTimedMethodOnce() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);
 
         // Call the timed method and assert it's been timed
-        bean.timedMethod();
+        bean.applicationScopedTimedMethod();
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
