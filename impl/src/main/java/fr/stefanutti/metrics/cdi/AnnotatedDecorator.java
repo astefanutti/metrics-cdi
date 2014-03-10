@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/* packaged-protected */ class AnnotatedDecorator implements Annotated {
+/* packaged-private */ class AnnotatedDecorator implements Annotated {
 
     private final Annotated decorated;
 

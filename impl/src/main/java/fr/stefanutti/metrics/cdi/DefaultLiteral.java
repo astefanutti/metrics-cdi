@@ -20,7 +20,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-protected */ class DefaultLiteral extends AnnotationLiteral<Default> implements Default {
+/* packaged-private */ class DefaultLiteral extends AnnotationLiteral<Default> implements Default {
 
     private static final long serialVersionUID = 1L;
 

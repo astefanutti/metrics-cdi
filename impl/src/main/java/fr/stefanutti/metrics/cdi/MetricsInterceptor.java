@@ -23,8 +23,6 @@ import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -34,12 +32,12 @@ import java.lang.reflect.Method;
 @Interceptor
 @MetricsBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-class MetricsInterceptor {
+/* packaged-private */ class MetricsInterceptor {
 
     private final MetricRegistry registry;
 
     @Inject
-    private MetricsInterceptor(BeanManager manager, MetricRegistry registry, InjectionPoint point) {
+    private MetricsInterceptor(MetricRegistry registry) {
         this.registry = registry;
     }
 

@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/* packaged-protected */ final class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
+/* packaged-private */ final class AnnotatedTypeMethodDecorator<X> implements AnnotatedType<X> {
 
     private final AnnotatedType<X> decoratedType;
 

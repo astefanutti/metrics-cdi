@@ -19,7 +19,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-protected */ class ExceptionMeteredBindingLiteral extends AnnotationLiteral<ExceptionMeteredBinding> implements ExceptionMeteredBinding {
+/* packaged-private */ class ExceptionMeteredBindingLiteral extends AnnotationLiteral<ExceptionMeteredBinding> implements ExceptionMeteredBinding {
 
     private static final long serialVersionUID = 1L;
 

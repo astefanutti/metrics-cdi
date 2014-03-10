@@ -28,7 +28,7 @@ import javax.interceptor.InvocationContext;
 @Interceptor
 @TimedBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* packaged-protected */ class TimedInterceptor {
+/* packaged-private */ class TimedInterceptor {
 
     @Inject
     private MetricRegistry registry;

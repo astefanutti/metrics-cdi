@@ -24,5 +24,5 @@ import java.lang.annotation.Target;
 @InterceptorBinding
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-/* packaged-protected */ @interface TimedBinding {
+/* packaged-private */ @interface TimedBinding {
 }

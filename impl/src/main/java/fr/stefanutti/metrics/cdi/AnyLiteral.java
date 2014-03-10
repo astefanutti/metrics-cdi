@@ -21,7 +21,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-protected */ class AnyLiteral extends AnnotationLiteral<Any> implements Any {
+/* packaged-private */ class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 
     private static final long serialVersionUID = 1L;
 

@@ -29,7 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Singleton
-/* packaged-protected */ class MetricProducer {
+/* packaged-private */ class MetricProducer {
 
     private static final Pattern expression = Pattern.compile("[#|$]\\{(.*)\\}");
 
