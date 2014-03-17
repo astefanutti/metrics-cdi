@@ -21,9 +21,9 @@ import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 @Interceptor
 @MetricsBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
+// See http://docs.oracle.com/javaee/7/tutorial/doc/interceptors.htm
 /* packaged-private */ class MetricsInterceptor {
 
     private final MetricRegistry registry;
@@ -41,13 +42,11 @@ import java.lang.reflect.Method;
         this.registry = registry;
     }
 
-    @PostConstruct
-    private void metrics(InvocationContext context) throws Exception {
-        // InvocationContext.getTarget() returns the intercepted (proxied) target instance in Weld
-        // see WELD-557, CDI-6
-        // TODO: should it return the non-intercepted target instance?
-        Class<?> bean = context.getTarget().getClass().getClassLoader().loadClass(context.getTarget().getClass().getName().split("\\$")[0]);
+    @AroundConstruct
+    private Object metrics(InvocationContext context) throws Exception {
+        Object target = context.proceed();
 
+        Class<?> bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ExceptionMetered.class)) {
                 ExceptionMetered metered = method.getAnnotation(ExceptionMetered.class);
@@ -57,7 +56,8 @@ import java.lang.reflect.Method;
             if (method.isAnnotationPresent(Gauge.class)) {
                 Gauge gauge = method.getAnnotation(Gauge.class);
                 String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
-                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget()));
+                // FIXME: remove that discrepancy to support OWB 2.0.0
+                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget() == null ? target : context.getTarget()));
             }
             if (method.isAnnotationPresent(Metered.class)) {
                 Metered metered = method.getAnnotation(Metered.class);
@@ -70,7 +70,8 @@ import java.lang.reflect.Method;
                 registry.timer(timed.absolute() ? name : MetricRegistry.name(bean, name));
             }
         }
-        context.proceed();
+
+        return target;
     }
 
     private static class ForwardingGauge implements com.codahale.metrics.Gauge<Object> {

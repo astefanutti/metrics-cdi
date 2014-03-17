@@ -14,7 +14,6 @@ CDI Extension for Metrics
 
 [CDI]: http://www.cdi-spec.org/
 [Metrics]: http://metrics.codahale.com/
-[CDI 1.0]: https://jcp.org/en/jsr/detail?id=299
 [CDI 1.1]: https://jcp.org/en/jsr/detail?id=346
 
 ## About
@@ -67,14 +66,12 @@ a [CDI 1.1][] enabled environment.
 
 _Metrics CDI_ is currently successfully tested with the following containers:
 
-| Container        | Version       | Specification | Arquillian Container Adapter                |
-| ---------------- | ------------- | ------------- | ------------------------------------------- |
-| [Weld SE][]      | `2.1.2.Final` | [CDI 1.1][]   | `arquillian-weld-se-embedded-1.1`           |
-| [Weld EE][]      | `2.1.2.Final` | [CDI 1.1][]   | `arquillian-weld-ee-embedded-1.1`           |
-| [OpenWebBeans][] | `1.2.2`       | [CDI 1.0][]   | `owb-arquillian-standalone`                 |
-| [WildFly][]      | `8.0.0.Final` | [Java EE 7][] | `wildfly-arquillian-container-managed`      |
-
-Note that the support of [CDI 1.0][] will be discontinued once [OpenWebBeans][] becomes [CDI 1.1][] compliant.
+| Container        | Version          | Specification | Arquillian Container Adapter                |
+| ---------------- | ---------------- | ------------- | ------------------------------------------- |
+| [Weld SE][]      | `2.1.2.Final`    | [CDI 1.1][]   | `arquillian-weld-se-embedded-1.1`           |
+| [Weld EE][]      | `2.1.2.Final`    | [CDI 1.1][]   | `arquillian-weld-ee-embedded-1.1`           |
+| [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][]   | `owb-arquillian-standalone`                 |
+| [WildFly][]      | `8.0.0.Final`    | [Java EE 7][] | `wildfly-arquillian-container-managed`      |
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
