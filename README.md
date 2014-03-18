@@ -103,6 +103,47 @@ public class TimedMethodBean {
 
 ### Metrics Injection and the `@Metric` Annotation
 
+Contextual instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
+
+```java
+import com.codahale.metrics.Timer;
+
+    @Inject
+    Timer timer;
+}
+```
+
+[`Metric`][] instances can be injected similarly as method parameters of any [initializer method][]
+or [bean constructor][], e.g.:
+
+```java
+import com.codahale.metrics.Timer;
+
+    Timer timer;
+
+    @Inject
+    void setTimer(Timer timer) {
+       this.timer = timer;
+    }
+}
+```
+
+In order to provide metadata for the [`Metric`][] instance retrieval, the injection point can be annotated
+with the `@Metric` annotation, e.g.:
+
+```java
+import com.codahale.metrics.Timer;
+
+    @Inject
+    @Metric(name = "timerAbsoluteName", absolute = true)
+    Timer timer;
+}
+```
+
+[injected field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#injected_fields
+[initializer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#initializer_methods
+[bean constructor]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#bean_constructors
+
 ### _Metrics_ Registry Resolution
 
 _Metrics CDI_ gets a contextual instance of the [`MetricRegistry`][] bean declared in the CDI container
@@ -165,8 +206,6 @@ public final class MetricRegistryBean {
 
 [producer field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_method
-[injected field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#injected_fields
-[bean constructor]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#bean_constructors
 
 ## Limitations
 
