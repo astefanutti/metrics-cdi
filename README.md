@@ -133,6 +133,7 @@ with the `@Metric` annotation, e.g.:
 
 ```java
 import com.codahale.metrics.Timer;
+import org.stefanutti.metrics.cdi.Metric;
 
     @Inject
     @Metric(name = "timerAbsoluteName", absolute = true)
