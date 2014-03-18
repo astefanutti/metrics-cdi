@@ -46,7 +46,7 @@ public class TimedMethodBeanTest {
                 Maven.resolver()
                     .offline()
                     .loadPomFromFile("pom.xml")
-                    .resolve("fr.stefanutti.metrics:metrics-cdi")
+                    .resolve("org.stefanutti.metrics:metrics-cdi")
                     .withTransitivity()
                     .as(JavaArchive.class))
             .addAsLibrary(
