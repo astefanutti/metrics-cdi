@@ -37,7 +37,7 @@
                                     <destFile>${project.basedir}/../../impl/target/jacoco.exec</destFile>
                                     <append>true</append>
                                     <includes>
-                                        <include>fr.stefanutti.metrics.cdi.*</include>
+                                        <include>org.stefanutti.metrics.cdi.*</include>
                                     </includes>
                                 </configuration>
                             </execution>
