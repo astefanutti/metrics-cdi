@@ -28,7 +28,7 @@ It implements the contract specified by these annotations with the following lev
 
 _Metrics CDI_ is compatible with _Metrics_ version 3.0.
 
-[Metrics annotations]: https://github.com/codahale/metrics/tree/master/metrics-annotation
+[Metrics annotations]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
 [`@ExceptionMetered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
 [`@Metered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Timed`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html
@@ -231,6 +231,6 @@ with one of the _Metrics_ annotations) must be _proxyable_ bean types, as define
 License
 -------
 
-Copyright © 2013-2014 Antonin Stefanutti
+Copyright © 2013-2014, Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
