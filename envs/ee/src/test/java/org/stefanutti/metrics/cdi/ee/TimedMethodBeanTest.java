@@ -43,8 +43,8 @@ public class TimedMethodBeanTest {
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(EnterpriseArchive.class)
             .addAsLibraries(
-                Maven.resolver()
-                    .offline()
+                Maven.configureResolver()
+                    .workOffline()
                     .loadPomFromFile("pom.xml")
                     .resolve("org.stefanutti.metrics:metrics-cdi")
                     .withTransitivity()
