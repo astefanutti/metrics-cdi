@@ -106,6 +106,8 @@ public class TimedMethodBean {
 Contextual instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
 
 ```java
+import javax.inject.Inject;
+
 import com.codahale.metrics.Timer;
 
     @Inject
@@ -117,6 +119,8 @@ import com.codahale.metrics.Timer;
 or [bean constructor][], e.g.:
 
 ```java
+import javax.inject.Inject;
+
 import com.codahale.metrics.Timer;
 
     Timer timer;
@@ -132,7 +136,10 @@ In order to provide metadata for the [`Metric`][] instance retrieval, the inject
 with the `@Metric` annotation, e.g.:
 
 ```java
+import javax.inject.Inject;
+
 import com.codahale.metrics.Timer;
+
 import org.stefanutti.metrics.cdi.Metric;
 
     @Inject
@@ -151,6 +158,9 @@ _Metrics CDI_ gets a contextual instance of the [`MetricRegistry`][] bean declar
 to register any [`Metric`][] instances produced. For example, it can be declared as a [producer field][]:
 
 ```java
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+
 import com.codahale.metrics.MetricRegistry;
 
 public final class MetricRegistryFactoryBean {
@@ -164,6 +174,9 @@ public final class MetricRegistryFactoryBean {
 or a [producer method][]:
 
 ```java
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+
 import com.codahale.metrics.MetricRegistry;
 
 public final class MetricRegistryFactoryBean {
@@ -180,6 +193,8 @@ Otherwise, _Metrics CDI_ automatically registers a [`MetricRegistry`][] bean int
 so that it can be injected in any valid injection point, for example, by declaring an [injected field][]:
 
 ```java
+import javax.inject.Inject;
+
 import com.codahale.metrics.MetricRegistry;
 
 public final class MetricRegistryBean {
@@ -192,6 +207,8 @@ public final class MetricRegistryBean {
 or by declaring a [bean constructor][]:
 
 ```java
+import javax.inject.Inject;
+
 import com.codahale.metrics.MetricRegistry;
 
 public final class MetricRegistryBean {
