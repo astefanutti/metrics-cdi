@@ -64,16 +64,16 @@ public class TimedMethodBeanTest {
                     .withTransitivity()
                     .as(JavaArchive.class))
             .addClass(TimedMethodBean.class)
-            .addClass(ClientServlet.class)
+            .addClass(TimedMethodServlet.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
                 .version("3.1")
                 .createServlet()
-                    .servletClass(ClientServlet.class.getName())
-                    .servletName("client").up()
+                    .servletClass(TimedMethodServlet.class.getName())
+                    .servletName("TimedMethod").up()
                 .createServletMapping()
-                    .servletName("client")
-                    .urlPattern("/client").up()
+                    .servletName("TimedMethod")
+                    .urlPattern("/timedMethod").up()
                 .createListener()
                     .listenerClass(Listener.class.getName()).up()
                 .exportAsString()));
@@ -84,7 +84,7 @@ public class TimedMethodBeanTest {
     @InSequence(1)
     public void timedMethodNotCalledYet(@ArquillianResource URL url) throws IOException {
         for (int i = 0; i < CALL_COUNT; i++)
-            readStreamAndClose(new URL(url, "client").openStream());
+            readStreamAndClose(new URL(url, "timedMethod").openStream());
     }
 
     @Test

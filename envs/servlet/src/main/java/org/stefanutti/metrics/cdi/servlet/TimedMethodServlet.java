@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ClientServlet extends HttpServlet {
+public class TimedMethodServlet extends HttpServlet {
 
     @Inject
     private TimedMethodBean bean;
