@@ -16,6 +16,7 @@
     <modules>
         <module>ee</module>
         <module>se</module>
+        <module>servlet</module>
     </modules>
 
     <profiles>
