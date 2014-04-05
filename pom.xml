@@ -55,7 +55,7 @@
         <metrics.version>3.0.2</metrics.version>
         <cdi.version>1.1-20130918</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.1.2.Final</weld.version>
+        <weld.version>2.2.0.CR1</weld.version>
         <owb.version>2.0.0-SNAPSHOT</owb.version>
         <wildfly.version>8.0.0.Final</wildfly.version>
         <jetty.version>9.1.3.v20140225</jetty.version>
