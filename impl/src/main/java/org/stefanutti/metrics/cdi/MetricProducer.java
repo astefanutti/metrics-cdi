@@ -21,14 +21,22 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
+import javax.interceptor.Interceptor;
+import java.lang.reflect.Member;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Singleton
+@Alternative
+@Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ class MetricProducer {
 
     private static final Pattern expression = Pattern.compile("[#|$]\\{(.*)\\}");
@@ -37,6 +45,8 @@ import java.util.regex.Pattern;
     private Counter produceCounter(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
         return registry.counter(metricName(point, manager));
     }
+
+    // TODO: produce gauge that have been registered in the Metrics registry
 
     @Produces
     private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
@@ -53,23 +63,31 @@ import java.util.regex.Pattern;
         return registry.timer(metricName(point, manager));
     }
 
-    private String metricName(InjectionPoint point, BeanManager manager) {
-        if (point.getAnnotated().isAnnotationPresent(Metric.class)) {
-            Metric metric = point.getAnnotated().getAnnotation(Metric.class);
+    private static String metricName(InjectionPoint point, BeanManager manager) {
+        return metricName(point.getAnnotated(), point.getMember(), manager);
+    }
+
+    static String metricName(AnnotatedMember<?> annotatedMember, BeanManager manager) {
+        return metricName(annotatedMember, annotatedMember.getJavaMember(), manager);
+    }
+
+    private static String metricName(Annotated annotated, Member member, BeanManager manager) {
+        if (annotated.isAnnotationPresent(Metric.class)) {
+            Metric metric = annotated.getAnnotation(Metric.class);
             if (metric.name().isEmpty()) {
-                String name = point.getMember().getName();
-                return metric.absolute() ? name : MetricRegistry.name(point.getMember().getDeclaringClass(), name);
+                String name = member.getName();
+                return metric.absolute() ? name : MetricRegistry.name(member.getDeclaringClass(), name);
             } else {
                 Matcher matcher = expression.matcher(metric.name());
                 if (matcher.matches()) {
                     // TODO: add support for EL evaluation
                     return null;
                 } else {
-                    return metric.absolute() ? metric.name() : MetricRegistry.name(point.getMember().getDeclaringClass(), metric.name());
+                    return metric.absolute() ? metric.name() : MetricRegistry.name(member.getDeclaringClass(), metric.name());
                 }
             }
         } else {
-            return MetricRegistry.name(point.getMember().getDeclaringClass(), point.getMember().getName());
+            return MetricRegistry.name(member.getDeclaringClass(), member.getName());
         }
     }
 }

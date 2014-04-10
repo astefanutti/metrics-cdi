@@ -15,7 +15,8 @@
  */
 package org.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.*;
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
@@ -24,13 +25,15 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.*;
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MetricsExtension implements Extension {
 
     private boolean hasMetricRegistry;
 
+    private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<Bean<?>, AnnotatedMember<?>>();
+
+    // TODO: give meaningful method names
     private <X> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
@@ -52,14 +55,29 @@ public class MetricsExtension implements Extension {
             pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<X>(annotatedType, decoratedMethods));
     }
 
+    // TODO: use typed observers
     private <X> void processBean(@Observes ProcessBean<X> pb) {
         if (pb.getBean().getTypes().contains(MetricRegistry.class))
             hasMetricRegistry = true;
     }
 
+    private <X> void processProducerField(@Observes ProcessProducerField<? extends Metric, X> ppf) {
+        metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
+    }
+
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (!hasMetricRegistry)
             abd.addBean(new MetricRegistryBean(manager));
+    }
+
+    private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+        Bean<?> registryBean = manager.resolve(manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE));
+        MetricRegistry registry = (MetricRegistry) manager.getReference(registryBean, MetricRegistry.class, manager.createCreationalContext(null));
+
+        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
+            Metric reference = (Metric) manager.getReference(metric.getKey(), metric.getValue().getBaseType(), manager.createCreationalContext(null));
+            registry.register(MetricProducer.metricName(metric.getValue(), manager), reference);
+        }
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {

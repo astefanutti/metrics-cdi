@@ -13,4 +13,8 @@
         <class>org.stefanutti.metrics.cdi.ExceptionMeteredInterceptor</class>
     </interceptors>
 
+    <alternatives>
+        <class>org.stefanutti.metrics.cdi.MetricProducer</class>
+    </alternatives>
+
 </beans>
