@@ -96,10 +96,10 @@ can be monitored using _Metrics_:
 ```java
 import com.codahale.metrics.annotation.Timed;
 
-public class TimedMethodBean {
+class TimedMethodBean {
 
     @Timed(name = "timerName")
-    public void timedMethod() {
+    void timedMethod() {
     }
 }
 ```
@@ -126,10 +126,12 @@ import com.codahale.metrics.Timer;
 
 import javax.inject.Inject;
 
-    Timer timer;
+class TimerBean {
+
+    final Timer timer;
 
     @Inject
-    void setTimer(Timer timer) {
+    TimerBean(Timer timer) {
        this.timer = timer;
     }
 }
@@ -146,8 +148,28 @@ import javax.inject.Inject;
 import org.stefanutti.metrics.cdi.Metric;
 
     @Inject
-    @Metric(name = "timerAbsoluteName", absolute = true)
+    @Metric(name = "timerName", absolute = true)
     Timer timer;
+}
+```
+
+or when using a [bean constructor][]:
+
+```java
+import com.codahale.metrics.Timer;
+
+import javax.inject.Inject;
+
+import org.stefanutti.metrics.cdi.Metric;
+
+class TimerBean {
+
+    final Timer timer;
+
+    @Inject
+    TimerBean(@Metric(name = "timerName", absolute = true) Timer timer) {
+       this.timer = timer;
+    }
 }
 ```
 
@@ -166,7 +188,7 @@ import com.codahale.metrics.MetricRegistry;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
-public final class MetricRegistryFactoryBean {
+class MetricRegistryFactoryBean {
 
     @Produces
     @Singleton
@@ -182,11 +204,11 @@ import com.codahale.metrics.MetricRegistry;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
-public final class MetricRegistryFactoryBean {
+class MetricRegistryFactoryBean {
 
     @Produces
     @Singleton
-    public MetricRegistry metricRegistry() {
+    MetricRegistry metricRegistry() {
         return new MetricRegistry();
     }
 }
@@ -200,7 +222,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.inject.Inject;
 
-public final class MetricRegistryBean {
+class MetricRegistryBean {
 
      @Inject
      MetricRegistry registry;
@@ -214,12 +236,12 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.inject.Inject;
 
-public final class MetricRegistryBean {
+class MetricRegistryBean {
 
     private final MetricRegistry registry;
 
     @Inject
-    public void MetricRegistryBean(MetricRegistry registry) {
+    void MetricRegistryBean(MetricRegistry registry) {
         this.registry = registry;
     }
 }
