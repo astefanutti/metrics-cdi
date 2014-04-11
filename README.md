@@ -113,9 +113,8 @@ import com.codahale.metrics.Timer;
 
 import javax.inject.Inject;
 
-    @Inject
-    Timer timer;
-}
+@Inject
+private Timer timer;
 ```
 
 [`Metric`][] instances can be injected similarly as method parameters of any [initializer method][]
@@ -128,10 +127,10 @@ import javax.inject.Inject;
 
 class TimerBean {
 
-    final Timer timer;
+    private final Timer timer;
 
     @Inject
-    TimerBean(Timer timer) {
+    private TimerBean(Timer timer) {
        this.timer = timer;
     }
 }
@@ -147,10 +146,9 @@ import javax.inject.Inject;
 
 import org.stefanutti.metrics.cdi.Metric;
 
-    @Inject
-    @Metric(name = "timerName", absolute = true)
-    Timer timer;
-}
+@Inject
+@Metric(name = "timerName", absolute = true)
+private Timer timer;
 ```
 
 or when using a [bean constructor][]:
@@ -164,10 +162,10 @@ import org.stefanutti.metrics.cdi.Metric;
 
 class TimerBean {
 
-    final Timer timer;
+    private final Timer timer;
 
     @Inject
-    TimerBean(@Metric(name = "timerName", absolute = true) Timer timer) {
+    private TimerBean(@Metric(name = "timerName", absolute = true) Timer timer) {
        this.timer = timer;
     }
 }
@@ -208,7 +206,7 @@ class MetricRegistryFactoryBean {
 
     @Produces
     @Singleton
-    MetricRegistry metricRegistry() {
+    private MetricRegistry metricRegistry() {
         return new MetricRegistry();
     }
 }
@@ -225,7 +223,7 @@ import javax.inject.Inject;
 class MetricRegistryBean {
 
      @Inject
-     MetricRegistry registry;
+     private MetricRegistry registry;
  }
 ```
 
@@ -241,7 +239,7 @@ class MetricRegistryBean {
     private final MetricRegistry registry;
 
     @Inject
-    void MetricRegistryBean(MetricRegistry registry) {
+    private MetricRegistryBean(MetricRegistry registry) {
         this.registry = registry;
     }
 }
