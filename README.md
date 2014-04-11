@@ -40,6 +40,7 @@ _Metrics CDI_ is compatible with _Metrics_ version 3.0.
 [`Timer`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html
 [`Metric`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html
 [`MetricRegistry`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html
+[_Metrics_ registry]: http://metrics.codahale.com/getting-started/#the-registry
 
 ## Getting Started
 
@@ -84,7 +85,17 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 ## Usage
 
-### The _Metrics_ Annotations
+_Metrics CDI_ automatically registers new [`Metric`][] instances in the [_Metrics_ registry][] resolved
+for the CDI application. The instantiation of these new [`Metric`][] instances happens when:
++ A bean containing [_Metrics_ annotations](#_Metrics_ Annotations) is instantiated,
++ A bean containing [metrics injection](#Metrics Injection) is instantiated.
+
+The [metrics registration](#Metrics Registration) mechanism can be used to customized
+the [`Metric`][] instances registered.
+Besides, the [_Metrics_ registry resolution](#_Metrics_ Registry Resolution) mechanism can be used for the application
+to provide a custom [`MetricRegistry`].
+
+### _Metrics_ Annotations
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a series
 of annotations ([`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
@@ -104,9 +115,9 @@ class TimedMethodBean {
 }
 ```
 
-### Metrics Injection and the `@Metric` Annotation
+### Metrics Injection
 
-Contextual instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
+Instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
 
 ```java
 import com.codahale.metrics.Timer;
@@ -136,7 +147,7 @@ class TimerBean {
 }
 ```
 
-In order to provide metadata for the [`Metric`][] instance retrieval, the injection point can be annotated
+In order to provide metadata for the [`Metric`][] instantiation and resolution, the injection point can be annotated
 with the `@Metric` annotation, e.g.:
 
 ```java
@@ -175,10 +186,98 @@ class TimerBean {
 [initializer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#initializer_methods
 [bean constructor]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#bean_constructors
 
+### Metrics Registration
+
+While _Metrics CDI_ automatically registers [`Metric`][] instances, it may be necessary for an application
+to explicitly provide the [`Metric`][] instances to register. For example, to register custom [gauges], e.g.:
+
+```java
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Ratio;
+import com.codahale.metrics.RatioGauge;
+import com.codahale.metrics.Timer;
+
+import javax.enterprise.inject.Produces;
+
+import org.stefanutti.metrics.cdi.Metric;
+
+class GaugeFactoryBean {
+
+    @Produces
+    @Metric(name = "cache-hits", absolute = true)
+    private Gauge<Double> cacheHitRatioGauge(@Metric(name = "hits", absolute = true) Meter hits,
+                                             @Metric(name = "calls", absolute = true) Timer calls) {
+        return new RatioGauge() {
+            @Override
+            protected Ratio getRatio() {
+                return Ratio.of(hits.oneMinuteRate(), calls.oneMinuteRate());
+            }
+        };
+    }
+}
+```
+
+or to provide particular `Reservoir` implementations to [histograms][], e.g.:
+
+```java
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.UniformReservoir;
+
+import javax.enterprise.inject.Produces;
+
+import org.stefanutti.metrics.cdi.Metric;
+
+@Produces
+@Metric(name = "uniform-histogram")
+private final Histogram histogram = new Histogram(new UniformReservoir());
+}
+```
+
+[gauges]: http://metrics.codahale.com/manual/core/#gauges
+[histograms]: http://metrics.codahale.com/manual/core/#histograms
+[`Reservoir`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Reservoir.html
+
 ### _Metrics_ Registry Resolution
 
-_Metrics CDI_ gets a contextual instance of the [`MetricRegistry`][] bean declared in the CDI container
-to register any [`Metric`][] instances produced. For example, it can be declared as a [producer field][]:
+_Metrics CDI_ automatically registers a [`MetricRegistry`][] bean into the CDI container
+to register any [`Metric`][] instances produced. That _default_ [`MetricRegistry`][] bean
+can be injected using standard CDI [typesafe resolution][], for example, by declaring an [injected field][]:
+
+```java
+import com.codahale.metrics.MetricRegistry;
+
+import javax.inject.Inject;
+
+class MetricRegistryBean {
+
+     @Inject
+     private MetricRegistry registry;
+ }
+```
+
+or by declaring a [bean constructor][]:
+
+```java
+import com.codahale.metrics.MetricRegistry;
+
+import javax.inject.Inject;
+
+class MetricRegistryBean {
+
+    private final MetricRegistry registry;
+
+    @Inject
+    private MetricRegistryBean(MetricRegistry registry) {
+        this.registry = registry;
+    }
+}
+```
+
+Otherwise, _Metrics CDI_ uses any [`MetricRegistry`][] bean declared in the CDI container with
+the [built-in _default_ qualifier][] [`@Default`][] so that a _custom_ [`MetricRegistry`][] can be provided.
+For example, that _custom_ [`MetricRegistry`][] can be declared as a [producer field][]:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -212,41 +311,11 @@ class MetricRegistryFactoryBean {
 }
 ```
 
-Otherwise, _Metrics CDI_ automatically registers a [`MetricRegistry`][] bean into the CDI container
-so that it can be injected in any valid injection point, for example, by declaring an [injected field][]:
-
-```java
-import com.codahale.metrics.MetricRegistry;
-
-import javax.inject.Inject;
-
-class MetricRegistryBean {
-
-     @Inject
-     private MetricRegistry registry;
- }
-```
-
-or by declaring a [bean constructor][]:
-
-```java
-import com.codahale.metrics.MetricRegistry;
-
-import javax.inject.Inject;
-
-class MetricRegistryBean {
-
-    private final MetricRegistry registry;
-
-    @Inject
-    private MetricRegistryBean(MetricRegistry registry) {
-        this.registry = registry;
-    }
-}
-```
-
+[typesafe resolution]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#typesafe_resolution
 [producer field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_method
+[built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#builtin_qualifiers
+[`@Default`]: http://docs.oracle.com/javaee/7/api/javax/enterprise/inject/Default.html
 
 ## Limitations
 
