@@ -37,10 +37,6 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class MetricProducerFieldBeanTest {
 
-    private final static AtomicLong COUNTER1 = new AtomicLong();
-
-    private final static AtomicLong COUNTER2 = new AtomicLong();
-
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
@@ -58,7 +54,7 @@ public class MetricProducerFieldBeanTest {
 
     @Test
     @InSequence(1)
-    public void countersNotCalledYet() {
+    public void countersNotIncrementedYet() {
         assertThat("Counters are not registered correctly", registry.getCounters(), allOf(hasKey("counter1"), hasKey("counter2")));
         Counter counter1 = registry.getCounters().get("counter1");
         Counter counter2 = registry.getCounters().get("counter2");
@@ -72,7 +68,7 @@ public class MetricProducerFieldBeanTest {
 
     @Test
     @InSequence(2)
-    public void incrementCounters() {
+    public void incrementCountersFromRegistry() {
         assertThat("Counters are not registered correctly", registry.getCounters(), allOf(hasKey("counter1"), hasKey("counter2")));
         Counter counter1 = registry.getCounters().get("counter1");
         Counter counter2 = registry.getCounters().get("counter2");
@@ -85,5 +81,22 @@ public class MetricProducerFieldBeanTest {
         counter2.inc(Math.round(Math.random() * Integer.MAX_VALUE));
 
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) counter1.getCount()) / ((double) counter2.getCount()))));
+    }
+
+    @Test
+    @InSequence(3)
+    public void incrementCountersFromInjection(@Metric(name = "ratioGauge", absolute = true) Gauge<Double> gauge,
+                                               @Metric(name = "counter1", absolute = true) Counter counter1,
+                                               @Metric(name = "counter2", absolute = true) Counter counter2) {
+        counter1.inc(Math.round(Math.random() * Integer.MAX_VALUE));
+        counter2.inc(Math.round(Math.random() * Integer.MAX_VALUE));
+
+        assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(((double) counter1.getCount()) / ((double) counter2.getCount()))));
+
+        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey("ratioGauge"));
+        @SuppressWarnings("unchecked")
+        Gauge<Double> gaugeFromRegistry = (Gauge<Double>) registry.getGauges().get("ratioGauge");
+
+        assertThat("Gauge values from registry and injection do not match", gauge.getValue(), is(equalTo(gaugeFromRegistry.getValue())));
     }
 }

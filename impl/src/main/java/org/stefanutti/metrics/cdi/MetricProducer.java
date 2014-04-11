@@ -63,12 +63,12 @@ import java.util.regex.Pattern;
         return registry.timer(metricName(point, manager));
     }
 
-    private static String metricName(InjectionPoint point, BeanManager manager) {
-        return metricName(point.getAnnotated(), point.getMember(), manager);
+    /* packaged-private */ static String metricName(AnnotatedMember<?> annotatedMember, BeanManager manager) {
+        return metricName(annotatedMember, annotatedMember.getJavaMember(), manager);
     }
 
-    static String metricName(AnnotatedMember<?> annotatedMember, BeanManager manager) {
-        return metricName(annotatedMember, annotatedMember.getJavaMember(), manager);
+    private static String metricName(InjectionPoint point, BeanManager manager) {
+        return metricName(point.getAnnotated(), point.getMember(), manager);
     }
 
     private static String metricName(Annotated annotated, Member member, BeanManager manager) {
