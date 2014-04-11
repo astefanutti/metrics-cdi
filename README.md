@@ -87,12 +87,12 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 _Metrics CDI_ automatically registers new [`Metric`][] instances in the [_Metrics_ registry][] resolved
 for the CDI application. The instantiation of these new [`Metric`][] instances happens when:
-+ A bean containing [_Metrics_ annotations](#_Metrics_ Annotations) is instantiated,
-+ A bean containing [metrics injection](#Metrics Injection) is instantiated.
++ A bean containing [_Metrics_ annotations](#metrics-annotations) is instantiated,
++ A bean containing [metrics injection](#metrics-injection) is instantiated.
 
-The [metrics registration](#Metrics Registration) mechanism can be used to customized
+The [metrics registration](#metrics-registration) mechanism can be used to customized
 the [`Metric`][] instances registered.
-Besides, the [_Metrics_ registry resolution](#_Metrics_ Registry Resolution) mechanism can be used for the application
+Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application
 to provide a custom [`MetricRegistry`].
 
 ### _Metrics_ Annotations
@@ -232,7 +232,6 @@ import org.stefanutti.metrics.cdi.Metric;
 @Produces
 @Metric(name = "uniform-histogram")
 private final Histogram histogram = new Histogram(new UniformReservoir());
-}
 ```
 
 [gauges]: http://metrics.codahale.com/manual/core/#gauges
@@ -250,11 +249,8 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.inject.Inject;
 
-class MetricRegistryBean {
-
-     @Inject
-     private MetricRegistry registry;
- }
+@Inject
+private MetricRegistry registry;
 ```
 
 or by declaring a [bean constructor][]:
@@ -285,12 +281,9 @@ import com.codahale.metrics.MetricRegistry;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
-class MetricRegistryFactoryBean {
-
-    @Produces
-    @Singleton
-    private final MetricRegistry registry = new MetricRegistry();
- }
+@Produces
+@Singleton
+private final MetricRegistry registry = new MetricRegistry();
 ```
 
 or a [producer method][]:
