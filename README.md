@@ -10,15 +10,17 @@ CDI Extension for Metrics
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.png
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 
-[CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1][CDI 1.1].
+[CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1][JSR 346].
 
 [CDI]: http://www.cdi-spec.org/
 [Metrics]: http://metrics.codahale.com/
-[CDI 1.1]: https://jcp.org/en/jsr/detail?id=346
+[JSR 346]: https://jcp.org/en/jsr/detail?id=346
+[CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
+[CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
 ## About
 
-_Metrics CDI_ provides support of the [_Metrics_ annotations][Metrics annotations] in [CDI 1.1][] enabled environments.
+_Metrics CDI_ provides support of the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
 + Intercept invocations of bean methods annotated with [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
 + Create [`Gauge`][] instances for bean methods annotated with [`@Gauge`][],
@@ -61,7 +63,7 @@ Add the `metrics-cdi` library as a dependency:
 ### Required Dependencies
 
 Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules), _Metrics CDI_ requires
-a [CDI 1.1][] enabled environment.
+a [CDI][] enabled environment.
 
 ### Supported Containers
 
@@ -69,8 +71,8 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container        | Version          | Specification   | Arquillian Container Adapter                |
 | ---------------- | ---------------- | --------------- | ------------------------------------------- |
-| [Weld SE][]      | `2.2.0.SP1`      | [CDI 1.1][]     | `arquillian-weld-se-embedded-1.1`           |
-| [Weld EE][]      | `2.2.0.SP1`      | [CDI 1.1][]     | `arquillian-weld-ee-embedded-1.1`           |
+| [Weld SE][]      | `2.2.0.SP1`      | [CDI 1.2][]     | `arquillian-weld-se-embedded-1.1`           |
+| [Weld EE][]      | `2.2.0.SP1`      | [CDI 1.2][]     | `arquillian-weld-ee-embedded-1.1`           |
 | [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][]     | `owb-arquillian-standalone`                 |
 | [Jetty][]        | `9.1.3`          | [Servlet 3.1][] | `arquillian-jetty-embedded-9`               |
 | [WildFly][]      | `8.1.0.CR1`      | [Java EE 7][]   | `wildfly-arquillian-container-managed`      |
@@ -182,9 +184,9 @@ class TimerBean {
 }
 ```
 
-[injected field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#injected_fields
-[initializer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#initializer_methods
-[bean constructor]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#bean_constructors
+[injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
+[initializer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#initializer_methods
+[bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
 ### Metrics Registration
 
@@ -304,19 +306,19 @@ class MetricRegistryFactoryBean {
 }
 ```
 
-[typesafe resolution]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#typesafe_resolution
-[producer field]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_field
-[producer method]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#producer_method
-[built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#builtin_qualifiers
+[typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
+[producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
+[producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
+[built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
 [`@Default`]: http://docs.oracle.com/javaee/7/api/javax/enterprise/inject/Default.html
 
 ## Limitations
 
-[CDI 1.1][CDI 1.1 spec] leverages on [Java Interceptors Specification 1.2][] to provide the ability to associate interceptors
+[CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to associate interceptors
 to objects via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from the business logic
 and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
 
-[CDI 1.1][CDI 1.1 spec] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user
+[CDI 1.2][] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user
 perspective, that implies that the managed beans to be monitored with _Metrics_ (i.e. having at least one member method annotated
 with one of the _Metrics_ annotations) must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
 > + Classes which don’t have a non-private constructor with no parameters,
@@ -325,10 +327,9 @@ with one of the _Metrics_ annotations) must be _proxyable_ bean types, as define
 > + Primitive types,
 > + And array types.
 
-[CDI 1.1 spec]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [Java Interceptors Specification 1.2]: http://download.oracle.com/otndocs/jcp/interceptors-1_2-mrel2-eval-spec/
-[Binding an interceptor to a bean]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#binding_interceptor_to_bean
-[Unproxyable bean types]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html#unproxyable
+[Binding an interceptor to a bean]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#binding_interceptor_to_bean
+[Unproxyable bean types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#unproxyable
 
 License
 -------
