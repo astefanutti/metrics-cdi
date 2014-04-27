@@ -53,7 +53,7 @@ Add the `metrics-cdi` library as a dependency:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>org.stefanutti.metrics</groupId>
+        <groupId>org.stefanutti.metrics.cdi</groupId>
         <artifactId>metrics-cdi</artifactId>
         <version>${metrics.cdi.version}</version>
     </dependency>

@@ -60,7 +60,7 @@ public class TimedMethodBeanTest {
                 Maven.configureResolver()
                     .workOffline()
                     .loadPomFromFile("pom.xml")
-                    .resolve("org.stefanutti.metrics:metrics-cdi", "org.jboss.weld.servlet:weld-servlet")
+                    .resolve("org.stefanutti.metrics.cdi:metrics-cdi", "org.jboss.weld.servlet:weld-servlet")
                     .withTransitivity()
                     .as(JavaArchive.class))
             .addClass(TimedMethodBean.class)
