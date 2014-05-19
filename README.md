@@ -3,11 +3,11 @@ CDI Extension for Metrics
 
 [![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build]
 
-[Travis badge]: https://secure.travis-ci.org/astefanutti/metrics-cdi.png
+[Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg?branch=master
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master
 [Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi?branch=master
-[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.png
+[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 
 [CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1][JSR 346].
