@@ -65,7 +65,7 @@
         <javaee.version>7.0</javaee.version>
         <weld.version>2.2.0.SP1</weld.version>
         <owb.version>2.0.0-SNAPSHOT</owb.version>
-        <wildfly.version>8.1.0.CR1</wildfly.version>
+        <wildfly.version>8.1.0.CR2</wildfly.version>
         <jetty.version>9.1.5.v20140505</jetty.version>
         <arquillian.version>1.1.4.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
