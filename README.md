@@ -3,10 +3,10 @@ CDI Extension for Metrics
 
 [![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build]
 
-[Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg?branch=master
+[Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
-[Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.png?branch=master
-[Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi?branch=master
+[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/metrics-cdi.svg
+[Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 
