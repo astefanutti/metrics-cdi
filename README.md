@@ -209,8 +209,8 @@ class GaugeFactoryBean {
 
     @Produces
     @Metric(name = "cache-hits", absolute = true)
-    private Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits", absolute = true) Meter hits,
-                                             final @Metric(name = "calls", absolute = true) Timer calls) {
+    Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits", absolute = true) Meter hits,
+                                     final @Metric(name = "calls", absolute = true) Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {
