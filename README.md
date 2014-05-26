@@ -191,7 +191,8 @@ class TimerBean {
 ### Metrics Registration
 
 While _Metrics CDI_ automatically registers [`Metric`][] instances, it may be necessary for an application
-to explicitly provide the [`Metric`][] instances to register. For example, to register custom [gauges], e.g.:
+to explicitly provide the [`Metric`][] instances to register. For example, to register custom [gauges],
+e.g. with a [producer method][]:
 
 ```java
 import com.codahale.metrics.Gauge;
@@ -208,19 +209,19 @@ class GaugeFactoryBean {
 
     @Produces
     @Metric(name = "cache-hits", absolute = true)
-    private Gauge<Double> cacheHitRatioGauge(@Metric(name = "hits", absolute = true) Meter hits,
-                                             @Metric(name = "calls", absolute = true) Timer calls) {
+    private Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits", absolute = true) Meter hits,
+                                             final @Metric(name = "calls", absolute = true) Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {
-                return Ratio.of(hits.oneMinuteRate(), calls.oneMinuteRate());
+                return Ratio.of(hits.getOneMinuteRate(), calls.getOneMinuteRate());
             }
         };
     }
 }
 ```
 
-or to provide particular `Reservoir` implementations to [histograms][], e.g.:
+or to provide particular `Reservoir` implementations to [histograms][], e.g. with a [producer field][]:
 
 ```java
 import com.codahale.metrics.Histogram;
@@ -239,6 +240,8 @@ private final Histogram histogram = new Histogram(new UniformReservoir());
 [gauges]: http://metrics.codahale.com/manual/core/#gauges
 [histograms]: http://metrics.codahale.com/manual/core/#histograms
 [`Reservoir`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Reservoir.html
+[producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
+[producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 
 ### _Metrics_ Registry Resolution
 
@@ -307,8 +310,6 @@ class MetricRegistryFactoryBean {
 ```
 
 [typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
-[producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
-[producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 [built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
 [`@Default`]: http://docs.oracle.com/javaee/7/api/javax/enterprise/inject/Default.html
 

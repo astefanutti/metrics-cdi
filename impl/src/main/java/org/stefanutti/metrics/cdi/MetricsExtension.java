@@ -65,6 +65,12 @@ public class MetricsExtension implements Extension {
         metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
     }
 
+    private <X> void processProducerMethod(@Observes ProcessProducerMethod<? extends Metric, X> ppm) {
+        // Skip the Metrics CDI alternatives
+        if (!ppm.getBean().getBeanClass().equals(MetricProducer.class))
+            metrics.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
+    }
+
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (!hasMetricRegistry)
             abd.addBean(new MetricRegistryBean(manager));
@@ -78,6 +84,9 @@ public class MetricsExtension implements Extension {
             Metric reference = (Metric) manager.getReference(metric.getKey(), metric.getValue().getBaseType(), manager.createCreationalContext(null));
             registry.register(MetricProducer.metricName(metric.getValue(), manager), reference);
         }
+
+        // Let's clear the collected metric producers
+        metrics.clear();
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {

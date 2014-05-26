@@ -17,33 +17,37 @@ package org.stefanutti.metrics.cdi.se;
 
 
 import com.codahale.metrics.*;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.annotation.*;
 import org.stefanutti.metrics.cdi.Metric;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.concurrent.TimeUnit;
 
 @Singleton
-public class MetricProducerFieldBean {
+public class MetricProducerMethodBean {
+
+
+    @Inject
+    @Metric(name = "hits", absolute = true)
+    private Meter hits;
+
+    @Timed(name = "calls", absolute = true)
+    public void cachedMethod(boolean hit) {
+        if (hit)
+            hits.mark();
+    }
 
     @Produces
-    @Metric(name = "counter1", absolute = true)
-    private final Counter counter1 = new Counter();
-
-    @Produces
-    @Metric(name = "counter2", absolute = true)
-    private final Counter counter2 = new Counter();
-
-    @Produces
-    @Metric(name = "ratioGauge", absolute = true)
-    private final Gauge<Double> gauge = new RatioGauge() {
-        @Override
-        protected Ratio getRatio() {
-            return Ratio.of(counter1.getCount(), counter2.getCount());
-        }
-    };
-
-    // TODO: add assertions in the corresponding test
-    @Produces
-    private final Histogram histogram = new Histogram(new SlidingTimeWindowReservoir(1L, TimeUnit.SECONDS));
+    @Metric(name = "cache-hits", absolute = true)
+    private Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits", absolute = true) Meter hits,
+                                             final @Metric(name = "calls", absolute = true) Timer calls) {
+        return new RatioGauge() {
+            @Override
+            protected Ratio getRatio() {
+                return Ratio.of(hits.getCount(), calls.getCount());
+            }
+        };
+    }
 }
