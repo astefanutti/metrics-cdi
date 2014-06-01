@@ -22,6 +22,7 @@ import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.Priority;
+
 import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
@@ -37,9 +38,12 @@ import java.lang.reflect.Method;
 
     private final MetricRegistry registry;
 
+    private final MetricNameStrategy strategy;
+
     @Inject
-    private MetricsInterceptor(MetricRegistry registry) {
+    private MetricsInterceptor(MetricRegistry registry, MetricNameStrategy strategy) {
         this.registry = registry;
+        this.strategy = strategy;
     }
 
     @AroundConstruct
@@ -66,7 +70,7 @@ import java.lang.reflect.Method;
             }
             if (method.isAnnotationPresent(Timed.class)) {
                 Timed timed = method.getAnnotation(Timed.class);
-                String name = timed.name().isEmpty() ? method.getName() : timed.name();
+                String name = timed.name().isEmpty() ? method.getName() : strategy.resolve(timed.name());
                 registry.timer(timed.absolute() ? name : MetricRegistry.name(bean, name));
             }
         }
@@ -76,9 +80,9 @@ import java.lang.reflect.Method;
 
     private static class ForwardingGauge implements com.codahale.metrics.Gauge<Object> {
 
-        final Method method;
+        private final Method method;
 
-        final Object object;
+        private final Object object;
 
         private ForwardingGauge(Method method, Object object) {
             this.method = method;

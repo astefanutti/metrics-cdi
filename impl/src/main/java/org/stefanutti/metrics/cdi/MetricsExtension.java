@@ -25,7 +25,10 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.*;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MetricsExtension implements Extension {
 
@@ -82,7 +85,7 @@ public class MetricsExtension implements Extension {
 
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
             Metric reference = (Metric) manager.getReference(metric.getKey(), metric.getValue().getBaseType(), manager.createCreationalContext(null));
-            registry.register(MetricProducer.metricName(metric.getValue(), manager), reference);
+            registry.register(MetricProducer.metricName(metric.getValue()), reference);
         }
 
         // Let's clear the collected metric producers

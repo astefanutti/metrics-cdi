@@ -33,10 +33,13 @@ import javax.interceptor.InvocationContext;
     @Inject
     private MetricRegistry registry;
 
+    @Inject
+    private MetricNameStrategy strategy;
+
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
         Timed timed = context.getMethod().getAnnotation(Timed.class);
-        String name = timed.name().isEmpty() ? context.getMethod().getName() : timed.name();
+        String name = timed.name().isEmpty() ? context.getMethod().getName() : strategy.resolve(timed.name());
         String finalName = timed.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
         Timer timer = (Timer) registry.getMetrics().get(finalName);
         if (timer == null)

@@ -45,7 +45,7 @@ public class TimerInjectionBeanTest {
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
-            .addAsManifestResource("beans.xml");
+            .addAsManifestResource("beans-test.xml", "beans.xml");
     }
 
     @Inject

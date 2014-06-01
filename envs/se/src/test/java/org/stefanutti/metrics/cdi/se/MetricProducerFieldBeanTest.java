@@ -29,8 +29,6 @@ import org.stefanutti.metrics.cdi.MetricsExtension;
 
 import javax.inject.Inject;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -46,7 +44,7 @@ public class MetricProducerFieldBeanTest {
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
-            .addAsManifestResource("beans.xml");
+            .addAsManifestResource("beans-test.xml", "beans.xml");
     }
 
     @Inject

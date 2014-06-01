@@ -26,7 +26,6 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptor;
@@ -42,36 +41,36 @@ import java.util.regex.Pattern;
     private static final Pattern expression = Pattern.compile("[#|$]\\{(.*)\\}");
 
     @Produces
-    private Counter produceCounter(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
-        return registry.counter(metricName(point, manager));
+    private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
+        return registry.counter(metricName(point));
     }
 
     // TODO: produce gauge that have been registered in the Metrics registry
 
     @Produces
-    private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
-        return registry.histogram(metricName(point, manager));
+    private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point) {
+        return registry.histogram(metricName(point));
     }
 
     @Produces
-    private Meter produceMeter(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
-        return registry.meter(metricName(point, manager));
+    private Meter produceMeter(MetricRegistry registry, InjectionPoint point) {
+        return registry.meter(metricName(point));
     }
 
     @Produces
-    private Timer produceTimer(MetricRegistry registry, InjectionPoint point, BeanManager manager) {
-        return registry.timer(metricName(point, manager));
+    private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
+        return registry.timer(metricName(point));
     }
 
-    /* packaged-private */ static String metricName(AnnotatedMember<?> annotatedMember, BeanManager manager) {
-        return metricName(annotatedMember, annotatedMember.getJavaMember(), manager);
+    /* packaged-private */ static String metricName(AnnotatedMember<?> annotatedMember) {
+        return metricName(annotatedMember, annotatedMember.getJavaMember());
     }
 
-    private static String metricName(InjectionPoint point, BeanManager manager) {
-        return metricName(point.getAnnotated(), point.getMember(), manager);
+    private static String metricName(InjectionPoint point) {
+        return metricName(point.getAnnotated(), point.getMember());
     }
 
-    private static String metricName(Annotated annotated, Member member, BeanManager manager) {
+    private static String metricName(Annotated annotated, Member member) {
         if (annotated.isAnnotationPresent(Metric.class)) {
             Metric metric = annotated.getAnnotation(Metric.class);
             if (metric.name().isEmpty()) {
