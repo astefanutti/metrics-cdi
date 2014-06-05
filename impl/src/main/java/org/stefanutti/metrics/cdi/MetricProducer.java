@@ -24,69 +24,42 @@ import com.codahale.metrics.Timer;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptor;
-import java.lang.reflect.Member;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Singleton
 @Alternative
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* packaged-private */ class MetricProducer {
+/* packaged-private */ final class MetricProducer {
 
-    private static final Pattern expression = Pattern.compile("[#|$]\\{(.*)\\}");
+    private final MetricNameHelper helper;
+
+    @Inject
+    MetricProducer(MetricNameHelper helper) {
+        this.helper = helper;
+    }
 
     @Produces
     private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
-        return registry.counter(metricName(point));
+        return registry.counter(helper.metricName(point));
     }
 
     // TODO: produce gauge that have been registered in the Metrics registry
 
     @Produces
     private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point) {
-        return registry.histogram(metricName(point));
+        return registry.histogram(helper.metricName(point));
     }
 
     @Produces
     private Meter produceMeter(MetricRegistry registry, InjectionPoint point) {
-        return registry.meter(metricName(point));
+        return registry.meter(helper.metricName(point));
     }
 
     @Produces
     private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
-        return registry.timer(metricName(point));
-    }
-
-    /* packaged-private */ static String metricName(AnnotatedMember<?> annotatedMember) {
-        return metricName(annotatedMember, annotatedMember.getJavaMember());
-    }
-
-    private static String metricName(InjectionPoint point) {
-        return metricName(point.getAnnotated(), point.getMember());
-    }
-
-    private static String metricName(Annotated annotated, Member member) {
-        if (annotated.isAnnotationPresent(Metric.class)) {
-            Metric metric = annotated.getAnnotation(Metric.class);
-            if (metric.name().isEmpty()) {
-                String name = member.getName();
-                return metric.absolute() ? name : MetricRegistry.name(member.getDeclaringClass(), name);
-            } else {
-                Matcher matcher = expression.matcher(metric.name());
-                if (matcher.matches()) {
-                    // TODO: add support for EL evaluation
-                    return null;
-                } else {
-                    return metric.absolute() ? metric.name() : MetricRegistry.name(member.getDeclaringClass(), metric.name());
-                }
-            }
-        } else {
-            return MetricRegistry.name(member.getDeclaringClass(), member.getName());
-        }
+        return registry.timer(helper.metricName(point));
     }
 }

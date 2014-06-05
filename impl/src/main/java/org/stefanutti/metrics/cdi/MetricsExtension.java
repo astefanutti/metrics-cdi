@@ -80,12 +80,12 @@ public class MetricsExtension implements Extension {
     }
 
     private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
-        Bean<?> registryBean = manager.resolve(manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE));
-        MetricRegistry registry = (MetricRegistry) manager.getReference(registryBean, MetricRegistry.class, manager.createCreationalContext(null));
+        MetricRegistry registry = getBeanInstance(manager, MetricRegistry.class);
+        MetricNameHelper helper = getBeanInstance(manager, MetricNameHelper.class);
 
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
             Metric reference = (Metric) manager.getReference(metric.getKey(), metric.getValue().getBaseType(), manager.createCreationalContext(null));
-            registry.register(MetricProducer.metricName(metric.getValue()), reference);
+            registry.register(helper.metricName(metric.getValue()), reference);
         }
 
         // Let's clear the collected metric producers
@@ -94,5 +94,11 @@ public class MetricsExtension implements Extension {
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {
         return new AnnotatedMethodDecorator<X>(annotatedMethod, annotated);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T getBeanInstance(BeanManager manager, Class<T> clazz) {
+        Bean<?> bean = manager.resolve(manager.getBeans(clazz, AnyLiteral.INSTANCE));
+        return (T) manager.getReference(bean, clazz, manager.createCreationalContext(null));
     }
 }

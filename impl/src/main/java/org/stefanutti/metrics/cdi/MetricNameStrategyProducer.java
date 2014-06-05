@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 /* package-private */ final class MetricNameStrategyProducer {
 
     @Produces
+    @Singleton
     private MetricNameStrategy metricNameStrategy(BeanManager manager) {
         try {
             // Cannot be inlined as OWB throws a NPE when manager.getELResolver() gets called
