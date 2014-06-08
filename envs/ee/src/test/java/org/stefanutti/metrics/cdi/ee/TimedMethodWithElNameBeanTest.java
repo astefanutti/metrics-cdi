@@ -33,11 +33,15 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class TimedMethodWithElNameBeanTest {
+
+    private final static AtomicLong TIMER_COUNT = new AtomicLong();
 
     private String timerName;
 
@@ -61,6 +65,9 @@ public class TimedMethodWithElNameBeanTest {
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
             );
     }
+
+    @Inject
+    private MetricRegistry registry;
     
     @Inject
     private TimedMethodWithElNameBean bean;
@@ -71,12 +78,12 @@ public class TimedMethodWithElNameBeanTest {
 
     @Before
     public void getTimerName() {
-        timerName = MetricRegistry.name(TimedMethodWithElNameBean.class, "timer" + timerIdBean.getId());
+        timerName = MetricRegistry.name(TimedMethodWithElNameBean.class, "timer " + timerIdBean.getId());
     }
 
     @Test
     @InSequence(1)
-    public void timedMethodNotCalledYet(MetricRegistry registry) {
+    public void timedMethodNotCalledYet() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerName));
         Timer timer = registry.getTimers().get(timerName);
 
@@ -86,7 +93,7 @@ public class TimedMethodWithElNameBeanTest {
 
     @Test
     @InSequence(2)
-    public void callTimedMethodOnce(MetricRegistry registry) {
+    public void callExpressionTimedMethodOnce() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerName));
         Timer timer = registry.getTimers().get(timerName);
 
@@ -94,6 +101,32 @@ public class TimedMethodWithElNameBeanTest {
         bean.expressionTimedMethod();
 
         // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
+    }
+
+    @Test
+    @InSequence(3)
+    public void callCompositeExpressionTimedMethodOnce() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerName));
+        Timer timer = registry.getTimers().get(timerName);
+
+        // Call the timed method and assert it's been timed
+        bean.compositeExpressionTimedMethod();
+
+        // Make sure that the timer has been called
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
+    }
+
+    @Test
+    @InSequence(3)
+    public void callLambdaExpressionTimedMethodOnce() {
+        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(timerName));
+        Timer timer = registry.getTimers().get(timerName);
+
+        // Call the timed method and assert it's been timed
+        bean.lambdaExpressionTimedMethod();
+
+        // Make sure that the timer has been called
+        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(TIMER_COUNT.incrementAndGet())));
     }
 }

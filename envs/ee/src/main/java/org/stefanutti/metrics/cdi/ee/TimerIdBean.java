@@ -15,16 +15,13 @@
  */
 package org.stefanutti.metrics.cdi.ee;
 
-import com.codahale.metrics.annotation.Timed;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 
 @ApplicationScoped
 @Named("timerIdBean")
-public class TimerIdBean implements Serializable {
+public class TimerIdBean {
 
     private final long id;
 

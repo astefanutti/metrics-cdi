@@ -23,10 +23,10 @@ import javax.inject.Inject;
 public class TimerFieldWithElNameBean {
 
     @Inject
-    @Metric(name = "${(id -> 'timer' += id)(timerIdBean.id)}")
+    @Metric(name = "timer ${timerIdBean.id}")
     Timer timerWithName;
 
     @Inject
-    @Metric(name = "${(id -> 'timer' += id)(timerIdBean.id)}", absolute = true)
+    @Metric(name = "timer ${timerIdBean.id} is absolute", absolute = true)
     Timer timerWithAbsoluteName;
 }

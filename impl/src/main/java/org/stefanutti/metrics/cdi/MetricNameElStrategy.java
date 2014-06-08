@@ -44,13 +44,25 @@ import java.util.regex.Pattern;
 
     public String resolve(String name) {
         Matcher matcher = expression.matcher(name);
-        if (matcher.matches())
-            return evaluateElExpression(name);
-        else
+        // Avoid creating objects if no EL expression are found
+        if (!matcher.find())
             return name;
+        else
+            return evaluateCompositeExpression(matcher);
     }
 
-    private String evaluateElExpression(String name) {
+    private String evaluateCompositeExpression(Matcher matcher) {
+        StringBuffer buffer = new StringBuffer();
+        do {
+            String result = evaluateExpression(matcher.group());
+            matcher.appendReplacement(buffer, result != null ? result : "");
+        } while (matcher.find());
+
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    private String evaluateExpression(String name) {
         ELContext context = createELContext(elResolver, new FunctionMapper() {
             @Override
             public Method resolveFunction(String prefix, String localName) {

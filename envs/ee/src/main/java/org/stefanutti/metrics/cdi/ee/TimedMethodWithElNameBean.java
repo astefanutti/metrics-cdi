@@ -19,9 +19,17 @@ import com.codahale.metrics.annotation.Timed;
 
 import java.io.Serializable;
 
-public class TimedMethodWithElNameBean implements Serializable {
+public class TimedMethodWithElNameBean {
 
-    @Timed(name = "${'timer' += timerIdBean.id}")
+    @Timed(name = "${'timer ' += timerIdBean.id}")
     public void expressionTimedMethod() {
+    }
+
+    @Timed(name = "timer ${timerIdBean.id}")
+    public void compositeExpressionTimedMethod() {
+    }
+
+    @Timed(name = "${(id -> 'timer ' += id)(timerIdBean['id'])}")
+    public void lambdaExpressionTimedMethod() {
     }
 }

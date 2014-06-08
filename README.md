@@ -20,7 +20,7 @@ CDI Extension for Metrics
 
 ## About
 
-_Metrics CDI_ provides support of the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
+_Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
 + Intercept invocations of bean methods annotated with [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
 + Create [`Gauge`][] instances for bean methods annotated with [`@Gauge`][],

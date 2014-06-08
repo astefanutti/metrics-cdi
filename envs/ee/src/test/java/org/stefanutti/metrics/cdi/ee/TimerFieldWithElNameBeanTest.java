@@ -70,7 +70,7 @@ public class TimerFieldWithElNameBeanTest {
     @Test
     public void timerFieldsWithElNames() {
         assertThat("Timers are not registered correctly", registry.getMetrics(), allOf(
-            hasKey("timer" + timerIdBean.getId()),
-            hasKey(MetricRegistry.name(TimerFieldWithElNameBean.class, "timer" + timerIdBean.getId()))));
+            hasKey("timer " + timerIdBean.getId() + " is absolute"),
+            hasKey(MetricRegistry.name(TimerFieldWithElNameBean.class, "timer " + timerIdBean.getId()))));
     }
 }
