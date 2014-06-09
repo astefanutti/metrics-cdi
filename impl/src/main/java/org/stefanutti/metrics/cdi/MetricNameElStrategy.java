@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 @Vetoed
 /* package-private */ final class MetricNameElStrategy implements MetricNameStrategy {
 
-    private static final Pattern expression = Pattern.compile("[#|$]\\{(.*)\\}");
+    private static final Pattern PATTERN = Pattern.compile("[#|$]\\{(.*)\\}");
 
     private final ELResolver elResolver;
 
@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
     }
 
     public String resolve(String name) {
-        Matcher matcher = expression.matcher(name);
-        // Avoid creating objects if no EL expression are found
+        Matcher matcher = PATTERN.matcher(name);
+        // Avoid creating objects if no expressions are found
         if (!matcher.find())
             return name;
         else

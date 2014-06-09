@@ -17,7 +17,7 @@ package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import org.stefanutti.metrics.cdi.Metric;
+import com.codahale.metrics.annotation.Metric;
 import org.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

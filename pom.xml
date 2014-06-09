@@ -46,21 +46,21 @@
     </scm>
 
     <repositories>
+        <!-- TODO: remove when OWB 2.0.0 is released -->
         <repository>
             <id>apache-snapshots</id>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
             <url>http://repository.apache.org/snapshots/</url>
+        </repository>
+        <!-- TODO: remove when Metrics 3.1.0 is released -->
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metrics.version>3.0.2</metrics.version>
+        <metrics.version>3.1.0-SNAPSHOT</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.2.1.Final</weld.version>
@@ -180,13 +180,13 @@
             <!-- compile dependencies -->
 
             <dependency>
-                <groupId>com.codahale.metrics</groupId>
+                <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
                 <version>${metrics.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.codahale.metrics</groupId>
+                <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-annotation</artifactId>
                 <version>${metrics.version}</version>
                 <exclusions>

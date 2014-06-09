@@ -16,8 +16,12 @@
 package org.stefanutti.metrics.cdi.se;
 
 
-import com.codahale.metrics.*;
-import org.stefanutti.metrics.cdi.Metric;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.RatioGauge;
+import com.codahale.metrics.SlidingTimeWindowReservoir;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;

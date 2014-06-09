@@ -16,7 +16,7 @@
 package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Histogram;
-import org.stefanutti.metrics.cdi.Metric;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.inject.Inject;
 

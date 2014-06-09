@@ -15,17 +15,14 @@
  */
 package org.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Metric;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.interceptor.Interceptor;
 import java.lang.reflect.Member;
 
 @Singleton

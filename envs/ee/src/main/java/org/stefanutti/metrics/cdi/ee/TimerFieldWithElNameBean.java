@@ -16,7 +16,7 @@
 package org.stefanutti.metrics.cdi.ee;
 
 import com.codahale.metrics.Timer;
-import org.stefanutti.metrics.cdi.Metric;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.inject.Inject;
 

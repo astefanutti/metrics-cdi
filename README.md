@@ -28,7 +28,7 @@ It implements the contract specified by these annotations with the following lev
 + Register or retrieve the produced [`Metric`][] instances in the declared [`MetricRegistry`][] bean,
 + Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
 
-_Metrics CDI_ is compatible with _Metrics_ version 3.0.
+_Metrics CDI_ is compatible with _Metrics_ version 3.1.0+.
 
 [Metrics annotations]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
 [`@ExceptionMetered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
@@ -154,10 +154,9 @@ with the `@Metric` annotation, e.g.:
 
 ```java
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.inject.Inject;
-
-import org.stefanutti.metrics.cdi.Metric;
 
 @Inject
 @Metric(name = "timerName", absolute = true)
@@ -168,10 +167,9 @@ or when using a [bean constructor][]:
 
 ```java
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.inject.Inject;
-
-import org.stefanutti.metrics.cdi.Metric;
 
 class TimerBean {
 
@@ -200,10 +198,9 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Ratio;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.enterprise.inject.Produces;
-
-import org.stefanutti.metrics.cdi.Metric;
 
 class GaugeFactoryBean {
 
@@ -227,10 +224,9 @@ or to provide particular `Reservoir` implementations to [histograms][], e.g. wit
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.UniformReservoir;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.enterprise.inject.Produces;
-
-import org.stefanutti.metrics.cdi.Metric;
 
 @Produces
 @Metric(name = "uniform-histogram")
