@@ -36,8 +36,7 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<Bean<?>, AnnotatedMember<?>>();
 
-    // TODO: give meaningful method names
-    private <X> void processAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
+    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
@@ -58,23 +57,31 @@ public class MetricsExtension implements Extension {
             pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<X>(annotatedType, decoratedMethods));
     }
 
-    // TODO: use typed observers
-    private <X> void processBean(@Observes ProcessBean<X> pb) {
-        if (pb.getBean().getTypes().contains(MetricRegistry.class))
-            hasMetricRegistry = true;
+    private void processMetricRegistryBean(@Observes ProcessBean<MetricRegistry> pb) {
+        hasMetricRegistry = true;
     }
 
-    private <X> void processProducerField(@Observes ProcessProducerField<? extends Metric, X> ppf) {
+    private void processMetricRegistryProducerField(@Observes ProcessProducerField<MetricRegistry, ?> ppf) {
+        hasMetricRegistry = true;
+    }
+
+    private void processMetricRegistryProducerMethod(@Observes ProcessProducerMethod<MetricRegistry, ?> ppm) {
+        hasMetricRegistry = true;
+    }
+
+    private void processMetricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
         metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
     }
 
-    private <X> void processProducerMethod(@Observes ProcessProducerMethod<? extends Metric, X> ppm) {
+    private void processMetricProducerMethod(@Observes ProcessProducerMethod<? extends Metric, ?> ppm) {
         // Skip the Metrics CDI alternatives
         if (!ppm.getBean().getBeanClass().equals(MetricProducer.class))
             metrics.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        // TODO: should be possible from the CDI spec though Weld is returning an empty set at that stage
+        //if (manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE).isEmpty())
         if (!hasMetricRegistry)
             abd.addBean(new MetricRegistryBean(manager));
     }
