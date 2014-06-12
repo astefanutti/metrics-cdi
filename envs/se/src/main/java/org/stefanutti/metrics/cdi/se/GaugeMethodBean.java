@@ -17,9 +17,9 @@ package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.annotation.Gauge;
 
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 
-@Singleton
+@ApplicationScoped
 public class GaugeMethodBean {
 
     private long gauge;

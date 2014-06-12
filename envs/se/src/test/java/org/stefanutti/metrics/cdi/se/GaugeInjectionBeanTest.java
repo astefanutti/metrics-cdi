@@ -17,29 +17,29 @@ package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import org.junit.Before;
-import org.stefanutti.metrics.cdi.MetricsExtension;
+import com.codahale.metrics.annotation.Metric;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.stefanutti.metrics.cdi.MetricsExtension;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class GaugeMethodBeanTest {
-
-    private final static String GAUGE_NAME = MetricRegistry.name(GaugeMethodBean.class, "gaugeMethod");
+public class GaugeInjectionBeanTest {
 
     @Deployment
-    public static Archive<?> createTestArchive() {
+    static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
             .addClass(GaugeMethodBean.class)
@@ -55,7 +55,7 @@ public class GaugeMethodBeanTest {
 
     @Inject
     private GaugeMethodBean bean;
-
+    
     @Before
     public void instantiateApplicationScopedBean() {
         // Let's trigger the instantiation of the application scoped bean explicitly
@@ -65,25 +65,18 @@ public class GaugeMethodBeanTest {
 
     @Test
     @InSequence(1)
-    public void gaugeCalledWithDefaultValue() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
-        @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
-
+    public void gaugeCalledWithDefaultValue(@Metric(absolute = true, name = "org.stefanutti.metrics.cdi.se.GaugeMethodBean.gaugeMethod") Gauge<Long> gauge) {
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
     }
 
     @Test
     @InSequence(2)
-    public void callGaugeAfterSetterCall() {
-        assertThat("Gauge is not registered correctly", registry.getGauges(), hasKey(GAUGE_NAME));
-        @SuppressWarnings("unchecked")
-        Gauge<Long> gauge = registry.getGauges().get(GAUGE_NAME);
-
+    public void callGaugeAfterSetterCall(@Metric(absolute = true, name = "org.stefanutti.metrics.cdi.se.GaugeMethodBean.gaugeMethod") Gauge<Long> gauge) {
         // Call the setter method and assert the gauge is up-to-date
         long value = Math.round(Math.random() * Long.MAX_VALUE);
         bean.setGauge(value);
+
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(value)));
     }
 }

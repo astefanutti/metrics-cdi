@@ -15,11 +15,7 @@
  */
 package org.stefanutti.metrics.cdi;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.*;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -46,7 +42,16 @@ import javax.interceptor.Interceptor;
         return registry.counter(helper.metricName(point));
     }
 
-    // TODO: produce gauge that have been registered in the Metrics registry
+    @Produces
+    @SuppressWarnings("unchecked")
+    private <T> Gauge<T> produceGauge(MetricRegistry registry, InjectionPoint point) {
+        // As gauge metrics are registered at instantiation time of the annotated beans
+        // this may lead to producing null values for that gauge bean in case the gauge
+        // metrics get injected before the corresponding beans. A more sophisticated
+        // strategy may be designed to delay the retrieval of the underlying gauges
+        // from the Metrics registry for example.
+        return (Gauge<T>) registry.getGauges().get(helper.metricName(point));
+    }
 
     @Produces
     private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point) {
