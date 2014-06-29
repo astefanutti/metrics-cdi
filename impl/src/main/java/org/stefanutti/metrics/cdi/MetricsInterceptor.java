@@ -60,8 +60,7 @@ import java.lang.reflect.Method;
             if (method.isAnnotationPresent(Gauge.class)) {
                 Gauge gauge = method.getAnnotation(Gauge.class);
                 String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
-                // FIXME: remove that discrepancy to support OWB 2.0.0
-                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget() == null ? target : context.getTarget()));
+                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget()));
             }
             if (method.isAnnotationPresent(Metered.class)) {
                 Metered metered = method.getAnnotation(Metered.class);
