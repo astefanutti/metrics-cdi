@@ -222,7 +222,6 @@ or to provide particular `Reservoir` implementations to [histograms][], e.g. wit
 
 ```java
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.UniformReservoir;
 import com.codahale.metrics.annotation.Metric;
 
