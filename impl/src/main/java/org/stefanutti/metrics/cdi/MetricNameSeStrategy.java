@@ -21,10 +21,6 @@ import javax.enterprise.inject.spi.BeanManager;
 @Vetoed
 /* package-private */ final class MetricNameSeStrategy implements MetricNameStrategy {
 
-    // TODO: remove when OWB supports the @Vetoed annotation
-    MetricNameSeStrategy(BeanManager manager) {
-    }
-
     public String resolve(String name) {
         return name;
     }

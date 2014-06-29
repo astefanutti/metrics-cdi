@@ -33,7 +33,7 @@ import javax.inject.Singleton;
             return new MetricNameElStrategy(manager.getELResolver(), manager.wrapExpressionFactory(factory));
         } catch (ELException cause) {
             // Falls back to SE
-            return new MetricNameSeStrategy(manager);
+            return new MetricNameSeStrategy();
         }
     }
 }
