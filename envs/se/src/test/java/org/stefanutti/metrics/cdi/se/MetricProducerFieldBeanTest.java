@@ -24,6 +24,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +46,7 @@ public class MetricProducerFieldBeanTest {
             // Metrics CDI extension
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
-            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
-            .addAsManifestResource("beans-test.xml", "beans.xml");
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject

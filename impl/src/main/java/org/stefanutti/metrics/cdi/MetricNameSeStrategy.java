@@ -16,7 +16,6 @@
 package org.stefanutti.metrics.cdi;
 
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
 
 @Vetoed
 /* package-private */ final class MetricNameSeStrategy implements MetricNameStrategy {

@@ -17,6 +17,7 @@ package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.junit.Before;
 import org.stefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -46,8 +47,7 @@ public class GaugeMethodBeanTest {
             // Metrics CDI extension
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
-            // FIXME: use EmptyAsset.INSTANCE when OWB supports CDI 1.1
-            .addAsManifestResource("beans-test.xml", "beans.xml");
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject

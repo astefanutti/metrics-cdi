@@ -17,8 +17,6 @@ package org.stefanutti.metrics.cdi.ee;
 
 import com.codahale.metrics.annotation.Timed;
 
-import java.io.Serializable;
-
 public class TimedMethodWithElNameBean {
 
     @Timed(name = "${'timer ' += timerIdBean.id}")

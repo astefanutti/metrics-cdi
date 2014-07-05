@@ -51,7 +51,7 @@ public class TimedMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
-    private final static long CALL_COUNT = Math.round(Math.random() * 10);
+    private final static long CALL_COUNT = 1L + Math.round(Math.random() * 10);
 
     @Deployment(testable = true)
     public static Archive<?> createTestArchive() {
