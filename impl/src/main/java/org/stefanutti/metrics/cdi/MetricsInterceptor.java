@@ -16,6 +16,7 @@
 package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
@@ -52,6 +53,11 @@ import java.lang.reflect.Method;
 
         Class<?> bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(Counted.class)) {
+                Counted counted = method.getAnnotation(Counted.class);
+                String name = counted.name().isEmpty() ? method.getName() : counted.name();
+                registry.counter(counted.absolute() ? name : MetricRegistry.name(bean, name));
+            }
             if (method.isAnnotationPresent(ExceptionMetered.class)) {
                 ExceptionMetered metered = method.getAnnotation(ExceptionMetered.class);
                 String name = metered.name().isEmpty() ? method.getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();

@@ -17,6 +17,7 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
@@ -48,10 +49,12 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<Bean<?>, AnnotatedMember<?>>();
 
-    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
+    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
+            if (method.isAnnotationPresent(Counted.class))
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(ExceptionMetered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(Metered.class))
