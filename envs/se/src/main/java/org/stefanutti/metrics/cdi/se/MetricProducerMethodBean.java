@@ -23,11 +23,11 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.Metric;
 import com.codahale.metrics.annotation.Timed;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
+@ApplicationScoped
 public class MetricProducerMethodBean {
 
 

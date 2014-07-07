@@ -17,12 +17,13 @@ package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
 public class MetricRegistryProducerFieldBean {
 
     @Produces
-    @Singleton
+    @ApplicationScoped
     private final MetricRegistry registry = new MetricRegistry();
 }
