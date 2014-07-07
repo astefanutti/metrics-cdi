@@ -16,7 +16,6 @@
 package org.stefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metric;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.stefanutti.metrics.cdi.MetricsExtension;
@@ -48,9 +47,6 @@ public class MeterInjectionBeanTest {
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-
-    @Inject
-    private MetricRegistry registry;
 
     @Inject
     private MeteredMethodBean bean;

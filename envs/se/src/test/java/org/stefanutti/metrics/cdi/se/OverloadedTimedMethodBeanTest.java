@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.everyItem;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)

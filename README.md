@@ -100,7 +100,7 @@ to provide a custom [`MetricRegistry`].
 ### _Metrics_ Annotations
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a series
-of annotations ([`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
+of annotations (`@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
 These annotations are supported by _Metrics CDI_ that implements the contract documented in their Javadoc.
 
 For example, a method on a bean can be annotated with the `@Timed` annotation so that its execution
