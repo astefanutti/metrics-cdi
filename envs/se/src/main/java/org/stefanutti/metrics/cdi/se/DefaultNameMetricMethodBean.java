@@ -15,33 +15,42 @@
  */
 package org.stefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
 public class DefaultNameMetricMethodBean {
 
-    @Timed
-    public void defaultNameTimedMethod() {
+    @Counted
+    public void defaultNameCountedMethod() {
+    }
+
+    @Counted(absolute = true)
+    public void absoluteDefaultNameCountedMethod() {
     }
 
     @Metered
     public void defaultNameMeteredMethod() {
     }
 
-    @ExceptionMetered
-    public void defaultNameExceptionMeteredMethod() {
-    }
-
-    @Timed(absolute = true)
-    public void absoluteDefaultNameTimedMethod() {
-    }
-
     @Metered(absolute = true)
     public void absoluteDefaultNameMeteredMethod() {
     }
 
+    @ExceptionMetered
+    public void defaultNameExceptionMeteredMethod() {
+    }
+
     @ExceptionMetered(absolute = true)
     public void absoluteDefaultNameExceptionMeteredMethod() {
+    }
+
+    @Timed
+    public void defaultNameTimedMethod() {
+    }
+
+    @Timed(absolute = true)
+    public void absoluteDefaultNameTimedMethod() {
     }
 }

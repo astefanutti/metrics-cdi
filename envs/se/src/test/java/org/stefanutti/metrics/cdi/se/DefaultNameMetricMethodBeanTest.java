@@ -38,9 +38,9 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class DefaultNameMetricMethodBeanTest {
 
-    private final static String[] METRIC_NAMES = {"defaultNameTimedMethod", "defaultNameMeteredMethod", "defaultNameExceptionMeteredMethod.exceptions"};
+    private final static String[] METRIC_NAMES = {"defaultNameCountedMethod", "defaultNameExceptionMeteredMethod.exceptions", "defaultNameMeteredMethod", "defaultNameTimedMethod"};
 
-    private final static String[] ABSOLUTE_METRIC_NAMES = {"absoluteDefaultNameTimedMethod", "absoluteDefaultNameMeteredMethod", "absoluteDefaultNameExceptionMeteredMethod.exceptions"};
+    private final static String[] ABSOLUTE_METRIC_NAMES = {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameExceptionMeteredMethod.exceptions", "absoluteDefaultNameMeteredMethod", "absoluteDefaultNameTimedMethod"};
 
     private Set<String> metricNames() {
         Set<String> names = MetricsUtil.absoluteMetricNameSet(DefaultNameMetricMethodBean.class, METRIC_NAMES);
