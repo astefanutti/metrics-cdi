@@ -17,6 +17,7 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
@@ -49,7 +50,7 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<Bean<?>, AnnotatedMember<?>>();
 
-    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
+    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
@@ -61,7 +62,7 @@ public class MetricsExtension implements Extension {
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(Timed.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
-            if (method.isAnnotationPresent(Gauge.class))
+            if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
         AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);

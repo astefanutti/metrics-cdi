@@ -19,10 +19,10 @@ import com.codahale.metrics.annotation.Counted;
 
 import java.util.concurrent.Callable;
 
-public class CountedMonotonicMethodBean<T> {
+public class MonotonicCountedMethodBean<T> {
 
-    @Counted(name = "countedMonotonicMethod", absolute = true, monotonic = true)
-    public T countedMonotonicMethod(Callable<T> callable) {
+    @Counted(name = "monotonicCountedMethod", absolute = true, monotonic = true)
+    public T monotonicCountedMethod(Callable<T> callable) {
         try {
             return callable.call();
         } catch (Exception cause) {

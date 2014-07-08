@@ -45,11 +45,11 @@ import javax.interceptor.Interceptor;
     @Produces
     @SuppressWarnings("unchecked")
     private <T> Gauge<T> produceGauge(MetricRegistry registry, InjectionPoint point) {
-        // As gauge metrics are registered at instantiation time of the annotated beans
-        // this may lead to producing null values for that gauge bean in case the gauge
-        // metrics get injected before the corresponding beans. A more sophisticated
-        // strategy may be designed to delay the retrieval of the underlying gauges
-        // from the Metrics registry for example.
+        // TODO: As gauge metrics are registered at instantiation time of the annotated
+        // beans this may lead to producing null values for that gauge bean in case
+        // the gauge metrics get injected before the corresponding beans. A more
+        // sophisticated strategy may be designed to delay the retrieval of the
+        // underlying gauges from the Metrics registry for example.
         return (Gauge<T>) registry.getGauges().get(helper.metricName(point));
     }
 

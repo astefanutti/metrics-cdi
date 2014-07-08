@@ -15,7 +15,9 @@
  */
 package org.stefanutti.metrics.cdi;
 
+
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
@@ -30,6 +32,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 @Interceptor
 @MetricsBinding
@@ -53,6 +56,11 @@ import java.lang.reflect.Method;
 
         Class<?> bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(CachedGauge.class)) {
+                CachedGauge gauge = method.getAnnotation(CachedGauge.class);
+                String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
+                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new CachingGauge(new ForwardingGauge(method, context.getTarget()), gauge.timeout(), gauge.timeoutUnit()));
+            }
             if (method.isAnnotationPresent(Counted.class)) {
                 Counted counted = method.getAnnotation(Counted.class);
                 String name = counted.name().isEmpty() ? method.getName() : counted.name();
@@ -81,6 +89,21 @@ import java.lang.reflect.Method;
         }
 
         return target;
+    }
+    
+    private static class CachingGauge extends com.codahale.metrics.CachedGauge<Object> {
+
+        private final com.codahale.metrics.Gauge<?> gauge;
+        
+        private CachingGauge(com.codahale.metrics.Gauge<?> gauge, long timeout, TimeUnit timeoutUnit) {
+            super(timeout, timeoutUnit);
+            this.gauge = gauge;
+        }
+
+        @Override
+        protected Object loadValue() {
+            return gauge.getValue();
+        }
     }
 
     private static class ForwardingGauge implements com.codahale.metrics.Gauge<Object> {
