@@ -23,8 +23,8 @@ CDI Extension for Metrics
 _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
 + Intercept invocations of bean methods annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
-+ Create [`Gauge`][] instances for bean methods annotated with [`@Gauge`][],
-+ Inject [`Counter`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
++ Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and `@CachedGauge` respectively,
++ Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
 + Register or retrieve the produced [`Metric`][] instances in the declared [`MetricRegistry`][] bean,
 + Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
 
@@ -35,6 +35,7 @@ _Metrics CDI_ is compatible with _Metrics_ version 3.1.0+.
 [`@Metered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Timed`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html
 [`Gauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html
+[`CachedGauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/CachedGauge.html
 [`@Gauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`Counter`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Counter.html
 [`Histogram`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Histogram.html
@@ -100,7 +101,7 @@ to provide a custom [`MetricRegistry`].
 ### _Metrics_ Annotations
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a series
-of annotations (`@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
+of annotations (`@CachedGauge`, `@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
 These annotations are supported by _Metrics CDI_ that implements the contract documented in their Javadoc.
 
 For example, a method on a bean can be annotated with the `@Timed` annotation so that its execution
