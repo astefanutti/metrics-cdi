@@ -72,8 +72,8 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container        | Version          | Specification   | Arquillian Container Adapter                |
 | ---------------- | ---------------- | --------------- | ------------------------------------------- |
-| [Weld SE][]      | `2.2.2.Final`    | [CDI 1.2][]     | `arquillian-weld-se-embedded-1.1`           |
-| [Weld EE][]      | `2.2.2.Final`    | [CDI 1.2][]     | `arquillian-weld-ee-embedded-1.1`           |
+| [Weld SE][]      | `2.2.3.Final`    | [CDI 1.2][]     | `arquillian-weld-se-embedded-1.1`           |
+| [Weld EE][]      | `2.2.3.Final`    | [CDI 1.2][]     | `arquillian-weld-ee-embedded-1.1`           |
 | [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][]     | `owb-arquillian-standalone`                 |
 | [Jetty][]        | `9.2.1`          | [Servlet 3.1][] | `arquillian-jetty-embedded-9`               |
 | [WildFly][]      | `8.1.0.Final`    | [Java EE 7][]   | `wildfly-arquillian-container-managed`      |
@@ -311,13 +311,15 @@ class MetricRegistryFactoryBean {
 
 ## Limitations
 
-[CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to associate interceptors
-to objects via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from the business logic
-and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
+[CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to
+[associate interceptors to beans][Binding an interceptor to a bean] via _typesafe_ interceptor bindings.
+Interceptors are a mean to separate cross-cutting concerns from the business logic and _Metrics CDI_
+is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
 
-[CDI 1.2][] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user
-perspective, that implies that the managed beans to be monitored with _Metrics_ (i.e. having at least one member method annotated
-with one of the _Metrics_ annotations) must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
+[CDI 1.2][] sets additional restrictions about the type of bean to which an interceptor can be bound.
+From a _Metrics CDI_ end-user perspective, that implies that the managed beans to be monitored with
+_Metrics_ (i.e. having at least one member method annotated with one of the _Metrics_ annotations)
+must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
 > + Classes which don’t have a non-private constructor with no parameters,
 > + Classes which are declared `final`,
 > + Classes which have non-static, final methods with public, protected or default visibility,
