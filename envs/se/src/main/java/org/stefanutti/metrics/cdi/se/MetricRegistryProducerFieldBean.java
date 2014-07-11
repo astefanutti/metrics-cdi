@@ -19,7 +19,6 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 
 public class MetricRegistryProducerFieldBean {
 

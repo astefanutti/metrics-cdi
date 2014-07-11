@@ -28,7 +28,7 @@ It implements the contract specified by these annotations with the following lev
 + Register or retrieve the produced [`Metric`][] instances in the declared [`MetricRegistry`][] bean,
 + Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
 
-_Metrics CDI_ is compatible with _Metrics_ version 3.1.0+.
+_Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
 [Metrics annotations]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
 [`@ExceptionMetered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
@@ -279,11 +279,11 @@ For example, that _custom_ [`MetricRegistry`][] can be declared as a [producer f
 ```java
 import com.codahale.metrics.MetricRegistry;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 
 @Produces
-@Singleton
+@ApplicationScoped
 private final MetricRegistry registry = new MetricRegistry();
 ```
 
@@ -292,13 +292,13 @@ or a [producer method][]:
 ```java
 import com.codahale.metrics.MetricRegistry;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 
 class MetricRegistryFactoryBean {
 
     @Produces
-    @Singleton
+    @ApplicationScoped
     private MetricRegistry metricRegistry() {
         return new MetricRegistry();
     }

@@ -23,11 +23,11 @@ import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.codahale.metrics.annotation.Metric;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
-@Singleton
+@ApplicationScoped
 public class MetricProducerFieldBean {
 
     @Produces
