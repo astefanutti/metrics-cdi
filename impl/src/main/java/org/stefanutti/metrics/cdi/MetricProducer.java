@@ -55,7 +55,7 @@ import javax.interceptor.Interceptor;
         // the gauge metrics get injected before the corresponding beans. A more
         // sophisticated strategy may be designed to delay the retrieval of the
         // underlying gauges from the Metrics registry for example.
-        return (Gauge<T>) registry.getGauges().get(helper.metricName(point));
+        return registry.getGauges().get(helper.metricName(point));
     }
 
     @Produces

@@ -22,4 +22,8 @@ public class TimedMethodBean {
     @Timed(name = "timedMethod")
     public void timedMethod() {
     }
+
+    public void selfInvocationTimedMethod() {
+        timedMethod();
+    }
 }

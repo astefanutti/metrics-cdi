@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class VisibilityTimedMethodBeanTest {
 
-    private final static String[] TIMER_NAMES = {"publicTimedMethod", "packagePrivateTimedMethod", "protectedTimedMethod", "privateTimedMethod"};
+    private final static String[] TIMER_NAMES = {"publicTimedMethod", "packagePrivateTimedMethod", "protectedTimedMethod"};
 
     private Set<String> absoluteMetricNames() {
         return MetricsUtil.absoluteMetricNameSet(VisibilityTimedMethodBean.class, TIMER_NAMES);
@@ -82,10 +82,7 @@ public class VisibilityTimedMethodBeanTest {
         bean.protectedTimedMethod();
         bean.packagePrivateTimedMethod();
         method("privateTimedMethod").in(bean).invoke();
-        // FIXME: check the interceptors specification for private method interception
-        //assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
-        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "publicTimedMethod")).getCount(), is(equalTo(1L)));
-        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "packagePrivateTimedMethod")).getCount(), is(equalTo(1L)));
-        assertThat("Timer count is incorrect", registry.getTimers().get(MetricRegistry.name(VisibilityTimedMethodBean.class, "protectedTimedMethod")).getCount(), is(equalTo(1L)));
+
+        assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
     }
 }
