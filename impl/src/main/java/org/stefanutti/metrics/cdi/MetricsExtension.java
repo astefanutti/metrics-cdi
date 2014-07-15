@@ -39,6 +39,7 @@ import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class MetricsExtension implements Extension {
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(Metered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
-            if (method.isAnnotationPresent(Timed.class))
+            if (shouldHaveMetricBinding(method, Timed.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
@@ -71,6 +72,14 @@ public class MetricsExtension implements Extension {
             pat.setAnnotatedType(annotatedType);
         else if (!decoratedMethods.isEmpty())
             pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<X>(annotatedType, decoratedMethods));
+    }
+
+    private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {
+        return new AnnotatedMethodDecorator<X>(annotatedMethod, annotated);
+    }
+
+    private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> annotation) {
+        return method.isAnnotationPresent(annotation) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(annotation);
     }
 
     private void processMetricRegistryBean(@Observes ProcessBean<MetricRegistry> pb) {
@@ -113,10 +122,6 @@ public class MetricsExtension implements Extension {
 
         // Let's clear the collected metric producers
         metrics.clear();
-    }
-
-    private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {
-        return new AnnotatedMethodDecorator<X>(annotatedMethod, annotated);
     }
 
     @SuppressWarnings("unchecked")

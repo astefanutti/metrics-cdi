@@ -17,7 +17,6 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -30,20 +29,22 @@ import javax.interceptor.InvocationContext;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ class TimedInterceptor {
 
-    @Inject
-    private MetricRegistry registry;
+    private final MetricRegistry registry;
+
+    private final MetricNameHelper nameHelper;
 
     @Inject
-    private MetricNameStrategy strategy;
+    private TimedInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+        this.registry = registry;
+        this.nameHelper = nameHelper;
+    }
 
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
-        Timed timed = context.getMethod().getAnnotation(Timed.class);
-        String name = timed.name().isEmpty() ? context.getMethod().getName() : strategy.resolve(timed.name());
-        String finalName = timed.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
-        Timer timer = (Timer) registry.getMetrics().get(finalName);
+        String name = nameHelper.timerName(context.getMethod());
+        Timer timer = (Timer) registry.getMetrics().get(name);
         if (timer == null)
-            throw new IllegalStateException("No timer with name [" + finalName + "] found in registry [" + registry + "]");
+            throw new IllegalStateException("No timer with name [" + name + "] found in registry [" + registry + "]");
 
         Timer.Context time = timer.time();
         try {

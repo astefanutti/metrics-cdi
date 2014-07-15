@@ -17,6 +17,7 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metric;
+import com.codahale.metrics.annotation.Timed;
 
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMember;
@@ -24,6 +25,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 @Singleton
 /* packaged-private */ final class MetricNameHelper {
@@ -31,7 +34,7 @@ import java.lang.reflect.Member;
     private final MetricNameStrategy strategy;
 
     @Inject
-    MetricNameHelper(MetricNameStrategy strategy) {
+    private MetricNameHelper(MetricNameStrategy strategy) {
         this.strategy = strategy;
     }
 
@@ -41,6 +44,22 @@ import java.lang.reflect.Member;
 
     String metricName(InjectionPoint point) {
         return metricName(point.getAnnotated(), point.getMember());
+    }
+
+    String timerName(Method method) {
+        if (method.isAnnotationPresent(Timed.class)) {
+            Timed timed = method.getAnnotation(Timed.class);
+            String name = timed.name().isEmpty() ? method.getName() : strategy.resolve(timed.name());
+            return timed.absolute() ? name : MetricRegistry.name(method.getDeclaringClass(), name);
+        } else {
+            Class<?> bean = method.getDeclaringClass();
+            if(bean.isAnnotationPresent(Timed.class) && Modifier.isPublic(method.getModifiers())) {
+                Timed timed = bean.getAnnotation(Timed.class);
+                String name = timed.name().isEmpty() ? bean.getSimpleName() : strategy.resolve(timed.name());
+                return timed.absolute() ? MetricRegistry.name(name, method.getName()) : MetricRegistry.name(bean.getPackage().getName(), name, method.getName());
+            }
+        }
+        return null;
     }
 
     private String metricName(Annotated annotated, Member member) {

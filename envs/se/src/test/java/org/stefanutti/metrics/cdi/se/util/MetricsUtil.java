@@ -33,7 +33,19 @@ public final class MetricsUtil {
         return set;
     }
 
+    public static Set<String> absoluteMetricNameSet(String clazz, String... names) {
+        Set<String> set = new HashSet<String>(names.length);
+        for (String name : names)
+            set.add(absoluteMetricName(clazz, name));
+
+        return set;
+    }
+
     public static String absoluteMetricName(Class<?> clazz, String name) {
+        return MetricRegistry.name(clazz, name);
+    }
+
+    public static String absoluteMetricName(String clazz, String name) {
         return MetricRegistry.name(clazz, name);
     }
 }

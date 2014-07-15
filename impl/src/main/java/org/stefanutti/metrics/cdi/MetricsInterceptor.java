@@ -22,7 +22,6 @@ import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
-import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.Priority;
 
@@ -42,12 +41,12 @@ import java.util.concurrent.TimeUnit;
 
     private final MetricRegistry registry;
 
-    private final MetricNameStrategy strategy;
+    private final MetricNameHelper nameHelper;
 
     @Inject
-    private MetricsInterceptor(MetricRegistry registry, MetricNameStrategy strategy) {
+    private MetricsInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
         this.registry = registry;
-        this.strategy = strategy;
+        this.nameHelper = nameHelper;
     }
 
     @AroundConstruct
@@ -81,11 +80,9 @@ import java.util.concurrent.TimeUnit;
                 String name = metered.name().isEmpty() ? method.getName() : metered.name();
                 registry.meter(metered.absolute() ? name : MetricRegistry.name(bean, name));
             }
-            if (method.isAnnotationPresent(Timed.class)) {
-                Timed timed = method.getAnnotation(Timed.class);
-                String name = timed.name().isEmpty() ? method.getName() : strategy.resolve(timed.name());
-                registry.timer(timed.absolute() ? name : MetricRegistry.name(bean, name));
-            }
+            String timerName = nameHelper.timerName(method);
+            if (timerName != null)
+                registry.timer(timerName);
         }
 
         return target;
