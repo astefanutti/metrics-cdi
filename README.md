@@ -22,7 +22,7 @@ CDI Extension for Metrics
 
 _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
-+ Intercept invocations of bean methods annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
++ Intercept invocations of bean methods and public methods of beans annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
 + Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and `@CachedGauge` respectively,
 + Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
 + Register or retrieve the produced [`Metric`][] instances in the declared [`MetricRegistry`][] bean,
@@ -114,6 +114,19 @@ class TimedMethodBean {
 
     @Timed(name = "timerName")
     void timedMethod() {
+    }
+}
+```
+
+or the bean class can be annotated directly so that all its public methods get monitored:
+
+```java
+import com.codahale.metrics.annotation.Timed;
+
+@Timed
+class TimedClassBean {
+
+    public void timedMethod() {
     }
 }
 ```
