@@ -17,7 +17,6 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.annotation.Metered;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -30,17 +29,22 @@ import javax.interceptor.InvocationContext;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ class MeteredInterceptor {
 
+    private final MetricRegistry registry;
+
+    private final MetricNameHelper nameHelper;
+
     @Inject
-    private MetricRegistry registry;
+    private MeteredInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+        this.registry = registry;
+        this.nameHelper = nameHelper;
+    }
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
-        Metered metered = context.getMethod().getAnnotation(Metered.class);
-        String name = metered.name().isEmpty() ? context.getMethod().getName() : metered.name();
-        String finalName = metered.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
-        Meter meter = (Meter) registry.getMetrics().get(finalName);
+        String name = nameHelper.meterName(context.getMethod());
+        Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
-            throw new IllegalStateException("No meter with name [" + finalName + "] found in registry [" + registry + "]");
+            throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
 
         meter.mark();
         return context.proceed();

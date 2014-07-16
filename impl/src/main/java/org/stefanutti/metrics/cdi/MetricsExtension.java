@@ -59,7 +59,7 @@ public class MetricsExtension implements Extension {
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(ExceptionMetered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
-            if (method.isAnnotationPresent(Metered.class))
+            if (shouldHaveMetricBinding(method, Metered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
             if (shouldHaveMetricBinding(method, Timed.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));

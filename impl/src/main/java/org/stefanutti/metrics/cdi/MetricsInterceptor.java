@@ -21,7 +21,6 @@ import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
-import com.codahale.metrics.annotation.Metered;
 
 import javax.annotation.Priority;
 
@@ -75,11 +74,11 @@ import java.util.concurrent.TimeUnit;
                 String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
                 registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget()));
             }
-            if (method.isAnnotationPresent(Metered.class)) {
-                Metered metered = method.getAnnotation(Metered.class);
-                String name = metered.name().isEmpty() ? method.getName() : metered.name();
-                registry.meter(metered.absolute() ? name : MetricRegistry.name(bean, name));
-            }
+
+            String meterName = nameHelper.meterName(method);
+            if (meterName != null)
+                registry.meter(meterName);
+
             String timerName = nameHelper.timerName(method);
             if (timerName != null)
                 registry.timer(timerName);
