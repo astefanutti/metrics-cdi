@@ -25,16 +25,16 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 @Interceptor
-@CountedBinding(monotonic = false)
+@CountedBinding(monotonic = true)
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* packaged-private */ class CountedInterceptor {
+/* packaged-private */ class CountedMonotonicInterceptor {
 
     private final MetricRegistry registry;
 
     private final MetricNameHelper nameHelper;
 
     @Inject
-    private CountedInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private CountedMonotonicInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
         this.registry = registry;
         this.nameHelper = nameHelper;
     }
@@ -47,10 +47,6 @@ import javax.interceptor.InvocationContext;
             throw new IllegalStateException("No counter with name [" + name + "] found in registry [" + registry + "]");
 
         counter.inc();
-        try {
-            return context.proceed();
-        } finally {
-            counter.dec();
-        }
+        return context.proceed();
     }
 }

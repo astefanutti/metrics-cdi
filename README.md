@@ -124,7 +124,7 @@ or the bean class can be annotated directly so that all its public methods get m
 import com.codahale.metrics.annotation.Timed;
 
 @Timed
-class TimedClassBean {
+public class TimedClassBean {
 
     public void timedMethod() {
     }

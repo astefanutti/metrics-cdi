@@ -15,16 +15,34 @@
  */
 package org.stefanutti.metrics.cdi;
 
+
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-private */ class CountedBindingLiteral extends AnnotationLiteral<CountedBinding> implements CountedBinding {
+/* packaged-private */ final class CountedBindingLiteral extends AnnotationLiteral<CountedBinding> implements CountedBinding {
 
     private static final long serialVersionUID = 1L;
 
-    static final CountedBinding INSTANCE = new CountedBindingLiteral();
+    private static final CountedBinding COUNTED_BINDING = new CountedBindingLiteral(false);
 
-    private CountedBindingLiteral() {
+    private static final CountedBinding MONOTONIC_COUNTED_BINDING = new CountedBindingLiteral(true);
+
+    private final boolean monotonic;
+
+    private CountedBindingLiteral(boolean monotonic) {
+        this.monotonic = monotonic;
+    }
+
+    static CountedBinding instance(boolean monotonic) {
+        if (monotonic)
+            return MONOTONIC_COUNTED_BINDING;
+        else
+            return COUNTED_BINDING;
+    }
+
+    @Override
+    public boolean monotonic() {
+        return monotonic;
     }
 }

@@ -32,6 +32,8 @@ import org.stefanutti.metrics.cdi.MetricsExtension;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Exchanger;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -88,7 +90,7 @@ public class CountedMethodBeanTest {
 
     @Test
     @InSequence(3)
-    public void callCountedMethodOnce() throws InterruptedException {
+    public void callCountedMethodOnce() throws InterruptedException, TimeoutException {
         assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
         Counter counter = registry.getCounters().get(COUNTER_NAME);
 
@@ -120,12 +122,12 @@ public class CountedMethodBeanTest {
         thread.start();
 
         // Wait until the method is executing and make sure that the counter has been incremented
-        exchanger.exchange(0L);
+        exchanger.exchange(0L, 5L, TimeUnit.SECONDS);
         assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(COUNTER_COUNT.incrementAndGet())));
 
         // Exchange the result and unblock the method execution
         Long random = 1 + Math.round(Math.random() * (Long.MAX_VALUE - 1));
-        exchanger.exchange(random);
+        exchanger.exchange(random, 5L, TimeUnit.SECONDS);
 
         // Wait until the method has returned
         assertThat("Counted method return value is incorrect", exchanger.exchange(0L), is(equalTo(random)));

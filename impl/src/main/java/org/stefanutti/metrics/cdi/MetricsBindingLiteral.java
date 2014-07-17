@@ -19,12 +19,16 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-private */ class MetricsBindingLiteral extends AnnotationLiteral<MetricsBinding> implements MetricsBinding {
+/* packaged-private */ final class MetricsBindingLiteral extends AnnotationLiteral<MetricsBinding> implements MetricsBinding {
 
     private static final long serialVersionUID = 1L;
 
-    static final MetricsBinding INSTANCE = new MetricsBindingLiteral();
+    private static final MetricsBinding METRICS_BINDING = new MetricsBindingLiteral();
 
     private MetricsBindingLiteral() {
+    }
+
+    static MetricsBinding instance() {
+        return METRICS_BINDING;
     }
 }

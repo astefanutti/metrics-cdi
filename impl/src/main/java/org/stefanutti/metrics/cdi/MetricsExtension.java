@@ -55,18 +55,18 @@ public class MetricsExtension implements Extension {
         boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
-            if (method.isAnnotationPresent(Counted.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.INSTANCE));
+            if (shouldHaveMetricBinding(method, Counted.class))
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.instance(getMetricAnnotation(method, Counted.class).monotonic())));
             if (method.isAnnotationPresent(ExceptionMetered.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.instance()));
             if (shouldHaveMetricBinding(method, Metered.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.instance()));
             if (shouldHaveMetricBinding(method, Timed.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.instance()));
             if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
-        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
+        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.instance());
         // FIXME: remove when OWB supports @WithAnnotations, see OWB-980
         if (gauge /*decoratedMethods.isEmpty()*/)
             pat.setAnnotatedType(annotatedType);
@@ -78,8 +78,15 @@ public class MetricsExtension implements Extension {
         return new AnnotatedMethodDecorator<X>(annotatedMethod, annotated);
     }
 
-    private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> annotation) {
-        return method.isAnnotationPresent(annotation) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(annotation);
+    private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
+        return method.isAnnotationPresent(type) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(type);
+    }
+
+    private static <T extends Annotation> T getMetricAnnotation(AnnotatedMethod<?> method, Class<T> type) {
+       if (method.isAnnotationPresent(type))
+           return method.getAnnotation(type);
+        else
+           return method.getDeclaringType().getAnnotation(type);
     }
 
     private void processMetricRegistryBean(@Observes ProcessBean<MetricRegistry> pb) {
@@ -106,7 +113,7 @@ public class MetricsExtension implements Extension {
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // TODO: should be possible from the CDI spec though Weld is returning an empty set at that stage
-        //if (manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE).isEmpty())
+        //if (manager.getBeans(MetricRegistry.class, AnyLiteral.METERED_BINDING).isEmpty())
         if (!hasMetricRegistry)
             abd.addBean(new MetricRegistryBean(manager));
     }

@@ -18,7 +18,6 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.CachedGauge;
-import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 
@@ -59,11 +58,11 @@ import java.util.concurrent.TimeUnit;
                 String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
                 registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new CachingGauge(new ForwardingGauge(method, context.getTarget()), gauge.timeout(), gauge.timeoutUnit()));
             }
-            if (method.isAnnotationPresent(Counted.class)) {
-                Counted counted = method.getAnnotation(Counted.class);
-                String name = counted.name().isEmpty() ? method.getName() : counted.name();
-                registry.counter(counted.absolute() ? name : MetricRegistry.name(bean, name));
-            }
+
+            String counterName = nameHelper.counterName(method);
+            if (counterName != null)
+                registry.counter(counterName);
+
             if (method.isAnnotationPresent(ExceptionMetered.class)) {
                 ExceptionMetered metered = method.getAnnotation(ExceptionMetered.class);
                 String name = metered.name().isEmpty() ? method.getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();

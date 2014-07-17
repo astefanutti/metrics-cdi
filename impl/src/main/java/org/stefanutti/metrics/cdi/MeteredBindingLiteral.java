@@ -19,12 +19,16 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
 @Vetoed
-/* packaged-private */ class MeteredBindingLiteral extends AnnotationLiteral<MeteredBinding> implements MeteredBinding {
+/* packaged-private */ final class MeteredBindingLiteral extends AnnotationLiteral<MeteredBinding> implements MeteredBinding {
 
     private static final long serialVersionUID = 1L;
 
-    static final MeteredBinding INSTANCE = new MeteredBindingLiteral();
+    private static final MeteredBinding METERED_BINDING = new MeteredBindingLiteral();
 
     private MeteredBindingLiteral() {
+    }
+
+    static MeteredBinding instance() {
+        return METERED_BINDING;
     }
 }

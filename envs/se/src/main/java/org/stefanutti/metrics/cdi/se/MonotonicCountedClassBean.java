@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.stefanutti.metrics.cdi;
+package org.stefanutti.metrics.cdi.se;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.util.AnnotationLiteral;
+import com.codahale.metrics.annotation.Counted;
 
-@Vetoed
-/* packaged-private */ final class TimedBindingLiteral extends AnnotationLiteral<TimedBinding> implements TimedBinding {
+@Counted(name = "monotonicCountedClass", monotonic = true)
+public class MonotonicCountedClassBean {
 
-    private static final long serialVersionUID = 1L;
-
-    private static final TimedBinding TIMED_BINDING = new TimedBindingLiteral();
-
-    private TimedBindingLiteral() {
+    public void countedMethodOne() {
     }
 
-    static TimedBinding instance() {
-        return TIMED_BINDING;
+    public void countedMethodTwo() {
+    }
+
+    protected void countedMethodProtected() {
+    }
+
+    void countedMethodPackagedPrivate() {
+    }
+
+    private void countedMethodPrivate() {
     }
 }

@@ -44,6 +44,10 @@ import java.lang.reflect.Modifier;
         this.strategy = strategy;
     }
 
+    String counterName(Method method) {
+        return metricName(method, Counted.class);
+    }
+
     String meterName(Method method) {
         return metricName(method, Metered.class);
     }
@@ -60,14 +64,14 @@ import java.lang.reflect.Modifier;
         return metricName(point.getAnnotated(), point.getMember());
     }
 
-    private <T extends Annotation> String metricName(Method method, Class<T> metric) {
-        if (method.isAnnotationPresent(metric)) {
-            Annotation annotation = method.getAnnotation(metric);
+    private <T extends Annotation> String metricName(Method method, Class<T> type) {
+        if (method.isAnnotationPresent(type)) {
+            Annotation annotation = method.getAnnotation(type);
             return metricName(method, metricName(annotation), isMetricAbsolute(annotation));
         } else {
             Class<?> bean = method.getDeclaringClass();
-            if(bean.isAnnotationPresent(metric) && Modifier.isPublic(method.getModifiers())) {
-                Annotation annotation = bean.getAnnotation(metric);
+            if(bean.isAnnotationPresent(type) && Modifier.isPublic(method.getModifiers())) {
+                Annotation annotation = bean.getAnnotation(type);
                 return metricName(bean, method, metricName(annotation), isMetricAbsolute(annotation));
             }
         }
@@ -99,10 +103,10 @@ import java.lang.reflect.Modifier;
             return ((CachedGauge) annotation).name();
         else if (Counted.class.isInstance(annotation))
             return ((Counted) annotation).name();
-        else if (Gauge.class.isInstance(annotation))
-            return ((Gauge) annotation).name();
         else if (ExceptionMetered.class.isInstance(annotation))
             return ((ExceptionMetered) annotation).name();
+        else if (Gauge.class.isInstance(annotation))
+            return ((Gauge) annotation).name();
         else if (Metered.class.isInstance(annotation))
             return ((Metered) annotation).name();
         else if (Timed.class.isInstance(annotation))
@@ -116,10 +120,10 @@ import java.lang.reflect.Modifier;
             return ((CachedGauge) annotation).absolute();
         else if (Counted.class.isInstance(annotation))
             return ((Counted) annotation).absolute();
-        else if (Gauge.class.isInstance(annotation))
-            return ((Gauge) annotation).absolute();
         else if (ExceptionMetered.class.isInstance(annotation))
             return ((ExceptionMetered) annotation).absolute();
+        else if (Gauge.class.isInstance(annotation))
+            return ((Gauge) annotation).absolute();
         else if (Metered.class.isInstance(annotation))
             return ((Metered) annotation).absolute();
         else if (Timed.class.isInstance(annotation))
