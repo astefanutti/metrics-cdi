@@ -30,24 +30,38 @@ import javax.interceptor.InvocationContext;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ class ExceptionMeteredInterceptor {
 
+    private final MetricRegistry registry;
+
+    private final MetricNameHelper nameHelper;
+
     @Inject
-    private MetricRegistry registry;
+    private ExceptionMeteredInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+        this.registry = registry;
+        this.nameHelper = nameHelper;
+    }
 
     @AroundInvoke
     private Object exceptionMeteredMethod(InvocationContext context) throws Throwable {
-        ExceptionMetered metered = context.getMethod().getAnnotation(ExceptionMetered.class);
-        String name = metered.name().isEmpty() ? context.getMethod().getName() + "." + ExceptionMetered.DEFAULT_NAME_SUFFIX : metered.name();
-        String finalName = metered.absolute() ? name : MetricRegistry.name(context.getMethod().getDeclaringClass(), name);
-        Meter meter = (Meter) registry.getMetrics().get(finalName);
+        String name = nameHelper.meterName(context.getMethod(), true);
+        Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
-            throw new IllegalStateException("No meter with name [" + finalName + "] found in registry [" + registry + "]");
+            throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
 
         try {
             return context.proceed();
         } catch (Throwable throwable) {
-            if (metered.cause().isInstance(throwable))
+            if (getCause(context).isInstance(throwable))
                 meter.mark();
+
             throw throwable;
         }
+    }
+
+    private Class<? extends Throwable> getCause(InvocationContext context) {
+        ExceptionMetered metered = context.getMethod().getAnnotation(ExceptionMetered.class);
+        if (metered != null)
+            return metered.cause();
+        else
+            return context.getMethod().getDeclaringClass().getAnnotation(ExceptionMetered.class).cause();
     }
 }

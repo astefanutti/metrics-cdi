@@ -106,14 +106,12 @@ public class ExceptionMeteredMethodBeanTest {
         try {
             // Call the metered method and assert it's been marked and that the original exception has been rethrown
             bean.illegalArgumentExceptionMeteredMethod(runnableThatThrowsIllegalArgumentException);
+            fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].incrementAndGet())));
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].get())));
             assertSame("Exception thrown is incorrect", cause, exception);
-            return;
         }
-
-        fail("No exception has been re-thrown!");
     }
 
     @Test
@@ -132,14 +130,12 @@ public class ExceptionMeteredMethodBeanTest {
         try {
             // Call the metered method and assert it hasn't been marked and that the original exception has been rethrown
             bean.illegalArgumentExceptionMeteredMethod(runnableThatThrowsIllegalStateException);
+            fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].get())));
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].get())));
             assertSame("Exception thrown is incorrect", cause, exception);
-            return;
         }
-
-        fail("No exception has been re-thrown!");
     }
 
     @Test
@@ -158,15 +154,13 @@ public class ExceptionMeteredMethodBeanTest {
         try {
             // Call the metered method and assert it's been marked and that the original exception has been rethrown
             bean.exceptionMeteredMethod(runnableThatThrowsIllegalStateException);
+            fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
             assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].get())));
             assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].incrementAndGet())));
             assertSame("Exception thrown is incorrect", cause, exception);
-            return;
         }
-
-        fail("No exception has been re-thrown!");
     }
 
     @Test
@@ -190,14 +184,12 @@ public class ExceptionMeteredMethodBeanTest {
         try {
             // Call the metered method and assert an exception is thrown
             bean.illegalArgumentExceptionMeteredMethod(runnableThatThrowsIllegalArgumentException);
+            fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
             assertThat(cause, is(instanceOf(IllegalStateException.class)));
             assertThat(cause.getMessage(), is(equalTo("No meter with name [" + absoluteMetricName(0) + "] found in registry [" + registry + "]")));
             // Make sure that the meter hasn't been marked
             assertThat("Meter count is incorrect", meter.getCount(), is(equalTo(METER_COUNTS[0].get())));
-            return;
         }
-
-        fail("No exception has been re-thrown!");
     }
 }

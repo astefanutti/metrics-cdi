@@ -48,8 +48,8 @@ import java.lang.reflect.Modifier;
         return metricName(method, Counted.class);
     }
 
-    String meterName(Method method) {
-        return metricName(method, Metered.class);
+    String meterName(Method method, boolean isExceptionMetered) {
+        return metricName(method, isExceptionMetered ? ExceptionMetered.class : Metered.class);
     }
 
     String timerName(Method method) {
@@ -64,28 +64,35 @@ import java.lang.reflect.Modifier;
         return metricName(point.getAnnotated(), point.getMember());
     }
 
-    private <T extends Annotation> String metricName(Method method, Class<T> type) {
+    private String metricName(Method method, Class<? extends Annotation> type) {
         if (method.isAnnotationPresent(type)) {
             Annotation annotation = method.getAnnotation(type);
-            return metricName(method, metricName(annotation), isMetricAbsolute(annotation));
+            return metricName(method, type, metricName(annotation), isMetricAbsolute(annotation));
         } else {
             Class<?> bean = method.getDeclaringClass();
-            if(bean.isAnnotationPresent(type) && Modifier.isPublic(method.getModifiers())) {
+            if (bean.isAnnotationPresent(type) && Modifier.isPublic(method.getModifiers())) {
                 Annotation annotation = bean.getAnnotation(type);
-                return metricName(bean, method, metricName(annotation), isMetricAbsolute(annotation));
+                return metricName(bean, method, type, metricName(annotation), isMetricAbsolute(annotation));
             }
         }
         return null;
     }
 
-    private String metricName(Method method, String name, boolean absolute) {
-        String metric = name.isEmpty() ? method.getName() : strategy.resolve(name);
+    private String metricName(Method method, Class<? extends Annotation> type, String name, boolean absolute) {
+        String metric = name.isEmpty() ? defaultName(method, type) : strategy.resolve(name);
         return absolute ? metric : MetricRegistry.name(method.getDeclaringClass(), metric);
     }
 
-    private String metricName(Class<?> bean, Method method, String name, boolean absolute) {
+    private String metricName(Class<?> bean, Method method, Class<? extends Annotation> type, String name, boolean absolute) {
         String metric = name.isEmpty() ? bean.getSimpleName() : strategy.resolve(name);
-        return absolute ? MetricRegistry.name(metric, method.getName()) : MetricRegistry.name(bean.getPackage().getName(), metric, method.getName());
+        return absolute ? MetricRegistry.name(metric, defaultName(method, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(method, type));
+    }
+
+    private String defaultName(Method method, Class<? extends Annotation> type) {
+        if (ExceptionMetered.class.equals(type))
+            return MetricRegistry.name(method.getName(), ExceptionMetered.DEFAULT_NAME_SUFFIX);
+        else
+            return method.getName();
     }
 
     private String metricName(Annotated annotated, Member member) {

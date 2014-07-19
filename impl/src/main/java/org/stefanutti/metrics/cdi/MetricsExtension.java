@@ -57,7 +57,7 @@ public class MetricsExtension implements Extension {
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             if (shouldHaveMetricBinding(method, Counted.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.instance(getMetricAnnotation(method, Counted.class).monotonic())));
-            if (method.isAnnotationPresent(ExceptionMetered.class))
+            if (shouldHaveMetricBinding(method, ExceptionMetered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.instance()));
             if (shouldHaveMetricBinding(method, Metered.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.instance()));
