@@ -21,55 +21,87 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Metric;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptor;
+import java.lang.reflect.Member;
 
 @Singleton
 @Alternative
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ final class MetricProducer {
 
-    private final MetricNameHelper helper;
+    private final MetricRegistry registry;
+
+    private final MetricNameStrategy strategy;
 
     @Inject
-    MetricProducer(MetricNameHelper helper) {
-        this.helper = helper;
+    private MetricProducer(MetricRegistry registry, MetricNameStrategy strategy) {
+        this.registry = registry;
+        this.strategy = strategy;
     }
 
     @Produces
     private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
-        return registry.counter(helper.metricName(point));
+        return registry.counter(metricName(point));
     }
 
     @Produces
     @SuppressWarnings("unchecked")
-    private <T> Gauge<T> produceGauge(MetricRegistry registry, InjectionPoint point) {
+    private <T> Gauge<T> produceGauge(InjectionPoint point) {
         // TODO: As gauge metrics are registered at instantiation time of the annotated
         // beans this may lead to producing null values for that gauge bean in case
         // the gauge metrics get injected before the corresponding beans. A more
         // sophisticated strategy may be designed to delay the retrieval of the
         // underlying gauges from the Metrics registry for example.
-        return registry.getGauges().get(helper.metricName(point));
+        return registry.getGauges().get(metricName(point));
     }
 
     @Produces
-    private Histogram produceHistogram(MetricRegistry registry, InjectionPoint point) {
-        return registry.histogram(helper.metricName(point));
+    private Histogram produceHistogram(InjectionPoint point) {
+        return registry.histogram(metricName(point));
     }
 
     @Produces
-    private Meter produceMeter(MetricRegistry registry, InjectionPoint point) {
-        return registry.meter(helper.metricName(point));
+    private Meter produceMeter(InjectionPoint point) {
+        return registry.meter(metricName(point));
     }
 
     @Produces
-    private Timer produceTimer(MetricRegistry registry, InjectionPoint point) {
-        return registry.timer(helper.metricName(point));
+    private Timer produceTimer(InjectionPoint point) {
+        return registry.timer(metricName(point));
+    }
+
+    void produceMetric(BeanManager manager, Bean<?> bean, AnnotatedMember<?> member) {
+        com.codahale.metrics.Metric metric = (com.codahale.metrics.Metric) manager.getReference(bean, member.getBaseType(), manager.createCreationalContext(null));
+        registry.register(metricName(member), metric);
+    }
+
+    private String metricName(AnnotatedMember<?> annotatedMember) {
+        return metricName(annotatedMember, annotatedMember.getJavaMember());
+    }
+
+    private String metricName(InjectionPoint point) {
+        return metricName(point.getAnnotated(), point.getMember());
+    }
+
+    private String metricName(Annotated annotated, Member member) {
+        if (annotated.isAnnotationPresent(Metric.class)) {
+            Metric metric = annotated.getAnnotation(Metric.class);
+            String name = (metric.name().isEmpty()) ? member.getName() : strategy.resolve(metric.name());
+            return metric.absolute() ? name : MetricRegistry.name(member.getDeclaringClass(), name);
+        } else {
+            return MetricRegistry.name(member.getDeclaringClass(), member.getName());
+        }
     }
 }

@@ -31,17 +31,17 @@ import javax.interceptor.InvocationContext;
 
     private final MetricRegistry registry;
 
-    private final MetricNameHelper nameHelper;
+    private final MetricResolver resolver;
 
     @Inject
-    private MeteredInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private MeteredInterceptor(MetricRegistry registry, MetricResolver resolver) {
         this.registry = registry;
-        this.nameHelper = nameHelper;
+        this.resolver = resolver;
     }
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
-        String name = nameHelper.meterName(context.getMethod(), false);
+        String name = resolver.meteredMethod(context.getMethod()).metricName();
         Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");

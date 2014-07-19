@@ -18,10 +18,14 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.CachedGauge;
+import com.codahale.metrics.annotation.Counted;
+import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
+import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Timed;
+import org.stefanutti.metrics.cdi.MetricResolver.Metric;
 
 import javax.annotation.Priority;
-
 import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
@@ -38,12 +42,12 @@ import java.util.concurrent.TimeUnit;
 
     private final MetricRegistry registry;
 
-    private final MetricNameHelper nameHelper;
+    private final MetricResolver resolver;
 
     @Inject
-    private MetricsInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private MetricsInterceptor(MetricRegistry registry, MetricResolver resolver) {
         this.registry = registry;
-        this.nameHelper = nameHelper;
+        this.resolver = resolver;
     }
 
     @AroundConstruct
@@ -52,33 +56,29 @@ import java.util.concurrent.TimeUnit;
 
         Class<?> bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(CachedGauge.class)) {
-                CachedGauge gauge = method.getAnnotation(CachedGauge.class);
-                String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
-                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new CachingGauge(new ForwardingGauge(method, context.getTarget()), gauge.timeout(), gauge.timeoutUnit()));
-            }
+            Metric<CachedGauge> cachedGauge = resolver.cachedGaugeMethod(method);
+            if (cachedGauge.isPresent())
+                registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
 
-            String counterName = nameHelper.counterName(method);
-            if (counterName != null)
-                registry.counter(counterName);
+            Metric<Counted> counted = resolver.countedMethod(method);
+            if (counted.isPresent())
+                registry.counter(counted.metricName());
 
-            String exceptionMeterName = nameHelper.meterName(method, true);
-            if (exceptionMeterName != null)
-                registry.meter(exceptionMeterName);
+            Metric<ExceptionMetered> exceptionMetered = resolver.exceptionMeteredMethod(method);
+            if (exceptionMetered.isPresent())
+                registry.meter(exceptionMetered.metricName());
 
-            if (method.isAnnotationPresent(Gauge.class)) {
-                Gauge gauge = method.getAnnotation(Gauge.class);
-                String name = gauge.name().isEmpty() ? method.getName() : gauge.name();
-                registry.register(gauge.absolute() ? name : MetricRegistry.name(bean, name), new ForwardingGauge(method, context.getTarget()));
-            }
+            Metric<Gauge> gauge = resolver.gaugeMethod(method);
+            if (gauge.isPresent())
+                registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
 
-            String meterName = nameHelper.meterName(method, false);
-            if (meterName != null)
-                registry.meter(meterName);
+            Metric<Metered> metered = resolver.meteredMethod(method);
+            if (metered.isPresent())
+                registry.meter(metered.metricName());
 
-            String timerName = nameHelper.timerName(method);
-            if (timerName != null)
-                registry.timer(timerName);
+            Metric<Timed> timed = resolver.timedMethod(method);
+            if (timed.isPresent())
+                registry.timer(timed.metricName());
         }
 
         return target;

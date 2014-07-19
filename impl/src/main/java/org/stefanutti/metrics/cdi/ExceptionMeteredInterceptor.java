@@ -18,6 +18,7 @@ package org.stefanutti.metrics.cdi;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
+import org.stefanutti.metrics.cdi.MetricResolver.Metric;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -32,36 +33,28 @@ import javax.interceptor.InvocationContext;
 
     private final MetricRegistry registry;
 
-    private final MetricNameHelper nameHelper;
+    private final MetricResolver resolver;
 
     @Inject
-    private ExceptionMeteredInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private ExceptionMeteredInterceptor(MetricRegistry registry, MetricResolver resolver) {
         this.registry = registry;
-        this.nameHelper = nameHelper;
+        this.resolver = resolver;
     }
 
     @AroundInvoke
     private Object exceptionMeteredMethod(InvocationContext context) throws Throwable {
-        String name = nameHelper.meterName(context.getMethod(), true);
-        Meter meter = (Meter) registry.getMetrics().get(name);
+        Metric<ExceptionMetered> exceptionMetered = resolver.exceptionMeteredMethod(context.getMethod());
+        Meter meter = (Meter) registry.getMetrics().get(exceptionMetered.metricName());
         if (meter == null)
-            throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
+            throw new IllegalStateException("No meter with name [" + exceptionMetered.metricName() + "] found in registry [" + registry + "]");
 
         try {
             return context.proceed();
         } catch (Throwable throwable) {
-            if (getCause(context).isInstance(throwable))
+            if (exceptionMetered.metricAnnotation().cause().isInstance(throwable))
                 meter.mark();
 
             throw throwable;
         }
-    }
-
-    private Class<? extends Throwable> getCause(InvocationContext context) {
-        ExceptionMetered metered = context.getMethod().getAnnotation(ExceptionMetered.class);
-        if (metered != null)
-            return metered.cause();
-        else
-            return context.getMethod().getDeclaringClass().getAnnotation(ExceptionMetered.class).cause();
     }
 }

@@ -17,6 +17,8 @@ package org.stefanutti.metrics.cdi;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.annotation.Counted;
+import org.stefanutti.metrics.cdi.MetricResolver.Metric;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -25,32 +27,33 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 @Interceptor
-@CountedBinding(monotonic = false)
+@CountedBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* packaged-private */ class CountedInterceptor {
 
     private final MetricRegistry registry;
 
-    private final MetricNameHelper nameHelper;
+    private final MetricResolver resolver;
 
     @Inject
-    private CountedInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private CountedInterceptor(MetricRegistry registry, MetricResolver resolver) {
         this.registry = registry;
-        this.nameHelper = nameHelper;
+        this.resolver = resolver;
     }
 
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
-        String name = nameHelper.counterName(context.getMethod());
-        Counter counter = (Counter) registry.getMetrics().get(name);
+        Metric<Counted> counted = resolver.countedMethod(context.getMethod());
+        Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
-            throw new IllegalStateException("No counter with name [" + name + "] found in registry [" + registry + "]");
+            throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");
 
         counter.inc();
         try {
             return context.proceed();
         } finally {
-            counter.dec();
+            if (!counted.metricAnnotation().monotonic())
+                counter.dec();
         }
     }
 }

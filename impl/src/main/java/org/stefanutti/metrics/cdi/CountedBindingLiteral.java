@@ -24,25 +24,5 @@ import javax.enterprise.util.AnnotationLiteral;
 
     private static final long serialVersionUID = 1L;
 
-    private static final CountedBinding COUNTED_BINDING = new CountedBindingLiteral(false);
-
-    private static final CountedBinding MONOTONIC_COUNTED_BINDING = new CountedBindingLiteral(true);
-
-    private final boolean monotonic;
-
-    private CountedBindingLiteral(boolean monotonic) {
-        this.monotonic = monotonic;
-    }
-
-    static CountedBinding instance(boolean monotonic) {
-        if (monotonic)
-            return MONOTONIC_COUNTED_BINDING;
-        else
-            return COUNTED_BINDING;
-    }
-
-    @Override
-    public boolean monotonic() {
-        return monotonic;
-    }
+    static final CountedBinding INSTANCE = new CountedBindingLiteral();
 }

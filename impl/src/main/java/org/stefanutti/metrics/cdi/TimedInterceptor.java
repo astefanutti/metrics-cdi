@@ -31,17 +31,17 @@ import javax.interceptor.InvocationContext;
 
     private final MetricRegistry registry;
 
-    private final MetricNameHelper nameHelper;
+    private final MetricResolver resolver;
 
     @Inject
-    private TimedInterceptor(MetricRegistry registry, MetricNameHelper nameHelper) {
+    private TimedInterceptor(MetricRegistry registry, MetricResolver resolver) {
         this.registry = registry;
-        this.nameHelper = nameHelper;
+        this.resolver = resolver;
     }
 
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
-        String name = nameHelper.timerName(context.getMethod());
+        String name = resolver.timedMethod(context.getMethod()).metricName();
         Timer timer = (Timer) registry.getMetrics().get(name);
         if (timer == null)
             throw new IllegalStateException("No timer with name [" + name + "] found in registry [" + registry + "]");

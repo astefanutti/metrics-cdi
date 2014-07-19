@@ -23,12 +23,5 @@ import javax.enterprise.util.AnnotationLiteral;
 
     private static final long serialVersionUID = 1L;
 
-    private static final TimedBinding TIMED_BINDING = new TimedBindingLiteral();
-
-    private TimedBindingLiteral() {
-    }
-
-    static TimedBinding instance() {
-        return TIMED_BINDING;
-    }
+    static final TimedBinding INSTANCE = new TimedBindingLiteral();
 }

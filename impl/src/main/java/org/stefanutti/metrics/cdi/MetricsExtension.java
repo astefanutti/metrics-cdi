@@ -56,17 +56,17 @@ public class MetricsExtension implements Extension {
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             if (shouldHaveMetricBinding(method, Counted.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.instance(getMetricAnnotation(method, Counted.class).monotonic())));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.INSTANCE));
             if (shouldHaveMetricBinding(method, ExceptionMetered.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.instance()));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, ExceptionMeteredBindingLiteral.INSTANCE));
             if (shouldHaveMetricBinding(method, Metered.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.instance()));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, MeteredBindingLiteral.INSTANCE));
             if (shouldHaveMetricBinding(method, Timed.class))
-                decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.instance()));
+                decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
-        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.instance());
+        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
         // FIXME: remove when OWB supports @WithAnnotations, see OWB-980
         if (gauge /*decoratedMethods.isEmpty()*/)
             pat.setAnnotatedType(annotatedType);
@@ -80,13 +80,6 @@ public class MetricsExtension implements Extension {
 
     private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
         return method.isAnnotationPresent(type) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(type);
-    }
-
-    private static <T extends Annotation> T getMetricAnnotation(AnnotatedMethod<?> method, Class<T> type) {
-       if (method.isAnnotationPresent(type))
-           return method.getAnnotation(type);
-        else
-           return method.getDeclaringType().getAnnotation(type);
     }
 
     private void processMetricRegistryBean(@Observes ProcessBean<MetricRegistry> pb) {
@@ -119,13 +112,10 @@ public class MetricsExtension implements Extension {
     }
 
     private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
-        MetricRegistry registry = getBeanInstance(manager, MetricRegistry.class);
-        MetricNameHelper helper = getBeanInstance(manager, MetricNameHelper.class);
+        MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
 
-        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
-            Metric reference = (Metric) manager.getReference(metric.getKey(), metric.getValue().getBaseType(), manager.createCreationalContext(null));
-            registry.register(helper.metricName(metric.getValue()), reference);
-        }
+        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet())
+            producer.produceMetric(manager, metric.getKey(), metric.getValue());
 
         // Let's clear the collected metric producers
         metrics.clear();

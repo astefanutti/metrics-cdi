@@ -23,12 +23,5 @@ import javax.enterprise.util.AnnotationLiteral;
 
     private static final long serialVersionUID = 1L;
 
-    private static final ExceptionMeteredBinding EXCEPTION_METERED_BINDING = new ExceptionMeteredBindingLiteral();
-
-    private ExceptionMeteredBindingLiteral() {
-    }
-
-    static ExceptionMeteredBinding instance() {
-        return EXCEPTION_METERED_BINDING;
-    }
+    static final ExceptionMeteredBinding INSTANCE = new ExceptionMeteredBindingLiteral();
 }

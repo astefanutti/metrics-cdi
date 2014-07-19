@@ -23,12 +23,5 @@ import javax.enterprise.util.AnnotationLiteral;
 
     private static final long serialVersionUID = 1L;
 
-    private static final MeteredBinding METERED_BINDING = new MeteredBindingLiteral();
-
-    private MeteredBindingLiteral() {
-    }
-
-    static MeteredBinding instance() {
-        return METERED_BINDING;
-    }
+    static final MeteredBinding INSTANCE = new MeteredBindingLiteral();
 }

@@ -21,61 +21,62 @@ import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
-import com.codahale.metrics.annotation.Metric;
 import com.codahale.metrics.annotation.Timed;
 
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 @Singleton
-/* packaged-private */ final class MetricNameHelper {
+/* packaged-private */ final class MetricResolver {
 
     private final MetricNameStrategy strategy;
 
     @Inject
-    private MetricNameHelper(MetricNameStrategy strategy) {
+    private MetricResolver(MetricNameStrategy strategy) {
         this.strategy = strategy;
     }
 
-    String counterName(Method method) {
-        return metricName(method, Counted.class);
+    Metric<CachedGauge> cachedGaugeMethod(Method method) {
+        return forMethod(method, CachedGauge.class);
     }
 
-    String meterName(Method method, boolean isExceptionMetered) {
-        return metricName(method, isExceptionMetered ? ExceptionMetered.class : Metered.class);
+    Metric<Counted> countedMethod(Method method) {
+        return forMethod(method, Counted.class);
     }
 
-    String timerName(Method method) {
-        return metricName(method, Timed.class);
+    Metric<ExceptionMetered> exceptionMeteredMethod(Method method) {
+        return forMethod(method, ExceptionMetered.class);
     }
 
-    String metricName(AnnotatedMember<?> annotatedMember) {
-        return metricName(annotatedMember, annotatedMember.getJavaMember());
+    Metric<Gauge> gaugeMethod(Method method) {
+        return forMethod(method, Gauge.class);
     }
 
-    String metricName(InjectionPoint point) {
-        return metricName(point.getAnnotated(), point.getMember());
+    Metric<Metered> meteredMethod(Method method) {
+        return forMethod(method, Metered.class);
     }
 
-    private String metricName(Method method, Class<? extends Annotation> type) {
+    Metric<Timed> timedMethod(Method method) {
+        return forMethod(method, Timed.class);
+    }
+
+    private <T extends Annotation> Metric<T> forMethod(Method method, Class<T> type) {
         if (method.isAnnotationPresent(type)) {
-            Annotation annotation = method.getAnnotation(type);
-            return metricName(method, type, metricName(annotation), isMetricAbsolute(annotation));
+            T annotation = method.getAnnotation(type);
+            String name = metricName(method, type, metricName(annotation), isMetricAbsolute(annotation));
+            return new DoesHaveMetric<T>(annotation, name);
         } else {
             Class<?> bean = method.getDeclaringClass();
             if (bean.isAnnotationPresent(type) && Modifier.isPublic(method.getModifiers())) {
-                Annotation annotation = bean.getAnnotation(type);
-                return metricName(bean, method, type, metricName(annotation), isMetricAbsolute(annotation));
+                T annotation = bean.getAnnotation(type);
+                String name = metricName(bean, method, type, metricName(annotation), isMetricAbsolute(annotation));
+                return new DoesHaveMetric<T>(annotation, name);
             }
         }
-        return null;
+        return new DoesNotHaveMetric<T>();
     }
 
     private String metricName(Method method, Class<? extends Annotation> type, String name, boolean absolute) {
@@ -95,16 +96,6 @@ import java.lang.reflect.Modifier;
             return method.getName();
     }
 
-    private String metricName(Annotated annotated, Member member) {
-        if (annotated.isAnnotationPresent(Metric.class)) {
-            Metric metric = annotated.getAnnotation(Metric.class);
-            String name = (metric.name().isEmpty()) ? member.getName() : strategy.resolve(metric.name());
-            return metric.absolute() ? name : MetricRegistry.name(member.getDeclaringClass(), name);
-        } else {
-            return MetricRegistry.name(member.getDeclaringClass(), member.getName());
-        }
-    }
-
     private String metricName(Annotation annotation) {
         if (CachedGauge.class.isInstance(annotation))
             return ((CachedGauge) annotation).name();
@@ -119,10 +110,10 @@ import java.lang.reflect.Modifier;
         else if (Timed.class.isInstance(annotation))
             return ((Timed) annotation).name();
         else
-            throw new IllegalArgumentException("Unsupported Metrics annotation [" + annotation.getClass().getName() + "]");
+            throw new IllegalArgumentException("Unsupported Metrics forMethod [" + annotation.getClass().getName() + "]");
     }
 
-    private  boolean isMetricAbsolute(Annotation annotation) {
+    private boolean isMetricAbsolute(Annotation annotation) {
         if (CachedGauge.class.isInstance(annotation))
             return ((CachedGauge) annotation).absolute();
         else if (Counted.class.isInstance(annotation))
@@ -136,6 +127,63 @@ import java.lang.reflect.Modifier;
         else if (Timed.class.isInstance(annotation))
             return ((Timed) annotation).absolute();
         else
-            throw new IllegalArgumentException("Unsupported Metrics annotation [" + annotation.getClass().getName() + "]");
+            throw new IllegalArgumentException("Unsupported Metrics forMethod [" + annotation.getClass().getName() + "]");
+    }
+
+    interface Metric<T extends Annotation> {
+
+        boolean isPresent();
+
+        String metricName();
+
+        T metricAnnotation();
+    }
+
+    private static class DoesHaveMetric<T extends Annotation> implements Metric<T> {
+
+        private final T annotation;
+
+        private final String name;
+
+        private DoesHaveMetric(T annotation, String name) {
+            this.annotation = annotation;
+            this.name = name;
+        }
+
+        @Override
+        public boolean isPresent() {
+            return true;
+        }
+
+        @Override
+        public String metricName() {
+            return name;
+        }
+
+        @Override
+        public T metricAnnotation() {
+            return annotation;
+        }
+    }
+
+    private static class DoesNotHaveMetric<T extends Annotation> implements Metric<T> {
+
+        private DoesNotHaveMetric() {
+        }
+
+        @Override
+        public boolean isPresent() {
+            return false;
+        }
+
+        @Override
+        public String metricName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public T metricAnnotation() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
