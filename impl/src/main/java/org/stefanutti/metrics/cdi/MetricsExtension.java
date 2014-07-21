@@ -27,9 +27,9 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
@@ -66,12 +66,20 @@ public class MetricsExtension implements Extension {
             if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
         }
-        AnnotatedType<X> annotatedType = new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE);
+
+        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<AnnotatedConstructor<X>>(1);
+        for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
+            if (constructor.isAnnotationPresent(Timed.class))
+                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
+        }
+
         // FIXME: remove when OWB supports @WithAnnotations, see OWB-980
-        if (gauge /*decoratedMethods.isEmpty()*/)
-            pat.setAnnotatedType(annotatedType);
-        else if (!decoratedMethods.isEmpty())
-            pat.setAnnotatedType(new AnnotatedTypeMethodDecorator<X>(annotatedType, decoratedMethods));
+        if (gauge || !decoratedConstructors.isEmpty() || !decoratedMethods.isEmpty())
+            pat.setAnnotatedType(new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
+    }
+
+    private static <X> AnnotatedConstructor<X> getAnnotatedConstructorDecorator(AnnotatedConstructor<X> annotatedConstructor, Annotation annotated) {
+        return new AnnotatedConstructorDecorator<X>(annotatedConstructor, annotated);
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {

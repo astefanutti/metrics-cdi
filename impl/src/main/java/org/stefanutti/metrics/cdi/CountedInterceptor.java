@@ -18,7 +18,6 @@ package org.stefanutti.metrics.cdi;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Counted;
-import org.stefanutti.metrics.cdi.MetricResolver.Metric;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -43,7 +42,7 @@ import javax.interceptor.InvocationContext;
 
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
-        Metric<Counted> counted = resolver.countedMethod(context.getMethod());
+        MetricResolver.Of<Counted> counted = resolver.counted(context.getMethod());
         Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
             throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");

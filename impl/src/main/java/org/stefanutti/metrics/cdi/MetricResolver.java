@@ -26,6 +26,8 @@ import com.codahale.metrics.annotation.Timed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -39,61 +41,61 @@ import java.lang.reflect.Modifier;
         this.strategy = strategy;
     }
 
-    Metric<CachedGauge> cachedGaugeMethod(Method method) {
-        return forMethod(method, CachedGauge.class);
+    Of<CachedGauge> cachedGauge(Method method) {
+        return resolverOf(method, CachedGauge.class);
     }
 
-    Metric<Counted> countedMethod(Method method) {
-        return forMethod(method, Counted.class);
+    Of<Counted> counted(Method method) {
+        return resolverOf(method, Counted.class);
     }
 
-    Metric<ExceptionMetered> exceptionMeteredMethod(Method method) {
-        return forMethod(method, ExceptionMetered.class);
+    Of<ExceptionMetered> exceptionMetered(Method method) {
+        return resolverOf(method, ExceptionMetered.class);
     }
 
-    Metric<Gauge> gaugeMethod(Method method) {
-        return forMethod(method, Gauge.class);
+    Of<Gauge> gauge(Method method) {
+        return resolverOf(method, Gauge.class);
     }
 
-    Metric<Metered> meteredMethod(Method method) {
-        return forMethod(method, Metered.class);
+    Of<Metered> metered(Method method) {
+        return resolverOf(method, Metered.class);
     }
 
-    Metric<Timed> timedMethod(Method method) {
-        return forMethod(method, Timed.class);
+    <E extends Member & AnnotatedElement> Of<Timed> timed(E element) {
+        return resolverOf(element, Timed.class);
     }
 
-    private <T extends Annotation> Metric<T> forMethod(Method method, Class<T> type) {
-        if (method.isAnnotationPresent(type)) {
-            T annotation = method.getAnnotation(type);
-            String name = metricName(method, type, metricName(annotation), isMetricAbsolute(annotation));
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(E element, Class<T> type) {
+        if (element.isAnnotationPresent(type)) {
+            T annotation = element.getAnnotation(type);
+            String name = metricName(element, type, metricName(annotation), isMetricAbsolute(annotation));
             return new DoesHaveMetric<T>(annotation, name);
         } else {
-            Class<?> bean = method.getDeclaringClass();
-            if (bean.isAnnotationPresent(type) && Modifier.isPublic(method.getModifiers())) {
+            Class<?> bean = element.getDeclaringClass();
+            if (bean.isAnnotationPresent(type) && Modifier.isPublic(element.getModifiers())) {
                 T annotation = bean.getAnnotation(type);
-                String name = metricName(bean, method, type, metricName(annotation), isMetricAbsolute(annotation));
+                String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
                 return new DoesHaveMetric<T>(annotation, name);
             }
         }
         return new DoesNotHaveMetric<T>();
     }
 
-    private String metricName(Method method, Class<? extends Annotation> type, String name, boolean absolute) {
-        String metric = name.isEmpty() ? defaultName(method, type) : strategy.resolve(name);
-        return absolute ? metric : MetricRegistry.name(method.getDeclaringClass(), metric);
+    private <E extends Member & AnnotatedElement> String metricName(E element, Class<? extends Annotation> type, String name, boolean absolute) {
+        String metric = name.isEmpty() ? defaultName(element, type) : strategy.resolve(name);
+        return absolute ? metric : MetricRegistry.name(element.getDeclaringClass(), metric);
     }
 
-    private String metricName(Class<?> bean, Method method, Class<? extends Annotation> type, String name, boolean absolute) {
+    private <E extends Member & AnnotatedElement> String metricName(Class<?> bean, E element, Class<? extends Annotation> type, String name, boolean absolute) {
         String metric = name.isEmpty() ? bean.getSimpleName() : strategy.resolve(name);
-        return absolute ? MetricRegistry.name(metric, defaultName(method, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(method, type));
+        return absolute ? MetricRegistry.name(metric, defaultName(element, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(element, type));
     }
 
-    private String defaultName(Method method, Class<? extends Annotation> type) {
+    private <E extends Member & AnnotatedElement> String defaultName(E element, Class<? extends Annotation> type) {
         if (ExceptionMetered.class.equals(type))
-            return MetricRegistry.name(method.getName(), ExceptionMetered.DEFAULT_NAME_SUFFIX);
+            return MetricRegistry.name(element.getName(), ExceptionMetered.DEFAULT_NAME_SUFFIX);
         else
-            return method.getName();
+            return element.getName();
     }
 
     private String metricName(Annotation annotation) {
@@ -130,7 +132,7 @@ import java.lang.reflect.Modifier;
             throw new IllegalArgumentException("Unsupported Metrics forMethod [" + annotation.getClass().getName() + "]");
     }
 
-    interface Metric<T extends Annotation> {
+    interface Of<T extends Annotation> {
 
         boolean isPresent();
 
@@ -139,7 +141,7 @@ import java.lang.reflect.Modifier;
         T metricAnnotation();
     }
 
-    private static class DoesHaveMetric<T extends Annotation> implements Metric<T> {
+    private static final class DoesHaveMetric<T extends Annotation> implements Of<T> {
 
         private final T annotation;
 
@@ -166,7 +168,7 @@ import java.lang.reflect.Modifier;
         }
     }
 
-    private static class DoesNotHaveMetric<T extends Annotation> implements Metric<T> {
+    private static final class DoesNotHaveMetric<T extends Annotation> implements Of<T> {
 
         private DoesNotHaveMetric() {
         }

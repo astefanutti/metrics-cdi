@@ -15,13 +15,7 @@
  */
 package org.stefanutti.metrics.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.codahale.metrics.MetricRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
@@ -31,8 +25,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.PassivationCapable;
-
-import com.codahale.metrics.MetricRegistry;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /* packaged-private */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
 

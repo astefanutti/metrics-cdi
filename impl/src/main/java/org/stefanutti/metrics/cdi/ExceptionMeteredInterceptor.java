@@ -18,7 +18,6 @@ package org.stefanutti.metrics.cdi;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
-import org.stefanutti.metrics.cdi.MetricResolver.Metric;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -43,7 +42,7 @@ import javax.interceptor.InvocationContext;
 
     @AroundInvoke
     private Object exceptionMeteredMethod(InvocationContext context) throws Throwable {
-        Metric<ExceptionMetered> exceptionMetered = resolver.exceptionMeteredMethod(context.getMethod());
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(context.getMethod());
         Meter meter = (Meter) registry.getMetrics().get(exceptionMetered.metricName());
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + exceptionMetered.metricName() + "] found in registry [" + registry + "]");

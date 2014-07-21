@@ -25,4 +25,7 @@ import javax.enterprise.util.AnnotationLiteral;
     private static final long serialVersionUID = 1L;
 
     static final CountedBinding INSTANCE = new CountedBindingLiteral();
+
+    private CountedBindingLiteral() {
+    }
 }

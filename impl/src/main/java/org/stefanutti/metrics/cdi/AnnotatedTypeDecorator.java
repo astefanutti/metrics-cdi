@@ -20,15 +20,23 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /* packaged-private */ final class AnnotatedTypeDecorator<X> extends AnnotatedDecorator implements AnnotatedType<X> {
 
     private final AnnotatedType<X> decoratedType;
 
-    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation) {
+    private final Set<AnnotatedConstructor<X>> decoratedConstructors;
+
+    private final Set<AnnotatedMethod<? super X>> decoratedMethods;
+
+    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation, Set<AnnotatedConstructor<X>> decoratedConstructors, Set<AnnotatedMethod<? super X>> decoratedMethods) {
         super(decoratedType, decoratingAnnotation);
         this.decoratedType = decoratedType;
+        this.decoratedConstructors = decoratedConstructors;
+        this.decoratedMethods = decoratedMethods;
     }
 
     @Override
@@ -38,12 +46,24 @@ import java.util.Set;
 
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors() {
-        return decoratedType.getConstructors();
+        Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>(decoratedType.getConstructors());
+        for (AnnotatedConstructor<X> constructor : decoratedConstructors) {
+            constructors.remove(constructor);
+            constructors.add(constructor);
+        }
+
+        return Collections.unmodifiableSet(constructors);
     }
 
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods() {
-        return decoratedType.getMethods();
+        Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>(decoratedType.getMethods());
+        for (AnnotatedMethod<? super X> method : decoratedMethods) {
+            methods.remove(method);
+            methods.add(method);
+        }
+
+        return Collections.unmodifiableSet(methods);
     }
 
     @Override

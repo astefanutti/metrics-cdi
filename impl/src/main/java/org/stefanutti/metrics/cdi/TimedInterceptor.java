@@ -20,9 +20,12 @@ import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
 @Interceptor
 @TimedBinding
@@ -39,9 +42,18 @@ import javax.interceptor.InvocationContext;
         this.resolver = resolver;
     }
 
+    @AroundConstruct
+    private Object timedConstructor(InvocationContext context) throws Exception {
+        return timedCallable(context, context.getConstructor());
+    }
+
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
-        String name = resolver.timedMethod(context.getMethod()).metricName();
+        return timedCallable(context, context.getMethod());
+    }
+
+    private <E extends Member & AnnotatedElement> Object timedCallable(InvocationContext context, E element) throws Exception {
+        String name = resolver.timed(element).metricName();
         Timer timer = (Timer) registry.getMetrics().get(name);
         if (timer == null)
             throw new IllegalStateException("No timer with name [" + name + "] found in registry [" + registry + "]");

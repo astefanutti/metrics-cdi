@@ -13,56 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package org.stefanutti.metrics.cdi;
 
-import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
-/* packaged-private */ final class AnnotatedMethodDecorator<X> extends AnnotatedDecorator implements AnnotatedMethod<X> {
+/* packaged-private */ final class AnnotatedConstructorDecorator<X> extends AnnotatedDecorator implements AnnotatedConstructor<X> {
 
-    private final AnnotatedMethod<X> decoratedMethod;
+    private final AnnotatedConstructor<X> decoratedConstructor;
 
-    AnnotatedMethodDecorator(AnnotatedMethod<X> decoratedMethod, Annotation decoratingAnnotation) {
-        super(decoratedMethod, decoratingAnnotation);
-        this.decoratedMethod = decoratedMethod;
+    AnnotatedConstructorDecorator(AnnotatedConstructor<X> decoratedConstructor, Annotation decoratingAnnotation) {
+        super(decoratedConstructor, decoratingAnnotation);
+        this.decoratedConstructor = decoratedConstructor;
     }
 
     @Override
-    public Method getJavaMember() {
-        return decoratedMethod.getJavaMember();
+    public Constructor<X> getJavaMember() {
+        return decoratedConstructor.getJavaMember();
     }
 
     @Override
     public boolean isStatic() {
-        return decoratedMethod.isStatic();
+        return decoratedConstructor.isStatic();
     }
 
     @Override
     public AnnotatedType<X> getDeclaringType() {
-        return decoratedMethod.getDeclaringType();
+        return decoratedConstructor.getDeclaringType();
     }
 
     @Override
     public List<AnnotatedParameter<X>> getParameters() {
-        return decoratedMethod.getParameters();
+        return decoratedConstructor.getParameters();
     }
 
+    // TODO: factorize in parent class when figured out why OWB tests fail for AnnotatedTypeDecorator
     @Override
     public String toString() {
-        return decoratedMethod.toString();
+        return decoratedConstructor.toString();
     }
 
     @Override
     public int hashCode() {
-        return decoratedMethod.hashCode();
+        return decoratedConstructor.hashCode();
     }
 
     @Override
     public boolean equals(Object object) {
-        return decoratedMethod.equals(object);
+        return decoratedConstructor.equals(object);
     }
 }
+

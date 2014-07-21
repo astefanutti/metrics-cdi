@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.stefanutti.metrics.cdi;
+package org.stefanutti.metrics.cdi.se;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.util.AnnotationLiteral;
+import com.codahale.metrics.annotation.Timed;
 
-@Vetoed
-/* packaged-private */ final class MeteredBindingLiteral extends AnnotationLiteral<MeteredBinding> implements MeteredBinding {
+public class TimedConstructorBean {
 
-    private static final long serialVersionUID = 1L;
-
-    static final MeteredBinding INSTANCE = new MeteredBindingLiteral();
-
-    private MeteredBindingLiteral() {
+    @Timed(name = "timedConstructor")
+    TimedConstructorBean() {
     }
 }

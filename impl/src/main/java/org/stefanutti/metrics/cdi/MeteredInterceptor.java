@@ -41,7 +41,7 @@ import javax.interceptor.InvocationContext;
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
-        String name = resolver.meteredMethod(context.getMethod()).metricName();
+        String name = resolver.metered(context.getMethod()).metricName();
         Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
