@@ -62,7 +62,6 @@ public class TimedConstructorBeanTest {
     private TimedConstructorBean bean;
 
     @Test
-    @Ignore("Weld does not support @WithAnnotations for annotated constructor and OWB is not ordering interceptors correctly")
     @InSequence(1)
     public void timedMethodNotCalledYet() {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));

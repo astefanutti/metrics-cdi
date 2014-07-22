@@ -28,7 +28,10 @@ import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
@@ -50,36 +53,45 @@ import java.util.concurrent.TimeUnit;
 
     @AroundConstruct
     private Object metrics(InvocationContext context) throws Exception {
+        Class<?> bean = context.getConstructor().getDeclaringClass();
+
+        for (Constructor<?> constructor : bean.getDeclaredConstructors())
+            registerMetrics(constructor);
+
+        for (Method method : bean.getDeclaredMethods())
+            registerMetrics(method);
+
         Object target = context.proceed();
 
-        Class<?> bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
             MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(method);
             if (cachedGauge.isPresent())
                 registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
 
-            MetricResolver.Of<Counted> counted = resolver.counted(method);
-            if (counted.isPresent())
-                registry.counter(counted.metricName());
-
-            MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(method);
-            if (exceptionMetered.isPresent())
-                registry.meter(exceptionMetered.metricName());
-
             MetricResolver.Of<Gauge> gauge = resolver.gauge(method);
             if (gauge.isPresent())
                 registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
-
-            MetricResolver.Of<Metered> metered = resolver.metered(method);
-            if (metered.isPresent())
-                registry.meter(metered.metricName());
-
-            MetricResolver.Of<Timed> timed = resolver.timed(method);
-            if (timed.isPresent())
-                registry.timer(timed.metricName());
         }
 
         return target;
+    }
+
+    private <E extends Member & AnnotatedElement> void registerMetrics(E element) {
+        MetricResolver.Of<Counted> counted = resolver.counted(element);
+        if (counted.isPresent())
+            registry.counter(counted.metricName());
+
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(element);
+        if (exceptionMetered.isPresent())
+            registry.meter(exceptionMetered.metricName());
+
+        MetricResolver.Of<Metered> metered = resolver.metered(element);
+        if (metered.isPresent())
+            registry.meter(metered.metricName());
+
+        MetricResolver.Of<Timed> timed = resolver.timed(element);
+        if (timed.isPresent())
+            registry.timer(timed.metricName());
     }
 
     private static final class CachingGauge extends com.codahale.metrics.CachedGauge<Object> {

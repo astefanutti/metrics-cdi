@@ -29,7 +29,7 @@ import java.lang.reflect.Member;
 
 @Interceptor
 @TimedBinding
-@Priority(Interceptor.Priority.LIBRARY_BEFORE)
+@Priority(Interceptor.Priority.LIBRARY_BEFORE  + 10)
 /* packaged-private */ class TimedInterceptor {
 
     private final MetricRegistry registry;

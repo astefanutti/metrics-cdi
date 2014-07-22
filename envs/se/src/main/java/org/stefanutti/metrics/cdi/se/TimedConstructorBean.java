@@ -20,6 +20,6 @@ import com.codahale.metrics.annotation.Timed;
 public class TimedConstructorBean {
 
     @Timed(name = "timedConstructor")
-    TimedConstructorBean() {
+    public TimedConstructorBean() {
     }
 }

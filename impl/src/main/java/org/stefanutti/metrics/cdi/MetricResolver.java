@@ -45,20 +45,20 @@ import java.lang.reflect.Modifier;
         return resolverOf(method, CachedGauge.class);
     }
 
-    Of<Counted> counted(Method method) {
-        return resolverOf(method, Counted.class);
+    <E extends Member & AnnotatedElement> Of<Counted> counted(E element) {
+        return resolverOf(element, Counted.class);
     }
 
-    Of<ExceptionMetered> exceptionMetered(Method method) {
-        return resolverOf(method, ExceptionMetered.class);
+    <E extends Member & AnnotatedElement> Of<ExceptionMetered> exceptionMetered(E element) {
+        return resolverOf(element, ExceptionMetered.class);
     }
 
     Of<Gauge> gauge(Method method) {
         return resolverOf(method, Gauge.class);
     }
 
-    Of<Metered> metered(Method method) {
-        return resolverOf(method, Metered.class);
+    <E extends Member & AnnotatedElement> Of<Metered> metered(E element) {
+        return resolverOf(element, Metered.class);
     }
 
     <E extends Member & AnnotatedElement> Of<Timed> timed(E element) {
@@ -72,7 +72,7 @@ import java.lang.reflect.Modifier;
             return new DoesHaveMetric<T>(annotation, name);
         } else {
             Class<?> bean = element.getDeclaringClass();
-            if (bean.isAnnotationPresent(type) && Modifier.isPublic(element.getModifiers())) {
+            if (bean.isAnnotationPresent(type) && element instanceof Method && Modifier.isPublic(element.getModifiers())) {
                 T annotation = bean.getAnnotation(type);
                 String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
                 return new DoesHaveMetric<T>(annotation, name);
