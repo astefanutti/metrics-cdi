@@ -29,7 +29,6 @@ import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -55,8 +54,7 @@ import java.util.concurrent.TimeUnit;
     private Object metrics(InvocationContext context) throws Exception {
         Class<?> bean = context.getConstructor().getDeclaringClass();
 
-        for (Constructor<?> constructor : bean.getDeclaredConstructors())
-            registerMetrics(constructor);
+        registerMetrics(context.getConstructor());
 
         for (Method method : bean.getDeclaredMethods())
             registerMetrics(method);

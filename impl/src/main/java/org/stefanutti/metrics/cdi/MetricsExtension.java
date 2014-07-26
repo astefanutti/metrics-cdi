@@ -53,6 +53,15 @@ public class MetricsExtension implements Extension {
 
     private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
+
+        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<AnnotatedConstructor<X>>(1);
+        for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
+            if (constructor.isAnnotationPresent(Counted.class))
+                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, CountedBindingLiteral.INSTANCE));
+            if (constructor.isAnnotationPresent(Timed.class))
+                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
+        }
+
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             if (shouldHaveMetricBinding(method, Counted.class))
@@ -65,12 +74,6 @@ public class MetricsExtension implements Extension {
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, TimedBindingLiteral.INSTANCE));
             if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
                 gauge = true;
-        }
-
-        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<AnnotatedConstructor<X>>(1);
-        for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
-            if (constructor.isAnnotationPresent(Timed.class))
-                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
         }
 
         // FIXME: remove when OWB supports @WithAnnotations, see OWB-980

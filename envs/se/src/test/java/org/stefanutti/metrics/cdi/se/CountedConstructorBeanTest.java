@@ -15,8 +15,8 @@
  */
 package org.stefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -38,15 +38,15 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimedConstructorBeanTest {
+public class CountedConstructorBeanTest {
 
-    private final static String TIMER_NAME = MetricRegistry.name(TimedConstructorBean.class, "timedConstructor");
+    private final static String COUNTER_NAME = MetricRegistry.name(CountedConstructorBean.class, "countedConstructor");
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(TimedConstructorBean.class)
+            .addClass(CountedConstructorBean.class)
             // Metrics CDI extension
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
@@ -57,25 +57,25 @@ public class TimedConstructorBeanTest {
     private MetricRegistry registry;
 
     @Inject
-    private Instance<TimedConstructorBean> instance;
+    private Instance<CountedConstructorBean> instance;
 
     @Test
     @InSequence(1)
-    public void timedConstructorNotCalledYet() {
-        assertThat("Timer is not registered correctly", registry.getTimers().keySet(), is(empty()));
+    public void countedConstructorNotCalledYet() {
+        assertThat("Counter is not registered correctly", registry.getCounters().keySet(), is(empty()));
     }
 
     @Test
     @InSequence(2)
-    public void timedConstructorCalled() {
+    public void countedConstructorCalled() {
         long count = 1L + Math.round(Math.random() * 10);
         for (int i = 0; i < count; i++)
             instance.get();
 
-        assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
-        Timer timer = registry.getTimers().get(TIMER_NAME);
+        assertThat("Counter is not registered correctly", registry.getCounters(), hasKey(COUNTER_NAME));
+        Counter counter = registry.getCounters().get(COUNTER_NAME);
 
-        // Make sure that the timer has been called
-        assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(count)));
+        // Make sure that the counter has been called
+        assertThat("Counter count is incorrect", counter.getCount(), is(equalTo(count)));
     }
 }

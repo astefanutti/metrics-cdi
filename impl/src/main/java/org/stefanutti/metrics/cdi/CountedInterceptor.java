@@ -21,13 +21,16 @@ import com.codahale.metrics.annotation.Counted;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
 @Interceptor
 @CountedBinding
-@Priority(Interceptor.Priority.LIBRARY_BEFORE)
+@Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* packaged-private */ class CountedInterceptor {
 
     private final MetricRegistry registry;
@@ -40,9 +43,18 @@ import javax.interceptor.InvocationContext;
         this.resolver = resolver;
     }
 
+    @AroundConstruct
+    private Object countedConstructor(InvocationContext context) throws Exception {
+        return countedCallable(context, context.getConstructor());
+    }
+
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
-        MetricResolver.Of<Counted> counted = resolver.counted(context.getMethod());
+        return countedCallable(context, context.getMethod());
+    }
+
+    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, E element) throws Exception {
+        MetricResolver.Of<Counted> counted = resolver.counted(element);
         Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
             throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");
