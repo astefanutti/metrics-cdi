@@ -20,13 +20,16 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
 @Interceptor
 @MeteredBinding
-@Priority(Interceptor.Priority.LIBRARY_BEFORE)
+@Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* packaged-private */ class MeteredInterceptor {
 
     private final MetricRegistry registry;
@@ -39,9 +42,18 @@ import javax.interceptor.InvocationContext;
         this.resolver = resolver;
     }
 
+    @AroundConstruct
+    private Object meteredConstructor(InvocationContext context) throws Exception {
+        return meteredCallable(context, context.getConstructor());
+    }
+
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
-        String name = resolver.metered(context.getMethod()).metricName();
+        return meteredCallable(context, context.getMethod());
+    }
+
+    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, E element) throws Exception {
+        String name = resolver.metered(element).metricName();
         Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");

@@ -60,6 +60,8 @@ public class MetricsExtension implements Extension {
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, CountedBindingLiteral.INSTANCE));
             if (constructor.isAnnotationPresent(ExceptionMetered.class))
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, ExceptionMeteredBindingLiteral.INSTANCE));
+            if (constructor.isAnnotationPresent(Metered.class))
+                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, MeteredBindingLiteral.INSTANCE));
             if (constructor.isAnnotationPresent(Timed.class))
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
         }
