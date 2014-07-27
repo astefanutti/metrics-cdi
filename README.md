@@ -100,12 +100,11 @@ to provide a custom [`MetricRegistry`].
 
 ### _Metrics_ Annotations
 
-_Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a series
+_Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set
 of annotations (`@CachedGauge`, `@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
-These annotations are supported by _Metrics CDI_ that implements the contract documented in their Javadoc.
+These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
 
-For example, a method on a bean can be annotated with the `@Timed` annotation so that its execution
-can be monitored using _Metrics_:
+For example, a method on a bean can be annotated so that its execution can be monitored using _Metrics_:
 
 ```java
 import com.codahale.metrics.annotation.Timed;
@@ -118,18 +117,34 @@ class TimedMethodBean {
 }
 ```
 
-or the bean class can be annotated directly so that all its public methods get monitored:
+or the [bean class][] can be annotated directly so that all its public methods get monitored:
 
 ```java
-import com.codahale.metrics.annotation.Timed;
+import com.codahale.metrics.annotation.Metered;
 
-@Timed
-public class TimedClassBean {
+@Metered
+public class MeteredClassBean {
 
-    public void timedMethod() {
+    public void meteredMethod() {
     }
 }
 ```
+
+or the [bean constructor][] can be annotated so that its instantiations get monitored:
+
+```java
+import com.codahale.metrics.annotation.Counted;
+
+class CountedConstructorBean {
+
+    @Counted
+    CountedConstructorBean() {
+    }
+}
+```
+
+[bean class]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
+[bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
 ### Metrics Injection
 
@@ -198,7 +213,6 @@ class TimerBean {
 
 [injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
 [initializer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#initializer_methods
-[bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
 ### Metrics Registration
 
