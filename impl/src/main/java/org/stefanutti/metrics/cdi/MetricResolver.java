@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -93,9 +94,20 @@ import java.lang.reflect.Modifier;
 
     private <E extends Member & AnnotatedElement> String defaultName(E element, Class<? extends Annotation> type) {
         if (ExceptionMetered.class.equals(type))
-            return MetricRegistry.name(element.getName(), ExceptionMetered.DEFAULT_NAME_SUFFIX);
+            return MetricRegistry.name(memberName(element), ExceptionMetered.DEFAULT_NAME_SUFFIX);
         else
-            return element.getName();
+            return memberName(element);
+    }
+
+    // While the Member Javadoc states that the getName method should returns
+    // the simple name of the underlying member or constructor, the FQN is returned
+    // for constructors. See JDK-6294399:
+    // http://bugs.java.com/view_bug.do?bug_id=6294399
+    private String memberName(Member member) {
+        if (member instanceof Constructor)
+            return member.getDeclaringClass().getSimpleName();
+        else
+            return member.getName();
     }
 
     private String metricName(Annotation annotation) {

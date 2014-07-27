@@ -58,6 +58,8 @@ public class MetricsExtension implements Extension {
         for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
             if (constructor.isAnnotationPresent(Counted.class))
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, CountedBindingLiteral.INSTANCE));
+            if (constructor.isAnnotationPresent(ExceptionMetered.class))
+                decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, ExceptionMeteredBindingLiteral.INSTANCE));
             if (constructor.isAnnotationPresent(Timed.class))
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
         }
