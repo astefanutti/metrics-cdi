@@ -98,7 +98,7 @@ the [`Metric`][] instances registered.
 Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application
 to provide a custom [`MetricRegistry`].
 
-### _Metrics_ Annotations
+### _Metrics_ Instrumentation
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set
 of annotations (`@CachedGauge`, `@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
