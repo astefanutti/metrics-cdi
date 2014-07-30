@@ -1,8 +1,8 @@
 language: java
 
 script:
-  - mvn clean package -Dmaven.test.skip.exec
-  - mvn test -Pjacoco
+  - mvn clean package -Pweld -Dmaven.test.skip.exec
+  - mvn test -Pjacoco -Pweld
   - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 

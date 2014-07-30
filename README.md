@@ -75,7 +75,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 | [Weld SE][]      | `2.2.3.Final`    | [CDI 1.2][]     | `arquillian-weld-se-embedded-1.1`           |
 | [Weld EE][]      | `2.2.3.Final`    | [CDI 1.2][]     | `arquillian-weld-ee-embedded-1.1`           |
 | [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][]     | `owb-arquillian-standalone`                 |
-| [Jetty][]        | `9.2.1`          | [Servlet 3.1][] | `arquillian-jetty-embedded-9`               |
+| [Jetty][]        | `9.2.2`          | [Servlet 3.1][] | `arquillian-jetty-embedded-9`               |
 | [WildFly][]      | `8.1.0.Final`    | [Java EE 7][]   | `wildfly-arquillian-container-managed`      |
 
 [Weld SE]: http://weld.cdi-spec.org/
@@ -111,7 +111,7 @@ import com.codahale.metrics.annotation.Timed;
 
 class TimedMethodBean {
 
-    @Timed(name = "timerName")
+    @Timed
     void timedMethod() {
     }
 }
@@ -178,6 +178,14 @@ class TimerBean {
 }
 ```
 
+Note that Java 8 with the `-parameters` compiler option activated is required to get access to injected parameter names.
+Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found
+in [Obtaining Names of Method Parameters][] from the Java tutorials.
+To work around that limitation for Java versions prior to Java 8, the `@Metric` annotation can be used as documented hereafter.
+
+[JEP-118]: http://openjdk.java.net/jeps/118
+[Obtaining Names of Method Parameters]: http://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
+
 In order to provide metadata for the [`Metric`][] instantiation and resolution, the injection point can be annotated
 with the `@Metric` annotation, e.g.:
 
@@ -227,15 +235,26 @@ import com.codahale.metrics.Ratio;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.Metric;
+import com.codahale.metrics.annotation.Timed;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
-class GaugeFactoryBean {
+class TimedMethodWithCacheHitRatioBean {
+
+    @Inject
+    private Meter hits;
+
+    @Timed(name = "calls")
+    public void cachedMethod() {
+        if (hit)
+            hits.mark();
+    }
 
     @Produces
-    @Metric(name = "cache-hits", absolute = true)
-    Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits", absolute = true) Meter hits,
-                                     final @Metric(name = "calls", absolute = true) Timer calls) {
+    @Metric(name = "cache-hits")
+    Gauge<Double> cacheHitRatioGauge(final Meter hits,
+                                     final Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {

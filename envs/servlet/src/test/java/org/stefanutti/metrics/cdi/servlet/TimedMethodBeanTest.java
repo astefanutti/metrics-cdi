@@ -53,7 +53,7 @@ public class TimedMethodBeanTest {
 
     private final static long CALL_COUNT = 1L + Math.round(Math.random() * 10);
 
-    @Deployment(testable = true)
+    @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             .addAsLibraries(

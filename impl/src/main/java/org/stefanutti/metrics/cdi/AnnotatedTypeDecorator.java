@@ -46,7 +46,7 @@ import java.util.Set;
 
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors() {
-        Set<AnnotatedConstructor<X>> constructors = new HashSet<AnnotatedConstructor<X>>(decoratedType.getConstructors());
+        Set<AnnotatedConstructor<X>> constructors = new HashSet<>(decoratedType.getConstructors());
         for (AnnotatedConstructor<X> constructor : decoratedConstructors) {
             constructors.remove(constructor);
             constructors.add(constructor);
@@ -57,7 +57,7 @@ import java.util.Set;
 
     @Override
     public Set<AnnotatedMethod<? super X>> getMethods() {
-        Set<AnnotatedMethod<? super X>> methods = new HashSet<AnnotatedMethod<? super X>>(decoratedType.getMethods());
+        Set<AnnotatedMethod<? super X>> methods = new HashSet<>(decoratedType.getMethods());
         for (AnnotatedMethod<? super X> method : decoratedMethods) {
             methods.remove(method);
             methods.add(method);

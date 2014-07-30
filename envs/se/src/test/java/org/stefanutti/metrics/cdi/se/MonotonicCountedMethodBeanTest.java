@@ -92,7 +92,7 @@ public class MonotonicCountedMethodBeanTest {
         Counter counter = registry.getCounters().get(COUNTER_NAME);
 
         // Call the counted method, block and assert it's been counted
-        final Exchanger<Long> exchanger = new Exchanger<Long>();
+        final Exchanger<Long> exchanger = new Exchanger<>();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

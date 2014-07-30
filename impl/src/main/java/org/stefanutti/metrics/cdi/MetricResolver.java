@@ -70,16 +70,16 @@ import java.lang.reflect.Modifier;
         if (element.isAnnotationPresent(type)) {
             T annotation = element.getAnnotation(type);
             String name = metricName(element, type, metricName(annotation), isMetricAbsolute(annotation));
-            return new DoesHaveMetric<T>(annotation, name);
+            return new DoesHaveMetric<>(annotation, name);
         } else {
             Class<?> bean = element.getDeclaringClass();
             if (bean.isAnnotationPresent(type) && element instanceof Method && Modifier.isPublic(element.getModifiers())) {
                 T annotation = bean.getAnnotation(type);
                 String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
-                return new DoesHaveMetric<T>(annotation, name);
+                return new DoesHaveMetric<>(annotation, name);
             }
         }
-        return new DoesNotHaveMetric<T>();
+        return new DoesNotHaveMetric<>();
     }
 
     private <E extends Member & AnnotatedElement> String metricName(E element, Class<? extends Annotation> type, String name, boolean absolute) {

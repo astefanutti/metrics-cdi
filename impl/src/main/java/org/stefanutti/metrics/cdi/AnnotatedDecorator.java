@@ -54,7 +54,7 @@ import java.util.Set;
 
     @Override
     public Set<Annotation> getAnnotations() {
-        Set<Annotation> annotations = new HashSet<Annotation>(decorated.getAnnotations());
+        Set<Annotation> annotations = new HashSet<>(decorated.getAnnotations());
         annotations.add(decoratingAnnotation);
         return Collections.unmodifiableSet(annotations);
     }

@@ -26,7 +26,7 @@ public final class MetricsUtil {
     }
 
     public static Set<String> absoluteMetricNameSet(Class<?> clazz, String... names) {
-        Set<String> set = new HashSet<String>(names.length);
+        Set<String> set = new HashSet<>(names.length);
         for (String name : names)
             set.add(absoluteMetricName(clazz, name));
 
@@ -34,7 +34,7 @@ public final class MetricsUtil {
     }
 
     public static Set<String> absoluteMetricNameSet(String clazz, String... names) {
-        Set<String> set = new HashSet<String>(names.length);
+        Set<String> set = new HashSet<>(names.length);
         for (String name : names)
             set.add(absoluteMetricName(clazz, name));
 

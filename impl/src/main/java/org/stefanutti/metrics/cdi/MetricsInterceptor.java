@@ -128,9 +128,7 @@ import java.util.concurrent.TimeUnit;
     private static Object invokeMethod(Method method, Object object) {
         try {
             return method.invoke(object);
-        } catch (IllegalAccessException cause) {
-            throw new IllegalStateException("Error while calling method [" + method + "]", cause);
-        } catch (InvocationTargetException cause) {
+        } catch (IllegalAccessException | InvocationTargetException cause) {
             throw new IllegalStateException("Error while calling method [" + method + "]", cause);
         }
     }

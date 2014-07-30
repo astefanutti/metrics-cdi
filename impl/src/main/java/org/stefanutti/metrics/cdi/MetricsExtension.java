@@ -49,12 +49,12 @@ public class MetricsExtension implements Extension {
 
     private boolean hasMetricRegistry;
 
-    private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<Bean<?>, AnnotatedMember<?>>();
+    private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
     private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         boolean gauge = false;
 
-        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<AnnotatedConstructor<X>>(1);
+        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<>(1);
         for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
             if (constructor.isAnnotationPresent(Counted.class))
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, CountedBindingLiteral.INSTANCE));
@@ -66,7 +66,7 @@ public class MetricsExtension implements Extension {
                 decoratedConstructors.add(getAnnotatedConstructorDecorator(constructor, TimedBindingLiteral.INSTANCE));
         }
 
-        Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<AnnotatedMethod<? super X>>(4);
+        Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<>(4);
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             if (shouldHaveMetricBinding(method, Counted.class))
                 decoratedMethods.add(getAnnotatedMethodDecorator(method, CountedBindingLiteral.INSTANCE));
@@ -82,15 +82,15 @@ public class MetricsExtension implements Extension {
 
         // FIXME: remove when OWB supports @WithAnnotations, see OWB-980
         if (gauge || !decoratedConstructors.isEmpty() || !decoratedMethods.isEmpty())
-            pat.setAnnotatedType(new AnnotatedTypeDecorator<X>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
+            pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
     }
 
     private static <X> AnnotatedConstructor<X> getAnnotatedConstructorDecorator(AnnotatedConstructor<X> annotatedConstructor, Annotation annotated) {
-        return new AnnotatedConstructorDecorator<X>(annotatedConstructor, annotated);
+        return new AnnotatedConstructorDecorator<>(annotatedConstructor, annotated);
     }
 
     private static <X> AnnotatedMethod<X> getAnnotatedMethodDecorator(AnnotatedMethod<X> annotatedMethod, Annotation annotated) {
-        return new AnnotatedMethodDecorator<X>(annotatedMethod, annotated);
+        return new AnnotatedMethodDecorator<>(annotatedMethod, annotated);
     }
 
     private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {

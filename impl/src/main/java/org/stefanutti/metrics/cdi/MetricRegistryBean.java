@@ -51,7 +51,7 @@ import java.util.Set;
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
+        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
     }
 
     @Override

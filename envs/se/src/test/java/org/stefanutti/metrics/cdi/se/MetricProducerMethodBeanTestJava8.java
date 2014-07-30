@@ -15,7 +15,10 @@
  */
 package org.stefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -29,11 +32,14 @@ import org.stefanutti.metrics.cdi.MetricsExtension;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class MetricProducerMethodBeanTest {
+public class MetricProducerMethodBeanTestJava8 {
 
     private final static String CALLS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "calls");
 

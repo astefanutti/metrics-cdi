@@ -28,7 +28,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class MetricProducerMethodBean {
+public class MetricProducerMethodBeanJava8 {
 
     @Inject
     private Meter hits;
@@ -41,8 +41,8 @@ public class MetricProducerMethodBean {
 
     @Produces
     @Metric(name = "cache-hits")
-    private Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits") Meter hits,
-                                             final @Metric(name = "calls") Timer calls) {
+    private Gauge<Double> cacheHitRatioGauge(final Meter hits,
+                                             final Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {
