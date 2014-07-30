@@ -41,8 +41,7 @@ public class MetricProducerMethodBeanJava8 {
 
     @Produces
     @Metric(name = "cache-hits")
-    private Gauge<Double> cacheHitRatioGauge(final Meter hits,
-                                             final Timer calls) {
+    private Gauge<Double> cacheHitRatioGauge(final Meter hits, final Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {

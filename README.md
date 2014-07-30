@@ -159,7 +159,7 @@ import javax.inject.Inject;
 private Timer timer;
 ```
 
-[`Metric`][] instances can be injected similarly as method parameters of any [initializer method][]
+[`Metric`][] instances can be injected similarly as parameters of any [initializer method][]
 or [bean constructor][], e.g.:
 
 ```java
@@ -253,8 +253,7 @@ class TimedMethodWithCacheHitRatioBean {
 
     @Produces
     @Metric(name = "cache-hits")
-    Gauge<Double> cacheHitRatioGauge(final Meter hits,
-                                     final Timer calls) {
+    private Gauge<Double> cacheHitRatioGauge(final Meter hits, final Timer calls) {
         return new RatioGauge() {
             @Override
             protected Ratio getRatio() {
