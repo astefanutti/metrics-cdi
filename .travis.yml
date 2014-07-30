@@ -1,7 +1,9 @@
 language: java
 
-script:
+install:
   - mvn clean package -Pweld -Dmaven.test.skip.exec
+
+script:
   - mvn test -Pjacoco -Pweld
   - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
