@@ -41,17 +41,17 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class MetricProducerMethodBeanTestJava8 {
 
-    private final static String CALLS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "calls");
+    private final static String CALLS_METRIC = MetricRegistry.name(MetricProducerMethodBeanJava8.class, "calls");
 
-    private final static String HITS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "hits");
+    private final static String HITS_METRIC = MetricRegistry.name(MetricProducerMethodBeanJava8.class, "hits");
 
-    private final static String CACHE_HITS_METRIC = MetricRegistry.name(MetricProducerMethodBean.class, "cache-hits");
+    private final static String CACHE_HITS_METRIC = MetricRegistry.name(MetricProducerMethodBeanJava8.class, "cache-hits");
 
     @Deployment
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Test bean
-            .addClass(MetricProducerMethodBean.class)
+            .addClass(MetricProducerMethodBeanJava8.class)
             // Metrics CDI extension
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
@@ -62,7 +62,7 @@ public class MetricProducerMethodBeanTestJava8 {
     private MetricRegistry registry;
 
     @Inject
-    private MetricProducerMethodBean bean;
+    private MetricProducerMethodBeanJava8 bean;
 
     @Test
     @InSequence(1)
