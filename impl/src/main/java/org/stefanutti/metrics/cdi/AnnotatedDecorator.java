@@ -26,11 +26,11 @@ import java.util.Set;
 
     private final Annotated decorated;
 
-    private final Annotation decoratingAnnotation;
+    private final Set<Annotation> annotations;
 
-    AnnotatedDecorator(Annotated decorated, Annotation decoratingAnnotation) {
+    AnnotatedDecorator(Annotated decorated, Set<Annotation> annotations) {
         this.decorated = decorated;
-        this.decoratingAnnotation = decoratingAnnotation;
+        this.annotations = annotations;
     }
 
     @Override
@@ -44,23 +44,32 @@ import java.util.Set;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        if (annotationType.isAssignableFrom(decoratingAnnotation.annotationType()))
-            return (T) decoratingAnnotation;
+        T annotation = getDecoratingAnnotation(annotationType);
+        if (annotation != null)
+            return annotation;
         else
             return decorated.getAnnotation(annotationType);
     }
 
     @Override
     public Set<Annotation> getAnnotations() {
-        Set<Annotation> annotations = new HashSet<>(decorated.getAnnotations());
-        annotations.add(decoratingAnnotation);
+        Set<Annotation> annotations = new HashSet<>(this.annotations);
+        annotations.addAll(decorated.getAnnotations());
         return Collections.unmodifiableSet(annotations);
     }
 
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return annotationType.equals(decoratingAnnotation.annotationType()) || decorated.isAnnotationPresent(annotationType);
+        return getDecoratingAnnotation(annotationType) != null || decorated.isAnnotationPresent(annotationType);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Annotation> T getDecoratingAnnotation(Class<T> annotationType) {
+        for (Annotation annotation : annotations)
+            if (annotationType.isAssignableFrom(annotation.annotationType()))
+                return (T) annotation;
+
+        return null;
     }
 }

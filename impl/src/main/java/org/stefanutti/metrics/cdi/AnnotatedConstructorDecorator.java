@@ -23,13 +23,14 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Set;
 
 /* packaged-private */ final class AnnotatedConstructorDecorator<X> extends AnnotatedDecorator implements AnnotatedConstructor<X> {
 
     private final AnnotatedConstructor<X> decoratedConstructor;
 
-    AnnotatedConstructorDecorator(AnnotatedConstructor<X> decoratedConstructor, Annotation decoratingAnnotation) {
-        super(decoratedConstructor, decoratingAnnotation);
+    AnnotatedConstructorDecorator(AnnotatedConstructor<X> decoratedConstructor, Set<Annotation> decoratingAnnotations) {
+        super(decoratedConstructor, decoratingAnnotations);
         this.decoratedConstructor = decoratedConstructor;
     }
 
@@ -69,4 +70,3 @@ import java.util.List;
         return decoratedConstructor.equals(object);
     }
 }
-

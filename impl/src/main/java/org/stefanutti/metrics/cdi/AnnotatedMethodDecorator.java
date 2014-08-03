@@ -21,13 +21,14 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 /* packaged-private */ final class AnnotatedMethodDecorator<X> extends AnnotatedDecorator implements AnnotatedMethod<X> {
 
     private final AnnotatedMethod<X> decoratedMethod;
 
-    AnnotatedMethodDecorator(AnnotatedMethod<X> decoratedMethod, Annotation decoratingAnnotation) {
-        super(decoratedMethod, decoratingAnnotation);
+    AnnotatedMethodDecorator(AnnotatedMethod<X> decoratedMethod, Set<Annotation> decoratingAnnotations) {
+        super(decoratedMethod, decoratingAnnotations);
         this.decoratedMethod = decoratedMethod;
     }
 

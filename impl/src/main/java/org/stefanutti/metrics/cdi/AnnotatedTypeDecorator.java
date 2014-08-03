@@ -33,7 +33,11 @@ import java.util.Set;
     private final Set<AnnotatedMethod<? super X>> decoratedMethods;
 
     AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation, Set<AnnotatedConstructor<X>> decoratedConstructors, Set<AnnotatedMethod<? super X>> decoratedMethods) {
-        super(decoratedType, decoratingAnnotation);
+        this(decoratedType, Collections.singleton(decoratingAnnotation), decoratedConstructors, decoratedMethods);
+    }
+
+    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Set<Annotation> decoratingAnnotations, Set<AnnotatedConstructor<X>> decoratedConstructors, Set<AnnotatedMethod<? super X>> decoratedMethods) {
+        super(decoratedType, decoratingAnnotations);
         this.decoratedType = decoratedType;
         this.decoratedConstructors = decoratedConstructors;
         this.decoratedMethods = decoratedMethods;
