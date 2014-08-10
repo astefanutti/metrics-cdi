@@ -9,11 +9,11 @@
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 
-[CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.1][JSR 346].
+[CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346].
 
 [CDI]: http://www.cdi-spec.org/
 [Metrics]: http://metrics.codahale.com/
-[JSR 346]: https://jcp.org/en/jsr/detail?id=346
+[JSR 346]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
 [CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
@@ -21,10 +21,10 @@
 
 _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
 It implements the contract specified by these annotations with the following level of functionality:
-+ Intercept invocations of bean methods and public methods of beans annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
++ Intercept invocations of bean constructors, methods and public methods of bean classes annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
 + Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and `@CachedGauge` respectively,
 + Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
-+ Register or retrieve the produced [`Metric`][] instances in the declared [`MetricRegistry`][] bean,
++ Register or retrieve the produced [`Metric`][] instances in the resolved [`MetricRegistry`][] bean,
 + Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
@@ -87,21 +87,20 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 ## Usage
 
-_Metrics CDI_ automatically registers new [`Metric`][] instances in the [_Metrics_ registry][] resolved
-for the CDI application. The instantiation of these new [`Metric`][] instances happens when:
-+ A bean containing [_Metrics_ annotations](#metrics-annotations) is instantiated,
-+ A bean containing [metrics injection](#metrics-injection) is instantiated.
+_Metrics CDI_ instruments beans annotated with the [_Metrics_ annotations](#metrics-instrumentation) and automatically
+registers the corresponding [`Metric`][] instances in the [_Metrics_ registry][] resolved for the CDI application.
+The registration of these [`Metric`][] instances happens each time a bean containing _Metrics_ annotations
+or [metrics injection points](#metrics-injection) gets instantiated.
 
-The [metrics registration](#metrics-registration) mechanism can be used to customized
-the [`Metric`][] instances registered.
+The [metrics registration](#metrics-registration) mechanism can be used to customized the [`Metric`][] instances that get registered.
 Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application
 to provide a custom [`MetricRegistry`].
 
 #### Metrics Instrumentation
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set
-of annotations (`@CachedGauge`, `@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
-These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
+of annotations. These annotations are supported by _Metrics CDI_ that implements their contract
+as documented in their Javadoc.
 
 For example, a method on a bean can be annotated so that its execution can be monitored using _Metrics_:
 
