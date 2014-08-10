@@ -1,5 +1,4 @@
-CDI Extension for Metrics
-===========
+# CDI Extension for Metrics
 
 [![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build]
 
@@ -47,7 +46,7 @@ _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
 ## Getting Started
 
-### Using Maven
+#### Using Maven
 
 Add the `metrics-cdi` library as a dependency:
 
@@ -61,12 +60,12 @@ Add the `metrics-cdi` library as a dependency:
 </dependencies>
 ```
 
-### Required Dependencies
+#### Required Dependencies
 
 Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules), _Metrics CDI_ requires
 a [CDI][] enabled environment.
 
-### Supported Containers
+#### Supported Containers
 
 _Metrics CDI_ is currently successfully tested with the following containers:
 
@@ -98,7 +97,7 @@ the [`Metric`][] instances registered.
 Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application
 to provide a custom [`MetricRegistry`].
 
-### _Metrics_ Instrumentation
+#### Metrics Instrumentation
 
 _Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set
 of annotations (`@CachedGauge`, `@Counted`, [`@ExceptionMetered`][], [`@Gauge`][], [`@Metered`][] and [`@Timed`][]).
@@ -146,7 +145,7 @@ class CountedConstructorBean {
 [bean class]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
 [bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
-### Metrics Injection
+#### Metrics Injection
 
 Instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
 
@@ -222,7 +221,7 @@ class TimerBean {
 [injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
 [initializer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#initializer_methods
 
-### Metrics Registration
+#### Metrics Registration
 
 While _Metrics CDI_ automatically registers [`Metric`][] instances, it may be necessary for an application
 to explicitly provide the [`Metric`][] instances to register. For example, to register custom [gauges],
@@ -284,7 +283,7 @@ private final Histogram histogram = new Histogram(new UniformReservoir());
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 
-### _Metrics_ Registry Resolution
+#### Metrics Registry Resolution
 
 _Metrics CDI_ automatically registers a [`MetricRegistry`][] bean into the CDI container
 to register any [`Metric`][] instances produced. That _default_ [`MetricRegistry`][] bean
@@ -375,8 +374,7 @@ must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that a
 [Binding an interceptor to a bean]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#binding_interceptor_to_bean
 [Unproxyable bean types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#unproxyable
 
-License
--------
+## License
 
 Copyright © 2013-2014, Antonin Stefanutti
 

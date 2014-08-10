@@ -88,7 +88,7 @@
 
                 <dependency>
                     <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core</artifactId>
+                    <artifactId>weld-core-impl</artifactId>
                     <scope>test</scope>
                 </dependency>
 
@@ -115,8 +115,8 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>unpack</id>
-                                <phase>process-test-classes</phase>
+                                <id>unpack-wildfly</id>
+                                <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>unpack</goal>
                                 </goals>
@@ -131,6 +131,45 @@
                                             <outputDirectory>${project.build.directory}</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-wildfly-patch</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>download-single</goal>
+                                </goals>
+                                <configuration>
+                                    <url>http://freefr.dl.sourceforge.net/</url>
+                                    <fromFile>project/jboss/Weld/2.2.4.Final/wildfly-8.1.0.Final-weld-2.2.4.Final-patch.zip</fromFile>
+                                    <toDir>${project.build.directory}</toDir>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>patch-wildfly</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${project.build.directory}/wildfly-${wildfly.version}/bin/jboss-cli${script.extension}</executable>
+                                    <arguments>
+                                        <argument>--command=patch apply ${project.build.directory}/wildfly-8.1.0.Final-weld-2.2.4.Final-patch.zip</argument>
+                                    </arguments>
                                 </configuration>
                             </execution>
                         </executions>

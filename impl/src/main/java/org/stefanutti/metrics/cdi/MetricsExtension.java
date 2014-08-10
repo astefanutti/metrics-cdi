@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
@@ -46,8 +45,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class MetricsExtension implements Extension {
-
-    private boolean hasMetricRegistry;
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
@@ -92,20 +89,8 @@ public class MetricsExtension implements Extension {
             pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
     }
 
-    private static boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
+    private boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
         return method.isAnnotationPresent(type) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(type);
-    }
-
-    private void processMetricRegistryBean(@Observes ProcessBean<MetricRegistry> pb) {
-        hasMetricRegistry = true;
-    }
-
-    private void processMetricRegistryProducerField(@Observes ProcessProducerField<MetricRegistry, ?> ppf) {
-        hasMetricRegistry = true;
-    }
-
-    private void processMetricRegistryProducerMethod(@Observes ProcessProducerMethod<MetricRegistry, ?> ppm) {
-        hasMetricRegistry = true;
     }
 
     private void processMetricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
@@ -119,9 +104,7 @@ public class MetricsExtension implements Extension {
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // TODO: should be possible from the CDI spec though Weld is returning an empty set at that stage
-        //if (manager.getBeans(MetricRegistry.class, AnyLiteral.METERED_BINDING).isEmpty())
-        if (!hasMetricRegistry)
+        if (manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())
             abd.addBean(new MetricRegistryBean(manager));
     }
 
