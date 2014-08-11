@@ -170,6 +170,10 @@
                                     <arguments>
                                         <argument>--command=patch apply ${project.build.directory}/wildfly-8.1.0.Final-weld-2.2.4.Final-patch.zip</argument>
                                     </arguments>
+                                    <environmentVariables>
+                                        <!-- avoid "Press any key to continue ..." message on Windows -->
+                                        <NOPAUSE>true</NOPAUSE>
+                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>
