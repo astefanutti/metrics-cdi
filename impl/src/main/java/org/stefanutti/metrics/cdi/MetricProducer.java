@@ -92,9 +92,9 @@ import java.lang.reflect.Method;
     private String metricName(InjectionPoint point) {
         Annotated annotated = point.getAnnotated();
         if (annotated instanceof AnnotatedMember)
-            return metricName((AnnotatedMember) annotated);
+            return metricName((AnnotatedMember<?>) annotated);
         else if (annotated instanceof AnnotatedParameter)
-            return metricName((AnnotatedParameter) annotated);
+            return metricName((AnnotatedParameter<?>) annotated);
         else
             throw new IllegalArgumentException("Unable to retrieve metric name for injection point [" + point + "], only members and parameters are supported");
     }

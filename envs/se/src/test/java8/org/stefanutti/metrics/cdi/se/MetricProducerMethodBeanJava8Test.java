@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class MetricProducerMethodBeanTestJava8 {
+public class MetricProducerMethodBeanJava8Test {
 
     private final static String CALLS_METRIC = MetricRegistry.name(MetricProducerMethodBeanJava8.class, "calls");
 

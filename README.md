@@ -262,7 +262,32 @@ class TimedMethodWithCacheHitRatioBean {
 }
 ```
 
-or to provide particular `Reservoir` implementations to [histograms][], e.g. with a [producer field][]:
+Since Java 8, lambda expressions can be used as a generic way to compose metrics, so that the above
+example can be rewritten the following way:
+
+```java
+class TimedMethodWithCacheHitRatioBean {
+
+    @Inject
+    private Meter hits;
+
+    @Timed(name = "calls")
+    public void cachedMethod() {
+        if (hit)
+            hits.mark();
+    }
+
+    @Produces
+    @Metric(name = "cache-hits")
+    private Gauge<Double> cacheHitRatioGaugeLambda(Meter hits, Timer calls) {
+        return () -> (calls.getOneMinuteRate() == 0) ? Double.NaN
+            : hits.getOneMinuteRate() / calls.getOneMinuteRate();
+    }
+}
+```
+
+Another use case is to provide particular `Reservoir` implementations to [histograms][],
+e.g. with a [producer field][]:
 
 ```java
 import com.codahale.metrics.Histogram;
