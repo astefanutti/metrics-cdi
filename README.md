@@ -279,9 +279,10 @@ class TimedMethodWithCacheHitRatioBean {
 
     @Produces
     @Metric(name = "cache-hits")
-    private Gauge<Double> cacheHitRatioGaugeLambda(Meter hits, Timer calls) {
-        return () -> (calls.getOneMinuteRate() == 0) ? Double.NaN
-            : hits.getOneMinuteRate() / calls.getOneMinuteRate();
+    private Gauge<Double> cacheHitRatioGauge(Meter hits, Timer calls) {
+        return () -> calls.getOneMinuteRate() != 0 ?
+                     hits.getOneMinuteRate() / calls.getOneMinuteRate() :
+                     Double.NaN;
     }
 }
 ```
