@@ -9,18 +9,19 @@
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 
-[CDI][] extension for [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346].
+[CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
 [CDI]: http://www.cdi-spec.org/
 [Metrics]: http://metrics.codahale.com/
-[JSR 346]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
+[JSR 346]: https://jcp.org/en/jsr/detail?id=346
+[JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
+[JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
 [CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
 ## About
 
-_Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in [CDI][] enabled environments.
-It implements the contract specified by these annotations with the following level of functionality:
+_Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in CDI enabled environments. It implements the contract specified by these annotations with the following level of functionality:
 + Intercept invocations of bean constructors, methods and public methods of bean classes annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
 + Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and `@CachedGauge` respectively,
 + Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
@@ -29,7 +30,7 @@ It implements the contract specified by these annotations with the following lev
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
-[Metrics annotations]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
+[Metrics annotations]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/package-summary.html
 [`@ExceptionMetered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
 [`@Metered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Timed`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html
@@ -42,7 +43,6 @@ _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 [`Timer`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html
 [`Metric`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html
 [`MetricRegistry`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html
-[_Metrics_ registry]: http://metrics.codahale.com/getting-started/#the-registry
 
 ## Getting Started
 
@@ -62,20 +62,19 @@ Add the `metrics-cdi` library as a dependency:
 
 #### Required Dependencies
 
-Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules), _Metrics CDI_ requires
-a [CDI][] enabled environment.
+Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules), _Metrics CDI_ requires a CDI enabled environment running in Java 7 or greater.
 
 #### Supported Containers
 
 _Metrics CDI_ is currently successfully tested with the following containers:
 
-| Container        | Version          | Specification   | Arquillian Container Adapter                |
-| ---------------- | ---------------- | --------------- | ------------------------------------------- |
-| [Weld SE][]      | `2.2.4.Final`    | [CDI 1.2][]     | `arquillian-weld-se-embedded-1.1`           |
-| [Weld EE][]      | `2.2.4.Final`    | [CDI 1.2][]     | `arquillian-weld-ee-embedded-1.1`           |
-| [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][]     | `owb-arquillian-standalone`                 |
-| [Jetty][]        | `9.2.2`          | [Servlet 3.1][] | `arquillian-jetty-embedded-9`               |
-| [WildFly][]      | `8.1.0.Final`    | [Java EE 7][]   | `wildfly-arquillian-container-managed`      |
+| Container        | Version          | Specification          | Arquillian Container Adapter           |
+| ---------------- | ---------------- | ---------------------- | -------------------------------------- |
+| [Weld SE][]      | `2.2.4.Final`    | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]      | `2.2.4.Final`    | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [OpenWebBeans][] | `2.0.0-SNAPSHOT` | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
+| [Jetty][]        | `9.2.2`          | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
+| [WildFly][]      | `8.1.0.Final`    | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
@@ -87,22 +86,17 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 ## Usage
 
-_Metrics CDI_ instruments beans annotated with the [_Metrics_ annotations](#metrics-instrumentation) and automatically
-registers the corresponding [`Metric`][] instances in the [_Metrics_ registry][] resolved for the CDI application.
-The registration of these [`Metric`][] instances happens each time a bean containing _Metrics_ annotations
-or [metrics injection points](#metrics-injection) gets instantiated.
+_Metrics CDI_ activates the [_Metrics_ AOP Instrumentation](#metrics-aop-instrumentation) for beans annotated with [_Metrics_ annotations][Metrics annotations] and automatically registers the corresponding `Metric` instances in the [_Metrics_ registry][] resolved for the CDI application. The registration of these `Metric` instances happens each time such a bean gets instantiated. Besides, `Metric` instances can be retrieved from the _Metrics_ registry by declaring [metrics injection points](#metrics-injection).
 
-The [metrics registration](#metrics-registration) mechanism can be used to customized the [`Metric`][] instances that get registered.
-Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application
-to provide a custom [`MetricRegistry`].
+The [metrics registration](#metrics-registration) mechanism can be used to customize the `Metric` instances that get registered. Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application to provide a custom [`MetricRegistry`] instance.
 
-#### Metrics Instrumentation
+[_Metrics_ registry]: http://metrics.codahale.com/getting-started/#the-registry
 
-_Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set
-of annotations. These annotations are supported by _Metrics CDI_ that implements their contract
-as documented in their Javadoc.
+#### Metrics AOP Instrumentation
 
-For example, a method on a bean can be annotated so that its execution can be monitored using _Metrics_:
+_Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set of annotations and provides a standard way to integrate _Metrics_ with frameworks supporting Aspect Oriented Programming (AOP). These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
+
+For example, a method of a bean can be annotated so that its execution can be monitored using _Metrics_:
 
 ```java
 import com.codahale.metrics.annotation.Timed;
@@ -111,6 +105,7 @@ class TimedMethodBean {
 
     @Timed
     void timedMethod() {
+        // Timer name => TimedMethodBean.timedMethod
     }
 }
 ```
@@ -124,6 +119,7 @@ import com.codahale.metrics.annotation.Metered;
 public class MeteredClassBean {
 
     public void meteredMethod() {
+        // Meter name => MeteredClassBean.meteredMethod
     }
 }
 ```
@@ -137,28 +133,32 @@ class CountedConstructorBean {
 
     @Counted
     CountedConstructorBean() {
+        // Counter name => CountedConstructorBean.CountedConstructorBean
     }
 }
 ```
+The `name` and `absolute` attributes available on every _Metrics_ annotation can be used to customize the name of the `Metric` instance that gets registered in the _Metrics_ registry. The default naming convention being the annotated member simple name relative to the declaring class fully qualified name as illustrated in the above examples.
 
 [bean class]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
 [bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
 #### Metrics Injection
 
-Instances of any [`Metric`][] can be retrieved by declaring an [injected field][], e.g.:
+`Metric` instances can be retrieved from the _Metrics_ registry by declaring an [injected field][], e.g.:
 
 ```java
 import com.codahale.metrics.Timer;
 
 import javax.inject.Inject;
 
-@Inject
-private Timer timer;
+class TimerBean {
+
+    @Inject
+    private Timer timer; // Timer name => TimerBean.Timer
+}
 ```
 
-[`Metric`][] instances can be injected similarly as parameters of any [initializer method][]
-or [bean constructor][], e.g.:
+`Metric` instances can be injected similarly as parameters of any [initializer method][] or [bean constructor][], e.g.:
 
 ```java
 import com.codahale.metrics.Timer;
@@ -170,22 +170,18 @@ class TimerBean {
     private final Timer timer;
 
     @Inject
-    private TimerBean(Timer timer) {
+    private TimerBean(Timer timer) { // Timer name => TimerBean.Timer
        this.timer = timer;
     }
 }
 ```
 
-Note that Java 8 with the `-parameters` compiler option activated is required to get access to injected parameter names.
-Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found
-in [Obtaining Names of Method Parameters][] from the Java tutorials.
-To work around that limitation for Java versions prior to Java 8, the `@Metric` annotation can be used as documented hereafter.
+In the above example, Java 8 with the `-parameters` compiler option activated is required to get access to injected parameter name. Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found in [Obtaining Names of Method Parameters][] from the Java tutorials. To work around that limitation for Java versions prior to Java 8, or to declare a specific name, the `@Metric` annotation can be used as documented hereafter.
 
 [JEP-118]: http://openjdk.java.net/jeps/118
 [Obtaining Names of Method Parameters]: http://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
 
-In order to provide metadata for the [`Metric`][] instantiation and resolution, the injection point can be annotated
-with the `@Metric` annotation, e.g.:
+In order to provide metadata for the `Metric` instantiation and resolution, the injection point can be annotated with the `@Metric` annotation, e.g., with an [injected field][]:
 
 ```java
 import com.codahale.metrics.Timer;
@@ -195,7 +191,7 @@ import javax.inject.Inject;
 
 @Inject
 @Metric(name = "timerName", absolute = true)
-private Timer timer;
+private Timer timer; // Timer name => timerName
 ```
 
 or when using a [bean constructor][]:
@@ -212,7 +208,8 @@ class TimerBean {
 
     @Inject
     private TimerBean(@Metric(name = "timerName", absolute = true) Timer timer) {
-       this.timer = timer;
+        // Timer name => timerName
+        this.timer = timer;
     }
 }
 ```
@@ -222,9 +219,30 @@ class TimerBean {
 
 #### Metrics Registration
 
-While _Metrics CDI_ automatically registers [`Metric`][] instances, it may be necessary for an application
-to explicitly provide the [`Metric`][] instances to register. For example, to register custom [gauges],
-e.g. with a [producer method][]:
+While _Metrics CDI_ automatically registers `Metric` instances during the [_Metrics_ AOP instrumentation](#metrics-aop-instrumentation), it may be necessary for an application to explicitly provide the `Metric` instances to register. For example, to provide particular `Reservoir` implementations to [histograms][] or [timers][], e.g. with a [producer field][]:
+
+```java
+import com.codahale.metrics.SlidingTimeWindowReservoir;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Metric;
+import com.codahale.metrics.annotation.Timed;
+
+import javax.enterprise.inject.Produces;
+
+class TimedMethodBean {
+
+    @Produces
+    @Metric(name = "customTimer") // Timer name => TimedMethodBean.customTimer
+    Timer Timer = new Timer(new SlidingTimeWindowReservoir(1L, TimeUnit.MINUTES));
+
+    @Timed(name = "customTimer")
+    void timedMethod() {
+        // Timer name => TimedMethodBean.customTimer
+    }
+}
+```
+
+Another use case is to register custom [gauges], e.g. with a [producer method][]:
 
 ```java
 import com.codahale.metrics.Gauge;
@@ -238,13 +256,14 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-class TimedMethodWithCacheHitRatioBean {
+class CacheHitRatioBean {
 
     @Inject
-    private Meter hits;
+    private Meter hits; // Meter name => CacheHitRatioBean.hits
 
     @Timed(name = "calls")
     public void cachedMethod() {
+        // Timer name => CacheHitRatioBean.calls
         if (hit)
             hits.mark();
     }
@@ -252,7 +271,7 @@ class TimedMethodWithCacheHitRatioBean {
     @Produces
     @Metric(name = "cache-hits")
     private Gauge<Double> cacheHitRatioGauge(final Meter hits, final Timer calls) {
-        return new RatioGauge() {
+        return new RatioGauge() { // Gauge name => CacheHitRatioBean.cache-hits
             @Override
             protected Ratio getRatio() {
                 return Ratio.of(hits.getOneMinuteRate(), calls.getOneMinuteRate());
@@ -262,11 +281,10 @@ class TimedMethodWithCacheHitRatioBean {
 }
 ```
 
-Since Java 8, lambda expressions can be used as a generic way to compose metrics, so that the above
-example can be rewritten the following way:
+Since Java 8, [lambda expressions][] can be used as a generic way to compose metrics, so that the above example can be rewritten the following way:
 
 ```java
-class TimedMethodWithCacheHitRatioBean {
+class CacheHitRatioBean {
 
     @Inject
     private Meter hits;
@@ -287,32 +305,16 @@ class TimedMethodWithCacheHitRatioBean {
 }
 ```
 
-Another use case is to provide particular `Reservoir` implementations to [histograms][],
-e.g. with a [producer field][]:
-
-```java
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.UniformReservoir;
-import com.codahale.metrics.annotation.Metric;
-
-import javax.enterprise.inject.Produces;
-
-@Produces
-@Metric(name = "uniform-histogram")
-private final Histogram histogram = new Histogram(new UniformReservoir());
-```
-
 [gauges]: http://metrics.codahale.com/manual/core/#gauges
 [histograms]: http://metrics.codahale.com/manual/core/#histograms
-[`Reservoir`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Reservoir.html
+[timers]: http://metrics.codahale.com/manual/core/#timers
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
+[lambda expressions]: http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
 
 #### Metrics Registry Resolution
 
-_Metrics CDI_ automatically registers a [`MetricRegistry`][] bean into the CDI container
-to register any [`Metric`][] instances produced. That _default_ [`MetricRegistry`][] bean
-can be injected using standard CDI [typesafe resolution][], for example, by declaring an [injected field][]:
+_Metrics CDI_ automatically registers a `MetricRegistry` bean into the CDI container to register any `Metric` instances produced. That _default_ `MetricRegistry` bean can be injected using standard CDI [typesafe resolution][], for example, by declaring an [injected field][]:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -341,9 +343,7 @@ class MetricRegistryBean {
 }
 ```
 
-Otherwise, _Metrics CDI_ uses any [`MetricRegistry`][] bean declared in the CDI container with
-the [built-in _default_ qualifier][] [`@Default`][] so that a _custom_ [`MetricRegistry`][] can be provided.
-For example, that _custom_ [`MetricRegistry`][] can be declared as a [producer field][]:
+Otherwise, _Metrics CDI_ uses any `MetricRegistry` bean declared in the CDI container with the [built-in _default_ qualifier][] `@Default` so that a _custom_ `MetricRegistry` can be provided. For example, that _custom_ `MetricRegistry` can be declared with a [producer field][]:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -356,7 +356,7 @@ import javax.enterprise.inject.Produces;
 private final MetricRegistry registry = new MetricRegistry();
 ```
 
-or a [producer method][]:
+or with a [producer method][]:
 
 ```java
 import com.codahale.metrics.MetricRegistry;
@@ -376,19 +376,12 @@ class MetricRegistryFactoryBean {
 
 [typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
 [built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
-[`@Default`]: http://docs.oracle.com/javaee/7/api/javax/enterprise/inject/Default.html
 
 ## Limitations
 
-[CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to
-[associate interceptors to beans][Binding an interceptor to a bean] via _typesafe_ interceptor bindings.
-Interceptors are a mean to separate cross-cutting concerns from the business logic and _Metrics CDI_
-is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
+[CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to [associate interceptors to beans][Binding an interceptor to a bean] via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from the business logic and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
 
-[CDI 1.2][] sets additional restrictions about the type of bean to which an interceptor can be bound.
-From a _Metrics CDI_ end-user perspective, that implies that the managed beans to be monitored with
-_Metrics_ (i.e. having at least one member method annotated with one of the _Metrics_ annotations)
-must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
+[CDI 1.2][] sets additional restrictions about the type of bean to which an interceptor can be bound. From a _Metrics CDI_ end-user perspective, that implies that the managed beans to be monitored with _Metrics_ (i.e. having at least one member method annotated with one of the _Metrics_ annotations) must be _proxyable_ bean types, as defined in [Unproxyable bean types][], that are:
 > + Classes which don’t have a non-private constructor with no parameters,
 > + Classes which are declared `final`,
 > + Classes which have non-static, final methods with public, protected or default visibility,
