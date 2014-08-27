@@ -185,7 +185,7 @@
                         <configuration>
                             <systemProperties>
                                 <arquillian.launch>wildfly-managed</arquillian.launch>
-                                <jacoco.agent>${jacoco.agent.arg}</jacoco.agent>
+                                <jacoco.agent>${argLine}</jacoco.agent>
                             </systemProperties>
                         </configuration>
                     </plugin>

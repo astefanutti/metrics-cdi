@@ -47,6 +47,7 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+
             <dependencies>
 
                 <!-- provided dependencies -->
@@ -74,20 +75,11 @@
 
         <profile>
             <id>owb</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <!-- JUL configuration for OWB -->
-                            <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
-                            <!-- JaCoCo agent if activated -->
-                            <argLine>${jacoco.agent.arg}</argLine>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+
+            <properties>
+                <!-- JUL configuration for OWB -->
+                <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
+            </properties>
 
             <dependencies>
 
