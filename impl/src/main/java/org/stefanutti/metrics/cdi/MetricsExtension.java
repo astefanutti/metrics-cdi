@@ -48,7 +48,7 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
-    private <X> void processMetricsAnnotatedType(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
+    private <X> void metricsAnnotations(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
         Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<>();
         for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
             Set<Annotation> annotations = new HashSet<>();
@@ -65,7 +65,6 @@ public class MetricsExtension implements Extension {
                 decoratedConstructors.add(new AnnotatedConstructorDecorator<>(constructor, annotations));
         }
 
-        boolean gauge = false;
         Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<>();
         for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
             Set<Annotation> annotations = new HashSet<>();
@@ -77,38 +76,34 @@ public class MetricsExtension implements Extension {
                 annotations.add(MeteredBindingLiteral.INSTANCE);
             if (shouldHaveMetricBinding(method, Timed.class))
                 annotations.add(TimedBindingLiteral.INSTANCE);
-            if (method.isAnnotationPresent(CachedGauge.class) || method.isAnnotationPresent(Gauge.class))
-                gauge = true;
 
             if (!annotations.isEmpty())
                 decoratedMethods.add(new AnnotatedMethodDecorator<>(method, annotations));
         }
 
-        // FIXME: remove when OWB supports @WithAnnotations, see OWB-980
-        if (gauge || !decoratedConstructors.isEmpty() || !decoratedMethods.isEmpty())
-            pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
+        pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
     }
 
     private boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
         return method.isAnnotationPresent(type) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(type);
     }
 
-    private void processMetricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
+    private void metricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
         metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
     }
 
-    private void processMetricProducerMethod(@Observes ProcessProducerMethod<? extends Metric, ?> ppm) {
+    private void metricProducerMethod(@Observes ProcessProducerMethod<? extends Metric, ?> ppm) {
         // Skip the Metrics CDI alternatives
         if (!ppm.getBean().getBeanClass().equals(MetricProducer.class))
             metrics.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
     }
 
-    private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+    private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())
             abd.addBean(new MetricRegistryBean(manager));
     }
 
-    private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+    private void customMetrics(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
 
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet())
@@ -120,7 +115,7 @@ public class MetricsExtension implements Extension {
 
     @SuppressWarnings("unchecked")
     private static <T> T getBeanInstance(BeanManager manager, Class<T> clazz) {
-        Bean<?> bean = manager.resolve(manager.getBeans(clazz, AnyLiteral.INSTANCE));
+        Bean<?> bean = manager.resolve(manager.getBeans(clazz));
         return (T) manager.getReference(bean, clazz, manager.createCreationalContext(null));
     }
 }
