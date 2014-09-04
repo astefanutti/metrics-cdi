@@ -51,16 +51,11 @@
             <id>apache-snapshots</id>
             <url>http://repository.apache.org/snapshots/</url>
         </repository>
-        <!-- TODO: remove when Metrics 3.1.0 is released -->
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
     </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metrics.version>3.1.0-SNAPSHOT</metrics.version>
+        <metrics.version>3.1.0</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.2.4.Final</weld.version>
