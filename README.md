@@ -12,7 +12,7 @@
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
 [CDI]: http://www.cdi-spec.org/
-[Metrics]: http://metrics.codahale.com/
+[Metrics]: http://metrics.dropwizard.io/
 [JSR 346]: https://jcp.org/en/jsr/detail?id=346
 [JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
 [JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
@@ -90,11 +90,13 @@ _Metrics CDI_ activates the [_Metrics_ AOP Instrumentation](#metrics-aop-instrum
 
 The [metrics registration](#metrics-registration) mechanism can be used to customize the `Metric` instances that get registered. Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application to provide a custom [`MetricRegistry`] instance.
 
-[_Metrics_ registry]: http://metrics.codahale.com/getting-started/#the-registry
+[_Metrics_ registry]: http://metrics.dropwizard.io/getting-started/#the-registry
 
 #### Metrics AOP Instrumentation
 
-_Metrics_ comes with the [`metrics-annotation`][Metrics annotations] module that contains a set of annotations and provides a standard way to integrate _Metrics_ with frameworks supporting Aspect Oriented Programming (AOP). These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
+_Metrics_ comes with the [`metrics-annotation`][] module that contains a set of annotations and provides a standard way to integrate _Metrics_ with frameworks supporting Aspect Oriented Programming (AOP). These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
+
+[`metrics-annotation`]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
 
 For example, a method of a bean can be annotated so that its execution can be monitored using _Metrics_:
 
@@ -305,9 +307,9 @@ class CacheHitRatioBean {
 }
 ```
 
-[gauges]: http://metrics.codahale.com/manual/core/#gauges
-[histograms]: http://metrics.codahale.com/manual/core/#histograms
-[timers]: http://metrics.codahale.com/manual/core/#timers
+[gauges]: http://metrics.dropwizard.io/manual/core/#gauges
+[histograms]: http://metrics.dropwizard.io/manual/core/#histograms
+[timers]: http://metrics.dropwizard.io/manual/core/#timers
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 [lambda expressions]: http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
