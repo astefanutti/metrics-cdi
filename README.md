@@ -31,8 +31,9 @@ _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotatio
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
 [Metrics annotations]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/package-summary.html
-[`@ExceptionMetered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
+[`@CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/CachedGauge.html
 [`@Counted`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Counted.html
+[`@ExceptionMetered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
 [`@Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Metered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Timed`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Timed.html
