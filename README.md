@@ -22,27 +22,28 @@
 ## About
 
 _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in CDI enabled environments. It implements the contract specified by these annotations with the following level of functionality:
-+ Intercept invocations of bean constructors, methods and public methods of bean classes annotated with `@Counted`, [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
-+ Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and `@CachedGauge` respectively,
++ Intercept invocations of bean constructors, methods and public methods of bean classes annotated with [`@Counted`][], [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
++ Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and [`@CachedGauge`][] respectively,
 + Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
 + Register or retrieve the produced [`Metric`][] instances in the resolved [`MetricRegistry`][] bean,
 + Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
-[Metrics annotations]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/package-summary.html
-[`@ExceptionMetered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
-[`@Metered`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
-[`@Timed`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Timed.html
-[`Gauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Gauge.html
-[`CachedGauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/CachedGauge.html
-[`@Gauge`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/annotation/Gauge.html
-[`Counter`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Counter.html
-[`Histogram`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Histogram.html
-[`Meter`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Meter.html
-[`Timer`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Timer.html
-[`Metric`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/Metric.html
-[`MetricRegistry`]: http://maginatics.github.io/metrics/apidocs/com/codahale/metrics/MetricRegistry.html
+[Metrics annotations]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/package-summary.html
+[`@ExceptionMetered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
+[`@Counted`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Counted.html
+[`@Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
+[`@Metered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
+[`@Timed`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Timed.html
+[`CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/CachedGauge.html
+[`Counter`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Counter.html
+[`Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Gauge.html
+[`Histogram`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Histogram.html
+[`Meter`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Meter.html
+[`Metric`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Metric.html
+[`Timer`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Timer.html
+[`MetricRegistry`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/MetricRegistry.html
 
 ## Getting Started
 
@@ -90,7 +91,7 @@ _Metrics CDI_ activates the [_Metrics_ AOP Instrumentation](#metrics-aop-instrum
 
 The [metrics registration](#metrics-registration) mechanism can be used to customize the `Metric` instances that get registered. Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application to provide a custom [`MetricRegistry`] instance.
 
-[_Metrics_ registry]: http://metrics.dropwizard.io/getting-started/#the-registry
+[_Metrics_ registry]: https://dropwizard.github.io/metrics/3.1.0/getting-started/#the-registry
 
 #### Metrics AOP Instrumentation
 
@@ -307,9 +308,9 @@ class CacheHitRatioBean {
 }
 ```
 
-[gauges]: http://metrics.dropwizard.io/manual/core/#gauges
-[histograms]: http://metrics.dropwizard.io/manual/core/#histograms
-[timers]: http://metrics.dropwizard.io/manual/core/#timers
+[gauges]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#gauges
+[histograms]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#histograms
+[timers]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#timers
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 [lambda expressions]: http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
