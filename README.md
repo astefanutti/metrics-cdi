@@ -32,11 +32,11 @@ _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
 [Metrics annotations]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/package-summary.html
 [`@ExceptionMetered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
+[`@CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/CachedGauge.html
 [`@Counted`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Counted.html
 [`@Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Metered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
 [`@Timed`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Timed.html
-[`CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/CachedGauge.html
 [`Counter`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Counter.html
 [`Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Gauge.html
 [`Histogram`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Histogram.html
