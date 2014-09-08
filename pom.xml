@@ -10,7 +10,7 @@
 
     <groupId>io.astefanutti.metrics.cdi</groupId>
     <artifactId>metrics-cdi-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Metrics CDI</name>
@@ -42,7 +42,7 @@
         <connection>scm:git:git@github.com:astefanutti/metrics-cdi.git</connection>
         <developerConnection>scm:git:git@github.com:astefanutti/metrics-cdi.git</developerConnection>
         <url>scm:git:git@github.com:astefanutti/metrics-cdi.git</url>
-      <tag>1.0.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <repositories>
