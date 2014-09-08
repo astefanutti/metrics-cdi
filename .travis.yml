@@ -5,8 +5,7 @@ install:
 
 script:
   - mvn test -Pjacoco -Pweld
-# disabled until https://issues.apache.org/jira/browse/OWB-997 is properly implemented
-#  - mvn test -Pjacoco -Powb -pl envs/se
+  - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:
