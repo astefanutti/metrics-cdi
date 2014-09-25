@@ -77,7 +77,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 | [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 
-WildFly 8.x requires to be patched with Weld 2.x as documented in [Weld 2.2 on WildFly][].
+WildFly 8.x requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
