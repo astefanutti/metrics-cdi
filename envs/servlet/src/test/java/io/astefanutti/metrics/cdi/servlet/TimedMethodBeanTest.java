@@ -27,11 +27,9 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptors;
 import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.weld.environment.servlet.Listener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,13 +54,14 @@ public class TimedMethodBeanTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
-            .addAsLibraries(
+            // TODO: understand why this is duplicated in the Archive and fails since Weld 2.2.5.Final
+            /* .addAsLibraries(
                 Maven.configureResolver()
                     .workOffline()
                     .loadPomFromFile("pom.xml")
                     .resolve("io.astefanutti.metrics.cdi:metrics-cdi", "org.jboss.weld.servlet:weld-servlet")
                     .withTransitivity()
-                    .as(JavaArchive.class))
+                    .as(JavaArchive.class)) */
             .addClass(TimedMethodBean.class)
             .addClass(TimedMethodServlet.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))

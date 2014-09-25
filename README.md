@@ -53,13 +53,11 @@ _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 Add the `metrics-cdi` library as a dependency:
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>io.astefanutti.metrics.cdi</groupId>
-        <artifactId>metrics-cdi</artifactId>
-        <version>${metrics.cdi.version}</version>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>io.astefanutti.metrics.cdi</groupId>
+    <artifactId>metrics-cdi</artifactId>
+    <version>1.0.0</version>
+</dependency>
 ```
 
 #### Required Dependencies
@@ -72,11 +70,14 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container        | Version       | Specification          | Arquillian Container Adapter           |
 | ---------------- | ------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]      | `2.2.4.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]      | `2.2.4.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [Weld SE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
 | [OpenWebBeans][] | `2.0.0`       | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
 | [Jetty][]        | `9.2.2`       | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
 | [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+
+
+WildFly 8.x requires to be patched with Weld 2.x as documented in [Weld 2.2 on WildFly][].
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
@@ -85,6 +86,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 [WildFly]: http://www.wildfly.org/
 [Servlet 3.1]: https://jcp.org/en/jsr/detail?id=340
 [Java EE 7]: https://jcp.org/en/jsr/detail?id=342
+[Weld 2.2 on WildFly]: http://weld.cdi-spec.org/news/2014/04/15/weld-220-final/
 
 ## Usage
 

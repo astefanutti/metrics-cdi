@@ -137,7 +137,7 @@
                                 </goals>
                                 <configuration>
                                     <url>http://freefr.dl.sourceforge.net/</url>
-                                    <fromFile>project/jboss/Weld/2.2.4.Final/wildfly-8.1.0.Final-weld-2.2.4.Final-patch.zip</fromFile>
+                                    <fromFile>project/jboss/Weld/${weld.version}/wildfly-${wildfly.version}-weld-${weld.version}-patch.zip</fromFile>
                                     <toDir>${project.build.directory}</toDir>
                                 </configuration>
                             </execution>
@@ -157,7 +157,7 @@
                                 <configuration>
                                     <executable>${project.build.directory}/wildfly-${wildfly.version}/bin/jboss-cli${script.extension}</executable>
                                     <arguments>
-                                        <argument>--command=patch apply ${project.build.directory}/wildfly-8.1.0.Final-weld-2.2.4.Final-patch.zip</argument>
+                                        <argument>--command=patch apply ${project.build.directory}/wildfly-${wildfly.version}-weld-${weld.version}-patch.zip</argument>
                                     </arguments>
                                     <successCodes>
                                         <!-- patch is applied successfully -->
