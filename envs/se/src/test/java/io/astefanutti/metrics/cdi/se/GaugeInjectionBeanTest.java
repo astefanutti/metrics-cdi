@@ -51,6 +51,10 @@ public class GaugeInjectionBeanTest {
 
     @Inject
     private GaugeMethodBean bean;
+
+    @Inject
+    @Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.GaugeMethodBean.gaugeMethod")
+    private Gauge<Long> gauge;
     
     @Before
     public void instantiateApplicationScopedBean() {
@@ -61,8 +65,7 @@ public class GaugeInjectionBeanTest {
 
     @Test
     @InSequence(1)
-    // TODO: find a way to declare the gauge injected argument as injected field. See MetricProducer Gauge producer method.
-    public void gaugeCalledWithDefaultValue(@Metric(absolute = true, name = "io.astefanutti.metrics.cdi.se.GaugeMethodBean.gaugeMethod") Gauge<Long> gauge) {
+    public void gaugeCalledWithDefaultValue() {
         // Make sure that the gauge has the expected value
         assertThat("Gauge value is incorrect", gauge.getValue(), is(equalTo(0L)));
     }

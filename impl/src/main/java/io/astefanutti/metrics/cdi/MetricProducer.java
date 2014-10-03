@@ -59,14 +59,18 @@ import java.lang.reflect.Method;
     }
 
     @Produces
-    @SuppressWarnings("unchecked")
     private <T> Gauge<T> produceGauge(InjectionPoint point) {
-        // TODO: As gauge metrics are registered at instantiation time of the annotated
-        // beans this may lead to producing null values for that gauge bean in case
-        // the gauge metrics get injected before the corresponding beans. A more
-        // sophisticated strategy may be designed to delay the retrieval of the
-        // underlying gauges from the Metrics registry for example.
-        return registry.getGauges().get(metricName(point));
+        final String name = metricName(point);
+        // A forwarding Gauge must be be returned as the Gauge creation happens when
+        // the declaring bean gets instantiated and the corresponding Gauge can be
+        // injected before which leads to producing a null value
+        return new Gauge<T>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public T getValue() {
+                return ((Gauge<T>) registry.getGauges().get(name)).getValue();
+            }
+        };
     }
 
     @Produces
