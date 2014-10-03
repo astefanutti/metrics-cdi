@@ -9,8 +9,7 @@ install:
 
 script:
   - mvn test -Pjacoco -Pweld
-# disabled until OWB-1018 is fixed
-#  - mvn test -Pjacoco -Powb -pl envs/se
+  - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:
