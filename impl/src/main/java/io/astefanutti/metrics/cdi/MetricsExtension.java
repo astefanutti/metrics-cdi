@@ -27,18 +27,21 @@ import com.codahale.metrics.annotation.Timed;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.enterprise.util.Nonbinding;
+import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,46 +49,23 @@ import java.util.Set;
 
 public class MetricsExtension implements Extension {
 
+    private static final AnnotationLiteral<Nonbinding> NON_BINDING = new AnnotationLiteral<Nonbinding>(){};
+
+    private static final AnnotationLiteral<InterceptorBinding> INTERCEPTOR_BINDING = new AnnotationLiteral<InterceptorBinding>(){};
+
+    private static final AnnotationLiteral<MetricsBinding> METRICS_BINDING = new AnnotationLiteral<MetricsBinding>(){};
+
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
-    private <X> void metricsAnnotations(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
-        Set<AnnotatedConstructor<X>> decoratedConstructors = new HashSet<>();
-        for (AnnotatedConstructor<X> constructor : pat.getAnnotatedType().getConstructors()) {
-            Set<Annotation> annotations = new HashSet<>();
-            if (constructor.isAnnotationPresent(Counted.class))
-                annotations.add(CountedBindingLiteral.INSTANCE);
-            if (constructor.isAnnotationPresent(ExceptionMetered.class))
-                annotations.add(ExceptionMeteredBindingLiteral.INSTANCE);
-            if (constructor.isAnnotationPresent(Metered.class))
-                annotations.add(MeteredBindingLiteral.INSTANCE);
-            if (constructor.isAnnotationPresent(Timed.class))
-                annotations.add(TimedBindingLiteral.INSTANCE);
-
-            if (!annotations.isEmpty())
-                decoratedConstructors.add(new AnnotatedConstructorDecorator<>(constructor, annotations));
-        }
-
-        Set<AnnotatedMethod<? super X>> decoratedMethods = new HashSet<>();
-        for (AnnotatedMethod<? super X> method : pat.getAnnotatedType().getMethods()) {
-            Set<Annotation> annotations = new HashSet<>();
-            if (shouldHaveMetricBinding(method, Counted.class))
-                annotations.add(CountedBindingLiteral.INSTANCE);
-            if (shouldHaveMetricBinding(method, ExceptionMetered.class))
-                annotations.add(ExceptionMeteredBindingLiteral.INSTANCE);
-            if (shouldHaveMetricBinding(method, Metered.class))
-                annotations.add(MeteredBindingLiteral.INSTANCE);
-            if (shouldHaveMetricBinding(method, Timed.class))
-                annotations.add(TimedBindingLiteral.INSTANCE);
-
-            if (!annotations.isEmpty())
-                decoratedMethods.add(new AnnotatedMethodDecorator<>(method, annotations));
-        }
-
-        pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), MetricsBindingLiteral.INSTANCE, decoratedConstructors, decoratedMethods));
+    private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {
+        declareAsInterceptorBinding(Counted.class, manager, bbd);
+        declareAsInterceptorBinding(ExceptionMetered.class, manager, bbd);
+        declareAsInterceptorBinding(Metered.class, manager, bbd);
+        declareAsInterceptorBinding(Timed.class, manager, bbd);
     }
 
-    private boolean shouldHaveMetricBinding(AnnotatedMethod<?> method, Class<? extends Annotation> type) {
-        return method.isAnnotationPresent(type) || Modifier.isPublic(method.getJavaMember().getModifiers()) && method.getDeclaringType().isAnnotationPresent(type);
+    private <X> void metricsAnnotations(@Observes @WithAnnotations({CachedGauge.class, Counted.class, ExceptionMetered.class, Gauge.class, Metered.class, Timed.class}) ProcessAnnotatedType<X> pat) {
+        pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), METRICS_BINDING));
     }
 
     private void metricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
@@ -105,12 +85,20 @@ public class MetricsExtension implements Extension {
 
     private void customMetrics(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
-
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet())
             producer.produceMetric(manager, metric.getKey(), metric.getValue());
 
         // Let's clear the collected metric producers
         metrics.clear();
+    }
+
+    private static <T extends Annotation> void declareAsInterceptorBinding(Class<T> annotation, BeanManager manager, BeforeBeanDiscovery bbd) {
+        AnnotatedType<T> annotated = manager.createAnnotatedType(annotation);
+        Set<AnnotatedMethod<? super T>> methods = new HashSet<>();
+        for (AnnotatedMethod<? super T> method : annotated.getMethods())
+            methods.add(new AnnotatedMethodDecorator<>(method, NON_BINDING));
+
+        bbd.addInterceptorBinding(new AnnotatedTypeDecorator<>(annotated, INTERCEPTOR_BINDING, methods));
     }
 
     @SuppressWarnings("unchecked")

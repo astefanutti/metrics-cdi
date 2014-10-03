@@ -17,6 +17,7 @@ package io.astefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.codahale.metrics.annotation.Timed;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -27,8 +28,8 @@ import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 
+@Timed
 @Interceptor
-@TimedBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE  + 10)
 /* packaged-private */ class TimedInterceptor {
 

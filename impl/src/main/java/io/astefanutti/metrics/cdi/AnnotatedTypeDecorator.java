@@ -28,18 +28,15 @@ import java.util.Set;
 
     private final AnnotatedType<X> decoratedType;
 
-    private final Set<AnnotatedConstructor<X>> decoratedConstructors;
-
     private final Set<AnnotatedMethod<? super X>> decoratedMethods;
 
-    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation, Set<AnnotatedConstructor<X>> decoratedConstructors, Set<AnnotatedMethod<? super X>> decoratedMethods) {
-        this(decoratedType, Collections.singleton(decoratingAnnotation), decoratedConstructors, decoratedMethods);
+    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation) {
+        this(decoratedType, decoratingAnnotation, Collections.<AnnotatedMethod<? super X>>emptySet());
     }
 
-    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Set<Annotation> decoratingAnnotations, Set<AnnotatedConstructor<X>> decoratedConstructors, Set<AnnotatedMethod<? super X>> decoratedMethods) {
-        super(decoratedType, decoratingAnnotations);
+    AnnotatedTypeDecorator(AnnotatedType<X> decoratedType, Annotation decoratingAnnotation, Set<AnnotatedMethod<? super X>> decoratedMethods) {
+        super(decoratedType, Collections.singleton(decoratingAnnotation));
         this.decoratedType = decoratedType;
-        this.decoratedConstructors = decoratedConstructors;
         this.decoratedMethods = decoratedMethods;
     }
 
@@ -50,13 +47,7 @@ import java.util.Set;
 
     @Override
     public Set<AnnotatedConstructor<X>> getConstructors() {
-        Set<AnnotatedConstructor<X>> constructors = new HashSet<>(decoratedType.getConstructors());
-        for (AnnotatedConstructor<X> constructor : decoratedConstructors) {
-            constructors.remove(constructor);
-            constructors.add(constructor);
-        }
-
-        return Collections.unmodifiableSet(constructors);
+        return decoratedType.getConstructors();
     }
 
     @Override
