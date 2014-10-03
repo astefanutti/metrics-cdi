@@ -28,8 +28,8 @@ import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 
+@Counted
 @Interceptor
-@CountedBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* packaged-private */ class CountedInterceptor {
 

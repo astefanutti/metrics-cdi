@@ -29,7 +29,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 
 @Interceptor
-@ExceptionMeteredBinding
+@ExceptionMetered
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* packaged-private */ class ExceptionMeteredInterceptor {
 
