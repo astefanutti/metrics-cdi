@@ -17,6 +17,9 @@ package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.annotation.Timed;
 
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 @Timed(name = "timedClass")
 public class TimedClassBean {
 

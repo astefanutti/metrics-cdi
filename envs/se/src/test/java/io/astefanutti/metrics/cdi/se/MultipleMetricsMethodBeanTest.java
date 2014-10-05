@@ -43,7 +43,7 @@ public class MultipleMetricsMethodBeanTest {
     private final static String[] METRIC_NAMES = {"counter", "exception", "gauge", "meter", "timer"};
 
     private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(MultipleMetricsMethodBean.class, METRIC_NAMES);
+        return MetricsUtil.absoluteMetricNames(MultipleMetricsMethodBean.class, METRIC_NAMES);
     }
 
     private String absoluteMetricName(String name) {

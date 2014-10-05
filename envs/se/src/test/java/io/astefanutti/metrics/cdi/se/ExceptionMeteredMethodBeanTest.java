@@ -47,7 +47,7 @@ public class ExceptionMeteredMethodBeanTest {
     private final static AtomicLong[] METER_COUNTS = {new AtomicLong(), new AtomicLong()};
 
     private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(ExceptionMeteredMethodBean.class, METER_NAMES);
+        return MetricsUtil.absoluteMetricNames(ExceptionMeteredMethodBean.class, METER_NAMES);
     }
 
     private static String absoluteMetricName(int index) {
@@ -116,7 +116,7 @@ public class ExceptionMeteredMethodBeanTest {
 
     @Test
     @InSequence(3)
-    public void callExceptionMeteredStaticMethodOnceWithThrowingNonExpectedException() {
+    public void callExceptionMeteredMethodOnceWithThrowingNonExpectedException() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
         final RuntimeException exception = new IllegalStateException("message");
@@ -140,7 +140,7 @@ public class ExceptionMeteredMethodBeanTest {
 
     @Test
     @InSequence(4)
-    public void callExceptionMeteredStaticMethodOnceWithThrowingInstanceOfExpectedException() {
+    public void callExceptionMeteredMethodOnceWithThrowingInstanceOfExpectedException() {
         assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
 
         final RuntimeException exception = new IllegalStateException("message");

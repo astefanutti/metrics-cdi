@@ -30,7 +30,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 @Singleton
 /* packaged-private */ final class MetricResolver {
@@ -73,7 +72,7 @@ import java.lang.reflect.Modifier;
             return new DoesHaveMetric<>(annotation, name);
         } else {
             Class<?> bean = element.getDeclaringClass();
-            if (bean.isAnnotationPresent(type) && element instanceof Method && Modifier.isPublic(element.getModifiers())) {
+            if (bean.isAnnotationPresent(type)) {
                 T annotation = bean.getAnnotation(type);
                 String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
                 return new DoesHaveMetric<>(annotation, name);

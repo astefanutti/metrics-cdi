@@ -43,7 +43,7 @@ public class DefaultNameMetricMethodBeanTest {
     private final static String[] ABSOLUTE_METRIC_NAMES = {"absoluteDefaultNameCountedMethod", "absoluteDefaultNameExceptionMeteredMethod.exceptions", "absoluteDefaultNameMeteredMethod", "absoluteDefaultNameTimedMethod"};
 
     private Set<String> metricNames() {
-        Set<String> names = MetricsUtil.absoluteMetricNameSet(DefaultNameMetricMethodBean.class, METRIC_NAMES);
+        Set<String> names = MetricsUtil.absoluteMetricNames(DefaultNameMetricMethodBean.class, METRIC_NAMES);
         names.addAll(Arrays.asList(ABSOLUTE_METRIC_NAMES));
         return names;
     }

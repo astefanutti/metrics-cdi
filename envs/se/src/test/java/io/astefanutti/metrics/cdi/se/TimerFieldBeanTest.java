@@ -43,7 +43,7 @@ public class TimerFieldBeanTest {
     private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithAbsoluteDefaultName", "timerAbsoluteName"};
 
     private Set<String> metricNames() {
-        Set<String> names = MetricsUtil.absoluteMetricNameSet(TimerFieldBean.class, METRIC_NAMES);
+        Set<String> names = MetricsUtil.absoluteMetricNames(TimerFieldBean.class, METRIC_NAMES);
         names.addAll(Arrays.asList(ABSOLUTE_METRIC_NAMES));
         return names;
     }

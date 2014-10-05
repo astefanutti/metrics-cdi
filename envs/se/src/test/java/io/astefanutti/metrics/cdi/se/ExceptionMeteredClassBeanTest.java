@@ -16,7 +16,11 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
+import io.astefanutti.metrics.cdi.MetricsExtension;
+import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,15 +31,12 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import io.astefanutti.metrics.cdi.MetricsExtension;
-import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 
 import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.fest.reflect.core.Reflection.method;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
@@ -46,17 +47,28 @@ import static org.junit.Assert.fail;
 @RunWith(Arquillian.class)
 public class ExceptionMeteredClassBeanTest {
 
-    private final static String[] METER_NAMES = {"exceptionMeteredMethodOne.exceptions", "exceptionMeteredMethodTwo.exceptions"};
+    private static final String[] METHOD_NAMES = {"exceptionMeteredMethodOne.exceptions", "exceptionMeteredMethodTwo.exceptions", "exceptionMeteredMethodProtected.exceptions", "exceptionMeteredMethodPackagedPrivate.exceptions"};
 
-    private final static AtomicLong[] METER_COUNTS = {new AtomicLong(), new AtomicLong()};
+    private static final String CONSTRUCTOR_NAME = "ExceptionMeteredClassBean.exceptions";
 
-    private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(ExceptionMeteredClassBean.class.getPackage().getName() + "." + "exceptionMeteredClass", METER_NAMES);
-    }
+    private static final Set<String> METHOD_METER_NAMES = MetricsUtil.absoluteMetricNames(ExceptionMeteredClassBean.class, "exceptionMeteredClass", METHOD_NAMES);
+
+    private static final MetricFilter METHOD_METERS = new MetricFilter() {
+        @Override
+        public boolean matches(String name, Metric metric) {
+            return METHOD_METER_NAMES.contains(name);
+        }
+    };
 
     private static String absoluteMetricName(int index) {
-        return MetricsUtil.absoluteMetricName(ExceptionMeteredClassBean.class.getPackage().getName() + "." + "exceptionMeteredClass", METER_NAMES[index]);
+        return MetricsUtil.absoluteMetricName(ExceptionMeteredClassBean.class, "exceptionMeteredClass", METHOD_NAMES[index]);
     }
+
+    private static final String CONSTRUCTOR_METER_NAME = MetricsUtil.absoluteMetricName(ExceptionMeteredClassBean.class, "exceptionMeteredClass", CONSTRUCTOR_NAME);
+
+    private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(ExceptionMeteredClassBean.class, "exceptionMeteredClass", METHOD_NAMES, CONSTRUCTOR_NAME, "exceptionMeteredMethodPrivate.exceptions");
+
+    private static final AtomicLong METHOD_COUNT = new AtomicLong();
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -78,7 +90,9 @@ public class ExceptionMeteredClassBeanTest {
     @Test
     @InSequence(1)
     public void callExceptionMeteredMethodsOnceWithoutThrowing() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), is(equalTo(0L)));
 
         Runnable runnableThatDoesNoThrowExceptions = new Runnable() {
             @Override
@@ -94,13 +108,16 @@ public class ExceptionMeteredClassBeanTest {
         bean.exceptionMeteredMethodPackagedPrivate(runnableThatDoesNoThrowExceptions);
         method("exceptionMeteredMethodPrivate").withParameterTypes(Runnable.class).in(bean).invoke(runnableThatDoesNoThrowExceptions);
 
-        assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(0L))));
+        // Make sure that the method meters haven't been marked yet
+        assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callExceptionMeteredMethodOnceWithThrowingExpectedException() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), is(equalTo(0L)));
 
         final RuntimeException exception = new IllegalArgumentException("message");
         Runnable runnableThatThrowsIllegalArgumentException = new Runnable() {
@@ -115,25 +132,23 @@ public class ExceptionMeteredClassBeanTest {
             bean.exceptionMeteredMethodOne(runnableThatThrowsIllegalArgumentException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].incrementAndGet())));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METHOD_COUNT.incrementAndGet())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
         try {
-            // Call the metered method and assert it's been marked and that the original exception has been rethrown
             bean.exceptionMeteredMethodTwo(runnableThatThrowsIllegalArgumentException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].incrementAndGet())));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
-        // Let's call the non-public methods as well
         try {
             bean.exceptionMeteredMethodProtected(runnableThatThrowsIllegalArgumentException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(2)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
@@ -141,7 +156,7 @@ public class ExceptionMeteredClassBeanTest {
             bean.exceptionMeteredMethodPackagedPrivate(runnableThatThrowsIllegalArgumentException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(3)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
@@ -149,15 +164,17 @@ public class ExceptionMeteredClassBeanTest {
             method("exceptionMeteredMethodPrivate").withParameterTypes(Runnable.class).in(bean).invoke(runnableThatThrowsIllegalArgumentException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meters counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
     }
 
     @Test
     @InSequence(3)
-    public void callExceptionMeteredStaticMethodOnceWithThrowingNonExpectedException() {
-        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(absoluteMetricNames())));
+    public void callExceptionMeteredMethodOnceWithThrowingNonExpectedException() {
+        assertThat("Meters are not registered correctly", registry.getMeters().keySet(), is(equalTo(METER_NAMES)));
+
+        assertThat("Constructor meter count is incorrect", registry.getMeters().get(CONSTRUCTOR_METER_NAME).getCount(), is(equalTo(0L)));
 
         final RuntimeException exception = new IllegalStateException("message");
         Runnable runnableThatThrowsIllegalStateException = new Runnable() {
@@ -172,16 +189,15 @@ public class ExceptionMeteredClassBeanTest {
             bean.exceptionMeteredMethodOne(runnableThatThrowsIllegalStateException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METER_COUNTS[0].get())));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(0)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
         try {
-            // Call the metered method and assert it hasn't been marked and that the original exception has been rethrown
             bean.exceptionMeteredMethodTwo(runnableThatThrowsIllegalStateException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METER_COUNTS[1].get())));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(1)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
@@ -190,7 +206,7 @@ public class ExceptionMeteredClassBeanTest {
             bean.exceptionMeteredMethodProtected(runnableThatThrowsIllegalStateException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(2)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
@@ -198,7 +214,7 @@ public class ExceptionMeteredClassBeanTest {
             bean.exceptionMeteredMethodPackagedPrivate(runnableThatThrowsIllegalStateException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meter count is incorrect", registry.getMeters().get(absoluteMetricName(3)).getCount(), is(equalTo(METHOD_COUNT.get())));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
 
@@ -206,7 +222,7 @@ public class ExceptionMeteredClassBeanTest {
             method("exceptionMeteredMethodPrivate").withParameterTypes(Runnable.class).in(bean).invoke(runnableThatThrowsIllegalStateException);
             fail("No exception has been re-thrown!");
         } catch (RuntimeException cause) {
-            assertThat("Meters counts are incorrect", registry.getMeters().values(), everyItem(Matchers.<Meter>hasProperty("count", allOf(equalTo(METER_COUNTS[0].get()), equalTo(METER_COUNTS[1].get())))));
+            assertThat("Meters counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.get()))));
             assertSame("Exception thrown is incorrect", cause, exception);
         }
     }

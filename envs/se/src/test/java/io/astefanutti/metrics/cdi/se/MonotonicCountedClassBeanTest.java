@@ -16,7 +16,11 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
+import io.astefanutti.metrics.cdi.MetricsExtension;
+import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,11 +31,10 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import io.astefanutti.metrics.cdi.MetricsExtension;
-import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 
 import javax.inject.Inject;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.fest.reflect.core.Reflection.method;
 import static org.hamcrest.Matchers.equalTo;
@@ -42,11 +45,24 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class MonotonicCountedClassBeanTest {
 
-    private final static String[] COUNTER_NAMES = {"countedMethodOne", "countedMethodTwo"};
+    private static final String CONSTRUCTOR_NAME = "MonotonicCountedClassBean";
 
-    private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(MonotonicCountedClassBean.class.getPackage().getName() + "." + "monotonicCountedClass", COUNTER_NAMES);
-    }
+    private static final String CONSTRUCTOR_COUNTER_NAME = MetricsUtil.absoluteMetricName(MonotonicCountedClassBean.class, "monotonicCountedClass", CONSTRUCTOR_NAME);
+
+    private static final String[] METHOD_NAMES = {"countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate"};
+
+    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, "countedMethodPrivate");
+
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, CONSTRUCTOR_NAME, "countedMethodPrivate");
+
+    private static final MetricFilter METHOD_TIMERS = new MetricFilter() {
+        @Override
+        public boolean matches(String name, Metric metric) {
+            return METHOD_COUNTER_NAMES.contains(name);
+        }
+    };
+
+    private static final AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -68,16 +84,20 @@ public class MonotonicCountedClassBeanTest {
     @Test
     @InSequence(1)
     public void countedMethodsNotCalledYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(), is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
-        assertThat("Counter counts are incorrect", registry.getCounters().values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
+        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_TIMERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
     }
 
     @Test
     @InSequence(2)
     public void callCountedMethodsOnce() {
-        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(absoluteMetricNames())));
+        assertThat("Counters are not registered correctly", registry.getCounters().keySet(), is(equalTo(COUNTER_NAMES)));
+
+        assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(), is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Call the counted methods and assert they've been incremented
         bean.countedMethodOne();
@@ -88,6 +108,6 @@ public class MonotonicCountedClassBeanTest {
         method("countedMethodPrivate").in(bean).invoke();
 
         // Make sure that the counters have been incremented
-        assertThat("Counter counts are incorrect", registry.getCounters().values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(1L))));
+        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_TIMERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(1L))));
     }
 }

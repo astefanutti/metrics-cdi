@@ -40,10 +40,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class VisibilityTimedMethodBeanTest {
 
-    private final static String[] TIMER_NAMES = {"publicTimedMethod", "packagePrivateTimedMethod", "protectedTimedMethod"};
+    private static final String[] TIMER_NAMES = {"publicTimedMethod", "packagePrivateTimedMethod", "protectedTimedMethod"};
 
     private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(VisibilityTimedMethodBean.class, TIMER_NAMES);
+        return MetricsUtil.absoluteMetricNames(VisibilityTimedMethodBean.class, TIMER_NAMES);
     }
 
     @Deployment

@@ -25,7 +25,7 @@ public final class MetricsUtil {
     private MetricsUtil() {
     }
 
-    public static Set<String> absoluteMetricNameSet(Class<?> clazz, String... names) {
+    public static Set<String> absoluteMetricNames(Class<?> clazz, String... names) {
         Set<String> set = new HashSet<>(names.length);
         for (String name : names)
             set.add(absoluteMetricName(clazz, name));
@@ -33,10 +33,26 @@ public final class MetricsUtil {
         return set;
     }
 
-    public static Set<String> absoluteMetricNameSet(String clazz, String... names) {
+    public static Set<String> absoluteMetricNames(Class<?> clazz, String prefix, String... names) {
         Set<String> set = new HashSet<>(names.length);
         for (String name : names)
+            set.add(absoluteMetricName(clazz, prefix, name));
+
+        return set;
+    }
+
+    public static Set<String> absoluteMetricNames(Class<?> clazz, String[] array, String... names) {
+        Set<String> set = new HashSet<>(absoluteMetricNames(clazz, array));
+        for (String name : names)
             set.add(absoluteMetricName(clazz, name));
+
+        return set;
+    }
+
+    public static Set<String> absoluteMetricNames(Class<?> clazz, String prefix, String[] array, String... names) {
+        Set<String> set = new HashSet<>(absoluteMetricNames(clazz, prefix, array));
+        for (String name : names)
+            set.add(absoluteMetricName(clazz, prefix, name));
 
         return set;
     }
@@ -45,7 +61,7 @@ public final class MetricsUtil {
         return MetricRegistry.name(clazz, name);
     }
 
-    public static String absoluteMetricName(String clazz, String name) {
-        return MetricRegistry.name(clazz, name);
+    public static String absoluteMetricName(Class<?> clazz, String metric, String name) {
+        return MetricRegistry.name(clazz.getPackage().getName() + "." + metric, name);
     }
 }

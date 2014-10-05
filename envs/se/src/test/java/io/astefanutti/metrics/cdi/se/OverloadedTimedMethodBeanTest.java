@@ -43,7 +43,7 @@ public class OverloadedTimedMethodBeanTest {
     private final static String[] TIMER_NAMES = {"overloadedTimedMethodWithNoArguments", "overloadedTimedMethodWithStringArgument", "overloadedTimedMethodWithListOfStringArgument", "overloadedTimedMethodWithObjectArgument"};
 
     private Set<String> absoluteMetricNames() {
-        return MetricsUtil.absoluteMetricNameSet(OverloadedTimedMethodBean.class, TIMER_NAMES);
+        return MetricsUtil.absoluteMetricNames(OverloadedTimedMethodBean.class, TIMER_NAMES);
     }
 
     @Deployment
