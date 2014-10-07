@@ -51,11 +51,11 @@ public class MonotonicCountedClassBeanTest {
 
     private static final String[] METHOD_NAMES = {"countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate"};
 
-    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, "countedMethodPrivate");
+    private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES);
 
     private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, CONSTRUCTOR_NAME, "countedMethodPrivate");
 
-    private static final MetricFilter METHOD_TIMERS = new MetricFilter() {
+    private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
         public boolean matches(String name, Metric metric) {
             return METHOD_COUNTER_NAMES.contains(name);
@@ -89,7 +89,7 @@ public class MonotonicCountedClassBeanTest {
         assertThat("Constructor timer count is incorrect", registry.getCounters().get(CONSTRUCTOR_COUNTER_NAME).getCount(), is(equalTo(CONSTRUCTOR_COUNT.incrementAndGet())));
 
         // Make sure that the counters haven't been incremented
-        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_TIMERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
+        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));
     }
 
     @Test
@@ -108,6 +108,6 @@ public class MonotonicCountedClassBeanTest {
         method("countedMethodPrivate").in(bean).invoke();
 
         // Make sure that the counters have been incremented
-        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_TIMERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(1L))));
+        assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(1L))));
     }
 }
