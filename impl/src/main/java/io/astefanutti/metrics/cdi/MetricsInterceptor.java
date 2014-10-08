@@ -59,7 +59,8 @@ import java.util.concurrent.TimeUnit;
         // TODO: add support for inherited methods
         // TODO: avoid registering metrics for private methods
         for (Method method : bean.getDeclaredMethods())
-            registerMetrics(method);
+            if (!method.isSynthetic())
+                registerMetrics(method);
 
         Object target = context.proceed();
 
