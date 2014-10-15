@@ -154,5 +154,17 @@
             <artifactId>fest-reflect</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-depchain</artifactId>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 </project>
