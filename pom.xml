@@ -58,7 +58,7 @@
         <metrics.version>3.1.0</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.2.5.Final</weld.version>
+        <weld.version>2.2.6.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.1.0.Final</wildfly.version>
         <jetty.version>9.2.3.v20140905</jetty.version>
@@ -105,7 +105,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>3.2</version>
                 </plugin>
 
                 <plugin>
@@ -117,15 +117,17 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.1.201405082137</version>
+                    <version>0.7.2.201409121644</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>2.2.0</version>
+                    <version>3.0.1</version>
                     <configuration>
-                        <coverageFile>${project.basedir}/impl/target/site/jacoco/jacoco.xml</coverageFile>
+                        <jacocoReports>
+                            <jacocoReport>${project.basedir}/impl/target/site/jacoco/jacoco.xml</jacocoReport>
+                        </jacocoReports>
                         <coverallsFile>${project.basedir}/impl/target/coveralls.json</coverallsFile>
                         <sourceDirectories>
                             <sourceDirectory>${project.basedir}/impl/src/main/java</sourceDirectory>

@@ -24,4 +24,4 @@ notifications:
 
 after_success:
   - mvn jacoco:report -pl impl
-  - mvn -N coveralls:jacoco
+  - mvn -N coveralls:report
