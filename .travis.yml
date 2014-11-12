@@ -11,6 +11,7 @@ script:
   - mvn test -Pjacoco -Pweld
   - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
+  - mvn test -Pjacoco -Pwildfly-9.x -pl envs/ee
 
 jdk:
   - oraclejdk7
