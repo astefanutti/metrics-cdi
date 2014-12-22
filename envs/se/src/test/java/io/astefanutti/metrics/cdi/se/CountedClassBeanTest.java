@@ -31,13 +31,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-
 import java.util.Set;
 
-import static org.fest.reflect.core.Reflection.method;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -47,7 +43,7 @@ public class CountedClassBeanTest {
 
     private static final String[] METHOD_NAMES = {"countedMethodOne", "countedMethodTwo", "countedMethodProtected", "countedMethodPackagedPrivate"};
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES, CONSTRUCTOR_NAME, "countedMethodPrivate");
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(CountedClassBean.class, "countedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
 
     @Deployment
     static Archive<?> createTestArchive() {
@@ -86,7 +82,6 @@ public class CountedClassBeanTest {
         // Let's call the non-public methods as well
         bean.countedMethodProtected();
         bean.countedMethodPackagedPrivate();
-        method("countedMethodPrivate").in(bean).invoke();
 
         // Make sure that the counters are back to zero
         assertThat("Counter counts are incorrect", registry.getCounters().values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(0L))));

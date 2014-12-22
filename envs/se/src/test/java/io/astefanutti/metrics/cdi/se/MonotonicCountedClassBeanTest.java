@@ -36,10 +36,7 @@ import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.fest.reflect.core.Reflection.method;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -53,7 +50,7 @@ public class MonotonicCountedClassBeanTest {
 
     private static final Set<String> METHOD_COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES);
 
-    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, CONSTRUCTOR_NAME, "countedMethodPrivate");
+    private static final Set<String> COUNTER_NAMES = MetricsUtil.absoluteMetricNames(MonotonicCountedClassBean.class, "monotonicCountedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
 
     private static final MetricFilter METHOD_COUNTERS = new MetricFilter() {
         @Override
@@ -105,7 +102,6 @@ public class MonotonicCountedClassBeanTest {
         // Let's call the non-public methods as well
         bean.countedMethodProtected();
         bean.countedMethodPackagedPrivate();
-        method("countedMethodPrivate").in(bean).invoke();
 
         // Make sure that the counters have been incremented
         assertThat("Method counter counts are incorrect", registry.getCounters(METHOD_COUNTERS).values(), everyItem(Matchers.<Counter>hasProperty("count", equalTo(1L))));

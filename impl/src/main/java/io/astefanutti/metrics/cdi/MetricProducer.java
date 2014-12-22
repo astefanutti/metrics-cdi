@@ -54,7 +54,7 @@ import java.lang.reflect.Method;
     }
 
     @Produces
-    private Counter produceCounter(MetricRegistry registry, InjectionPoint point) {
+    private Counter produceCounter(InjectionPoint point) {
         return registry.counter(metricName(point));
     }
 

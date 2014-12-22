@@ -79,7 +79,7 @@ public class MetricsExtension implements Extension {
     }
 
     private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        if (manager.getBeans(MetricRegistry.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())
+        if (manager.getBeans(MetricRegistry.class).isEmpty())
             abd.addBean(new MetricRegistryBean(manager));
     }
 

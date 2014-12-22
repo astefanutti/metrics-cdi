@@ -17,7 +17,6 @@ package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import io.astefanutti.metrics.cdi.MetricsExtension;
 import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.hamcrest.Matchers;
@@ -26,6 +25,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.util.Set;
 
-import static org.fest.reflect.core.Reflection.method;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -81,7 +80,6 @@ public class VisibilityTimedMethodBeanTest {
         bean.publicTimedMethod();
         bean.protectedTimedMethod();
         bean.packagePrivateTimedMethod();
-        method("privateTimedMethod").in(bean).invoke();
 
         assertThat("Timer counts are incorrect", registry.getTimers().values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(1L))));
     }

@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.fest.reflect.core.Reflection.method;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
@@ -61,7 +60,7 @@ public class TimedClassBeanTest {
         }
     };
 
-    private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES, CONSTRUCTOR_NAME, "timedMethodPrivate");
+    private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
 
     private static final AtomicLong METHOD_COUNT = new AtomicLong();
 
@@ -113,7 +112,6 @@ public class TimedClassBeanTest {
         // Let's call the non-public methods as well
         bean.timedMethodProtected();
         bean.timedMethodPackagedPrivate();
-        method("timedMethodPrivate").in(bean).invoke();
 
         // Make sure that the method timers have been timed
         assertThat("Method timer counts are incorrect", registry.getTimers(METHOD_TIMERS).values(), everyItem(Matchers.<Timer>hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));

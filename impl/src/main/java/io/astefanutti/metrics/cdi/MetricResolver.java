@@ -23,6 +23,7 @@ import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
+import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
@@ -179,6 +180,7 @@ import java.lang.reflect.Method;
         }
     }
 
+    @Vetoed
     private static final class DoesNotHaveMetric<T extends Annotation> implements Of<T> {
 
         private DoesNotHaveMetric() {

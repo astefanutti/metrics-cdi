@@ -102,55 +102,6 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>wagon-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-wildfly-patch</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>download-single</goal>
-                                </goals>
-                                <configuration>
-                                    <url>http://freefr.dl.sourceforge.net/</url>
-                                    <fromFile>project/jboss/Weld/${weld.version}/wildfly-${wildfly.version}-weld-${weld.version}-patch.zip</fromFile>
-                                    <toDir>${project.build.directory}</toDir>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>patch-wildfly</id>
-                                <phase>process-test-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>${project.build.directory}/wildfly-${wildfly.version}/bin/jboss-cli${script.extension}</executable>
-                                    <arguments>
-                                        <argument>--command=patch apply ${project.build.directory}/wildfly-${wildfly.version}-weld-${weld.version}-patch.zip</argument>
-                                    </arguments>
-                                    <successCodes>
-                                        <!-- patch is applied successfully -->
-                                        <code>0</code>
-                                        <!-- avoid breaking the build when the patch is already applied -->
-                                        <code>1</code>
-                                    </successCodes>
-                                    <environmentVariables>
-                                        <!-- avoid "Press any key to continue ..." message on Windows -->
-                                        <NOPAUSE>true</NOPAUSE>
-                                    </environmentVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>

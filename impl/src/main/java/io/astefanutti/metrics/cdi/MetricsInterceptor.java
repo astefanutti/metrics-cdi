@@ -28,10 +28,7 @@ import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.concurrent.TimeUnit;
 
 @Interceptor
@@ -57,9 +54,8 @@ import java.util.concurrent.TimeUnit;
         registerMetrics(context.getConstructor());
 
         // TODO: add support for inherited methods
-        // TODO: avoid registering metrics for private methods
         for (Method method : bean.getDeclaredMethods())
-            if (!method.isSynthetic())
+            if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
                 registerMetrics(method);
 
         Object target = context.proceed();

@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.fest.reflect.core.Reflection.method;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
@@ -60,7 +59,7 @@ public class MeteredClassBeanTest {
         }
     };
 
-    private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES, CONSTRUCTOR_NAME, "meteredMethodPrivate");
+    private static final Set<String> METER_NAMES = MetricsUtil.absoluteMetricNames(MeteredClassBean.class, "meteredClass", METHOD_NAMES, CONSTRUCTOR_NAME);
 
     private final static AtomicLong CONSTRUCTOR_COUNT = new AtomicLong();
 
@@ -107,7 +106,6 @@ public class MeteredClassBeanTest {
         // Let's call the non-public methods as well
         bean.meteredMethodProtected();
         bean.meteredMethodPackagedPrivate();
-        method("meteredMethodPrivate").in(bean).invoke();
 
         // Make sure that the method meters have been marked
         assertThat("Method meter counts are incorrect", registry.getMeters(METHOD_METERS).values(), everyItem(Matchers.<Meter>hasProperty("count", equalTo(METHOD_COUNT.incrementAndGet()))));

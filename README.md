@@ -4,12 +4,11 @@
 
 [Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
-[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/metrics-cdi.svg
+[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/metrics-cdi.svg?style=flat
 [Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi
-[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
+[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg?style=flat
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
-[Maven Central]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
-[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
+[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg?style=flat
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.0.0/
 
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
@@ -73,14 +72,14 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container            | Version        | Specification          | Arquillian Container Adapter           |
 | -------------------- | -------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]          | `2.2.5.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]          | `2.2.5.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [Weld SE][]          | `2.2.8.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]          | `2.2.8.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
 | [OpenWebBeans][]     | `1.5.0`        | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
-| [Jetty][]            | `9.2.2`        | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
-| [WildFly 8][WildFly] | `8.1.0.Final`  | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+| [Jetty][]            | `9.2.6`        | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
+| [WildFly 8][WildFly] | `8.2.0.Final`  | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 | [WildFly 9][WildFly] | `9.0.0.Alpha1` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
-WildFly 8.x requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
+WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
