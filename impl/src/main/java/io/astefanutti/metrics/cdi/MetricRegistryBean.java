@@ -19,12 +19,10 @@ import com.codahale.metrics.MetricRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.PassivationCapable;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.*;
+import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -33,6 +31,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /* packaged-private */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
+
+    private final Set<Annotation> qualifiers = new HashSet<>(Arrays.<Annotation>asList(new AnnotationLiteral<Any>(){}, new AnnotationLiteral<Default>(){}));
 
     private final Set<Type> types;
 
@@ -51,12 +51,13 @@ import java.util.Set;
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
+        return Collections.unmodifiableSet(qualifiers);
     }
 
     @Override
     public MetricRegistry create(CreationalContext<MetricRegistry> context) {
         MetricRegistry registry = target.produce(context);
+        target.inject(registry, context);
         target.postConstruct(registry);
         context.push(registry);
         return registry;

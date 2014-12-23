@@ -402,6 +402,6 @@ class MetricRegistryFactoryBean {
 
 ## License
 
-Copyright © 2013-2014, Antonin Stefanutti
+Copyright © 2013-2015, Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
