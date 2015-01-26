@@ -58,12 +58,12 @@
         <metrics.version>3.1.0</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.2.8.Final</weld.version>
+        <weld.version>2.2.9.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
         <wildfly-9.version>9.0.0.Alpha1</wildfly-9.version>
         <jetty.version>9.2.6.v20141205</jetty.version>
-        <arquillian.version>1.1.5.Final</arquillian.version>
+        <arquillian.version>1.1.6.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
@@ -288,14 +288,14 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.7</version>
+                <version>1.7.10</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
 
