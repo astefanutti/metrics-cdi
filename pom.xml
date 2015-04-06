@@ -58,15 +58,15 @@
         <metrics.version>3.1.0</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.2.9.Final</weld.version>
+        <weld.version>2.2.10.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
         <wildfly-9.version>9.0.0.Alpha1</wildfly-9.version>
-        <jetty.version>9.2.6.v20141205</jetty.version>
-        <arquillian.version>1.1.6.Final</arquillian.version>
+        <jetty.version>9.2.7.v20150116</jetty.version>
+        <arquillian.version>1.1.7.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
-        <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
+        <shrinkwrap.descriptors.version>2.0.0-alpha-7</shrinkwrap.descriptors.version>
     </properties>
 
     <modules>
@@ -88,7 +88,7 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>2.8</version>
                 </plugin>
 
                 <plugin>
@@ -100,19 +100,19 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18</version>
+                    <version>2.18.1</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.2.201409121644</version>
+                    <version>0.7.4.201502262128</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <jacocoReports>
                             <jacocoReport>${project.basedir}/impl/target/site/jacoco/jacoco.xml</jacocoReport>
@@ -133,7 +133,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.5.1</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <mavenExecutorId>forked-path</mavenExecutorId>
@@ -281,14 +281,14 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.1.2</version>
+                <version>1.1.3</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.10</version>
+                <version>1.7.12</version>
                 <scope>test</scope>
             </dependency>
 
@@ -321,17 +321,6 @@
                 <artifactId>shrinkwrap-descriptors-bom</artifactId>
                 <version>${shrinkwrap.descriptors.version}</version>
                 <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- TODO: should be removed when the depchain is included in the BOM
-            see https://github.com/shrinkwrap/descriptors/pull/94
-            and https://issues.jboss.org/browse/SHRINKDESC-154 -->
-            <dependency>
-                <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-                <artifactId>shrinkwrap-descriptors-depchain</artifactId>
-                <version>${shrinkwrap.descriptors.version}</version>
-                <scope>test</scope>
                 <type>pom</type>
             </dependency>
 

@@ -72,10 +72,10 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container            | Version        | Specification          | Arquillian Container Adapter           |
 | -------------------- | -------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]          | `2.2.8.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]          | `2.2.8.Final`  | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [Weld SE][]          | `2.2.10.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]          | `2.2.10.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
 | [OpenWebBeans][]     | `1.5.0`        | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
-| [Jetty][]            | `9.2.6`        | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
+| [Jetty][]            | `9.2.7`        | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
 | [WildFly 8][WildFly] | `8.2.0.Final`  | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 | [WildFly 9][WildFly] | `9.0.0.Alpha1` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
