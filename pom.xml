@@ -55,14 +55,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metrics.version>3.1.0</metrics.version>
+        <metrics.version>3.1.1</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.2.10.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
         <wildfly-9.version>9.0.0.Alpha1</wildfly-9.version>
-        <jetty.version>9.2.7.v20150116</jetty.version>
+        <jetty.version>9.2.10.v20150310</jetty.version>
         <arquillian.version>1.1.7.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
@@ -223,7 +223,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jcdi_1.1_spec</artifactId>
-                <version>1.0-alpha-1</version>
+                <version>1.0</version>
                 <scope>provided</scope>
             </dependency>
 
