@@ -27,6 +27,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import javax.interceptor.AroundTimeout;
 
 @Counted
 @Interceptor
@@ -50,6 +51,11 @@ import java.lang.reflect.Member;
 
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
+        return countedCallable(context, context.getMethod());
+    }
+
+    @AroundTimeout
+    private Object countedTimeout(InvocationContext context) throws Exception {
         return countedCallable(context, context.getMethod());
     }
 

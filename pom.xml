@@ -23,6 +23,17 @@
             <name>Antonin Stefanutti</name>
             <email>antonin.stefanutti@gmail.com</email>
             <timezone>+1</timezone>
+            <roles>
+                <role>project lead</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Matthieu Brouillard</name>
+            <email>matthieu@brouillard.fr</email>
+            <timezone>Europe/Paris</timezone>
+            <roles>
+                <role>contributor</role>
+            </roles>
         </developer>
     </developers>
 
@@ -59,7 +70,7 @@
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.2.10.Final</weld.version>
-        <owb.version>1.5.0-SNAPSHOT</owb.version>
+        <owb.version>1.5.0</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
         <wildfly-9.version>9.0.0.Alpha1</wildfly-9.version>
         <jetty.version>9.2.10.v20150310</jetty.version>
