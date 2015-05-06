@@ -17,6 +17,7 @@ package io.astefanutti.metrics.cdi.ee;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import io.astefanutti.metrics.cdi.ee.categories.Integration;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +28,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
@@ -36,6 +38,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
+@Category(Integration.class)
 public class MeteredMethodScheduledBeanTest {
 
     private final static String METER_NAME = MetricRegistry.name(MeteredMethodScheduledBean.class, "meter");
