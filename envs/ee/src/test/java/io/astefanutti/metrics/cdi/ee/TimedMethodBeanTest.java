@@ -56,7 +56,7 @@ public class TimedMethodBeanTest {
                     .addClass(TimedMethodBeanTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
-    
+
     @Inject
     private TimedMethodBean bean;
 

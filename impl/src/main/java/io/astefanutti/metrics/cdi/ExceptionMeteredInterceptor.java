@@ -31,7 +31,7 @@ import java.lang.reflect.Member;
 @Interceptor
 @ExceptionMetered
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
-/* packaged-private */ class ExceptionMeteredInterceptor {
+/* package-private */ class ExceptionMeteredInterceptor {
 
     private final MetricRegistry registry;
 

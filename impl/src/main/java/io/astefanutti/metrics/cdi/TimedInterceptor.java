@@ -32,7 +32,7 @@ import javax.interceptor.AroundTimeout;
 @Timed
 @Interceptor
 @Priority(Interceptor.Priority.LIBRARY_BEFORE  + 10)
-/* packaged-private */ class TimedInterceptor {
+/* package-private */ class TimedInterceptor {
 
     private final MetricRegistry registry;
 
@@ -48,7 +48,7 @@ import javax.interceptor.AroundTimeout;
     private Object timedConstructor(InvocationContext context) throws Exception {
         return timedCallable(context, context.getConstructor());
     }
-    
+
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
         return timedCallable(context, context.getMethod());

@@ -15,21 +15,22 @@
  */
 package io.astefanutti.metrics.cdi.ee;
 
-import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Singleton;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Singleton
 public class CallCounter {
+
     private final AtomicLong counter = new AtomicLong();
     
     public void reset() {
         counter.set(0l);
     }
-    
+
     public void count() {
         counter.incrementAndGet();
     }
-    
+
     public long value() {
         return counter.get();
     }

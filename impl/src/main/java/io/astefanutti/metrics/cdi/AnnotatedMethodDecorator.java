@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-/* packaged-private */ final class AnnotatedMethodDecorator<X> extends AnnotatedDecorator implements AnnotatedMethod<X> {
+/* package-private */ final class AnnotatedMethodDecorator<X> extends AnnotatedDecorator implements AnnotatedMethod<X> {
 
     private final AnnotatedMethod<X> decoratedMethod;
 

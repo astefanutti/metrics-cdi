@@ -45,16 +45,14 @@ public class TimerFieldWithElNameBeanTest {
                     .loadPomFromFile("pom.xml")
                     .resolve("io.astefanutti.metrics.cdi:metrics-cdi")
                     .withTransitivity()
-                    .as(JavaArchive.class)
-                )
+                    .as(JavaArchive.class))
             .addAsLibrary(
                 ShrinkWrap.create(JavaArchive.class)
                     .addClass(TimerFieldWithElNameBean.class)
                     .addClass(TimerIdBean.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(TimerFieldWithElNameBeanTest.class)
-                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-            );
+                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
 
     @Inject

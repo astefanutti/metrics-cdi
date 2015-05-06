@@ -32,7 +32,7 @@ import javax.interceptor.AroundTimeout;
 @Counted
 @Interceptor
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
-/* packaged-private */ class CountedInterceptor {
+/* package-private */ class CountedInterceptor {
 
     private final MetricRegistry registry;
 

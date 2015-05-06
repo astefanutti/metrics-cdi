@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 @MetricsBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 // See http://docs.oracle.com/javaee/7/tutorial/doc/interceptors.htm
-/* packaged-private */ class MetricsInterceptor {
+/* package-private */ class MetricsInterceptor {
 
     private final MetricRegistry registry;
 

@@ -41,7 +41,7 @@ import java.lang.reflect.Method;
 @Singleton
 @Alternative
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* packaged-private */ final class MetricProducer {
+/* package-private */ final class MetricProducer {
 
     private final MetricRegistry registry;
 

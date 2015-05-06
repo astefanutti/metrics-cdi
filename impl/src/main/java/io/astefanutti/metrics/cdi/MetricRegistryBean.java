@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/* packaged-private */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
+/* package-private */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
 
     private final Set<Annotation> qualifiers = new HashSet<>(Arrays.<Annotation>asList(new AnnotationLiteral<Any>(){}, new AnnotationLiteral<Default>(){}));
 

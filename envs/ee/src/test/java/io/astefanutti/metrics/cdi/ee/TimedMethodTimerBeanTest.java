@@ -17,10 +17,6 @@ package io.astefanutti.metrics.cdi.ee;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import java.util.SortedMap;
-import javax.inject.Inject;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,15 +25,22 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import java.util.SortedMap;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class TimedMethodTimerBeanTest {
+
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodTimerBean.class, "schedule");
-    
+
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(EnterpriseArchive.class)
@@ -48,33 +51,32 @@ public class TimedMethodTimerBeanTest {
                     .resolve("io.astefanutti.metrics.cdi:metrics-cdi")
                     .withTransitivity()
                     .as(JavaArchive.class))
-            .addAsModule(ShrinkWrap.create(JavaArchive.class)
+            .addAsModule(
+                ShrinkWrap.create(JavaArchive.class)
                     .addClass(TimedMethodTimerBean.class)
                     .addClass(CallCounter.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(TimedMethodTimerBeanTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
-    
+
     @Inject
     private MetricRegistry registry; 
-    
+
     @Inject 
     private CallCounter counter;
-    
+
     @Before
     public void init() {
         counter.reset();
     }
-    
+
     @Test
-    public void testATimerMethodCanBeTimed() {
+    public void testATimerMethodCanBeTimed() throws InterruptedException {
         // let's wait a few seconds, so that the scheduled method has been fired
-        try {
-            Thread.sleep(3000l);
-        } catch (InterruptedException ex) {}
+        Thread.sleep(3000l);
         
-        final SortedMap<String, Timer> allTimers = registry.getTimers();
+        SortedMap<String, Timer> allTimers = registry.getTimers();
         
         assertThat("Schedule timer is not registered correctly", allTimers, hasKey(TIMER_NAME));
         Timer timer = allTimers.get(TIMER_NAME);
@@ -82,7 +84,7 @@ public class TimedMethodTimerBeanTest {
         // Make sure that the timer has been called
         assertThat("Timer has not been called", counter.value(), greaterThan(0l));
 
-        // Make sure that the interception occured
+        // Make sure that the interception occurred
         assertThat("Schedule timer count is incorrect", timer.getCount(), greaterThan(0l));
     }
 }

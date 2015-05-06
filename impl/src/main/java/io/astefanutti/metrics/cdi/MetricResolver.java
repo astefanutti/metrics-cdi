@@ -33,7 +33,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 @Singleton
-/* packaged-private */ final class MetricResolver {
+/* package-private */ final class MetricResolver {
 
     private final MetricNameStrategy strategy;
 

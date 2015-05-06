@@ -22,11 +22,12 @@ import javax.inject.Inject;
 
 @Stateless
 public class CountedMethodScheduledBean {
+
     @Inject
     private CallCounter counter;
-    
-    @Schedule(hour = "*", minute = "*", second = "*", persistent = false)
+
     @Counted(name = "count", monotonic = true)
+    @Schedule(hour = "*", minute = "*", second = "*", persistent = false)
     public void scheduledMethod() {
         counter.count();
     }

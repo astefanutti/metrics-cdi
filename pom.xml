@@ -56,14 +56,6 @@
       <tag>HEAD</tag>
   </scm>
 
-    <repositories>
-        <!-- TODO: remove when OWB 1.5.0 is released -->
-        <repository>
-            <id>apache-snapshots</id>
-            <url>http://repository.apache.org/snapshots/</url>
-        </repository>
-    </repositories>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metrics.version>3.1.1</metrics.version>
