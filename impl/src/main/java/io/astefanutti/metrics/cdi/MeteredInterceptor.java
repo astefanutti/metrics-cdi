@@ -27,6 +27,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import javax.interceptor.AroundTimeout;
 
 @Metered
 @Interceptor
@@ -50,6 +51,11 @@ import java.lang.reflect.Member;
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
+        return meteredCallable(context, context.getMethod());
+    }
+
+    @AroundTimeout
+    private Object meteredTimeout(InvocationContext context) throws Exception {
         return meteredCallable(context, context.getMethod());
     }
 

@@ -27,6 +27,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import javax.interceptor.AroundTimeout;
 
 @Timed
 @Interceptor
@@ -47,9 +48,14 @@ import java.lang.reflect.Member;
     private Object timedConstructor(InvocationContext context) throws Exception {
         return timedCallable(context, context.getConstructor());
     }
-
+    
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
+        return timedCallable(context, context.getMethod());
+    }
+
+    @AroundTimeout
+    private Object timedTimeout(InvocationContext context) throws Exception {
         return timedCallable(context, context.getMethod());
     }
 
