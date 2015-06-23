@@ -52,14 +52,19 @@ import java.util.concurrent.TimeUnit;
         Class<?> bean = context.getConstructor().getDeclaringClass();
 
         registerMetrics(context.getConstructor());
-
-        // TODO: add support for inherited methods
-        for (Method method : bean.getDeclaredMethods())
-            if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
-                registerMetrics(method);
-
+  
+    	while(bean != null && bean != Object.class) {
+    		for (Method method : bean.getDeclaredMethods()) {
+    			if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers())) {
+    				registerMetrics(method);
+    			}
+            }
+    		bean = bean.getSuperclass();
+    	}
+        
         Object target = context.proceed();
 
+        bean = context.getConstructor().getDeclaringClass();
         for (Method method : bean.getDeclaredMethods()) {
             MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(method);
             if (cachedGauge.isPresent())
