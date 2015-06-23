@@ -21,7 +21,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Typed;
 
 @ApplicationScoped
-@Typed(InheritedGaugeMethodBean.class)
 public class InheritedGaugeMethodBean extends GaugeMethodBean {
 
     private long childGauge;

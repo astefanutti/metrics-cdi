@@ -72,12 +72,12 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 | Container            | Version        | Specification          | Arquillian Container Adapter           |
 | -------------------- | -------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]          | `2.2.11.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]          | `2.2.11.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
-| [OpenWebBeans][]     | `1.5.0`        | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
-| [Jetty][]            | `9.2.10`       | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
+| [Weld SE][]          | `2.2.13.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]          | `2.2.13.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [OpenWebBeans][]     | `1.6.1`        | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
+| [Jetty][]            | `9.2.11`       | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
 | [WildFly 8][WildFly] | `8.2.0.Final`  | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
-| [WildFly 9][WildFly] | `9.0.0.CR1`    | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+| [WildFly 9][WildFly] | `9.0.0.CR2`    | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 

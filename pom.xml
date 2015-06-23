@@ -61,11 +61,11 @@
         <metrics.version>3.1.2</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
-        <weld.version>2.2.11.Final</weld.version>
-        <owb.version>1.5.0</owb.version>
+        <weld.version>2.2.13.Final</weld.version>
+        <owb.version>1.6.1</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
-        <wildfly-9.version>9.0.0.CR1</wildfly-9.version>
-        <jetty.version>9.2.10.v20150310</jetty.version>
+        <wildfly-9.version>9.0.0.CR2</wildfly-9.version>
+        <jetty.version>9.2.11.v20150529</jetty.version>
         <arquillian.version>1.1.8.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.2.0-beta-2</shrinkwrap.resolver.version>
@@ -109,7 +109,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.4.201502262128</version>
+                    <version>0.7.5.201505241946</version>
                 </plugin>
 
                 <plugin>
