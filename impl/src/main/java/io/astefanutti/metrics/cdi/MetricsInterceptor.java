@@ -28,7 +28,11 @@ import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.TimeUnit;
 
 @Interceptor
@@ -49,26 +53,36 @@ import java.util.concurrent.TimeUnit;
 
     @AroundConstruct
     private Object metrics(InvocationContext context) throws Exception {
-        Class<?> bean = context.getConstructor().getDeclaringClass();
-
+        // Registers the present bean constructor metrics
         registerMetrics(context.getConstructor());
 
-        // TODO: add support for inherited methods
-        for (Method method : bean.getDeclaredMethods())
-            if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
-                registerMetrics(method);
+        // Registers the present methods metrics over the bean type hierarchy
+        Class<?> bean = context.getConstructor().getDeclaringClass();
+        do {
+            // TODO: discover annotations declared on implemented interfaces
+            for (Method method : bean.getDeclaredMethods())
+                if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
+                    registerMetrics(method);
+            bean = bean.getSuperclass();
+        } while (!Object.class.equals(bean));
 
         Object target = context.proceed();
 
-        for (Method method : bean.getDeclaredMethods()) {
-            MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(method);
-            if (cachedGauge.isPresent())
-                registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
-
-            MetricResolver.Of<Gauge> gauge = resolver.gauge(method);
-            if (gauge.isPresent())
-                registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
-        }
+        // Registers the present gauges over the bean type hierarchy after the target is constructed as it is required for the gauge invocations
+        bean = context.getConstructor().getDeclaringClass();
+        do {
+            // TODO: discover annotations declared on implemented interfaces
+            for (Method method : bean.getDeclaredMethods()) {
+                MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(method);
+                if (cachedGauge.isPresent())
+                    registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
+    
+                MetricResolver.Of<Gauge> gauge = resolver.gauge(method);
+                if (gauge.isPresent())
+                    registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
+            }
+            bean = bean.getSuperclass();
+        } while (!Object.class.equals(bean));
 
         return target;
     }
