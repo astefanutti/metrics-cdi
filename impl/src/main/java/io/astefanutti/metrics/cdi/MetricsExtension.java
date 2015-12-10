@@ -86,7 +86,7 @@ public class MetricsExtension implements Extension {
     private void customMetrics(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet())
-            producer.produceMetric(manager, metric.getKey(), metric.getValue());
+            producer.registerMetric(manager, metric.getKey(), metric.getValue());
 
         // Let's clear the collected metric producers
         metrics.clear();

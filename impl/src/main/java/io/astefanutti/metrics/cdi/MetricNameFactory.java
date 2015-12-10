@@ -22,18 +22,18 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Singleton;
 
 @Singleton
-/* package-private */ final class MetricNameStrategyProducer {
+/* package-private */ final class MetricNameFactory {
 
     @Produces
     @Singleton
-    private MetricNameStrategy metricNameStrategy(BeanManager manager) {
+    private MetricName metricName(BeanManager manager) {
         try {
             // Cannot be inlined as OWB throws a NPE when manager.getELResolver() gets called
             ExpressionFactory factory = ExpressionFactory.newInstance();
-            return new MetricNameElStrategy(manager.getELResolver(), manager.wrapExpressionFactory(factory));
+            return new ElMetricName(manager.getELResolver(), manager.wrapExpressionFactory(factory));
         } catch (ELException cause) {
             // Falls back to SE
-            return new MetricNameSeStrategy();
+            return new SeMetricName();
         }
     }
 }

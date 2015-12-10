@@ -35,11 +35,11 @@ import java.lang.reflect.Method;
 @Singleton
 /* package-private */ final class MetricResolver {
 
-    private final MetricNameStrategy strategy;
+    private final MetricName metricName;
 
     @Inject
-    private MetricResolver(MetricNameStrategy strategy) {
-        this.strategy = strategy;
+    private MetricResolver(MetricName metricName) {
+        this.metricName = metricName;
     }
 
     Of<CachedGauge> cachedGauge(Method method) {
@@ -83,12 +83,12 @@ import java.lang.reflect.Method;
     }
 
     private <E extends Member & AnnotatedElement> String metricName(E element, Class<? extends Annotation> type, String name, boolean absolute) {
-        String metric = name.isEmpty() ? defaultName(element, type) : strategy.resolve(name);
+        String metric = name.isEmpty() ? defaultName(element, type) : metricName.of(name);
         return absolute ? metric : MetricRegistry.name(element.getDeclaringClass(), metric);
     }
 
     private <E extends Member & AnnotatedElement> String metricName(Class<?> bean, E element, Class<? extends Annotation> type, String name, boolean absolute) {
-        String metric = name.isEmpty() ? bean.getSimpleName() : strategy.resolve(name);
+        String metric = name.isEmpty() ? bean.getSimpleName() : metricName.of(name);
         return absolute ? MetricRegistry.name(metric, defaultName(element, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(element, type));
     }
 

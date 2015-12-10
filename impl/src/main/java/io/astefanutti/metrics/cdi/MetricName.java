@@ -15,7 +15,14 @@
  */
 package io.astefanutti.metrics.cdi;
 
-/* package-private */ interface MetricNameStrategy {
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.InjectionPoint;
 
-    String resolve(String name);
+/* package-private */ interface MetricName {
+
+    String of(InjectionPoint point);
+
+    String of(AnnotatedMember<?> member);
+
+    String of(String attribute);
 }

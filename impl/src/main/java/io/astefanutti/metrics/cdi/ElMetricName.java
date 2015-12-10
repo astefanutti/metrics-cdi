@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Vetoed
-/* package-private */ final class MetricNameElStrategy implements MetricNameStrategy {
+/* package-private */ final class ElMetricName extends SeMetricName {
 
     private static final Pattern PATTERN = Pattern.compile("[#|$]\\{(.*)\\}");
 
@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
     private final ExpressionFactory expressionFactory;
 
-    MetricNameElStrategy(ELResolver resolver, ExpressionFactory expressionFactory) {
+    ElMetricName(ELResolver resolver, ExpressionFactory expressionFactory) {
         CompositeELResolver composite = new CompositeELResolver();
         composite.add(resolver);
         composite.add(new MapELResolver());
@@ -53,11 +53,12 @@ import java.util.regex.Pattern;
         this.expressionFactory = expressionFactory;
     }
 
-    public String resolve(String name) {
-        Matcher matcher = PATTERN.matcher(name);
+    @Override
+    public String of(String attribute) {
+        Matcher matcher = PATTERN.matcher(attribute);
         // Avoid creating objects if no expressions are found
         if (!matcher.find())
-            return name;
+            return super.of(attribute);
         else
             return evaluateCompositeExpression(matcher);
     }
