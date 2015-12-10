@@ -30,14 +30,14 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class MetricRegistryProducerFieldBeanTest {
+public class MetricRegistryProducerMethodBeanTest {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 
@@ -45,7 +45,7 @@ public class MetricRegistryProducerFieldBeanTest {
     static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
             // Metric registry bean
-            .addClass(MetricRegistryProducerFieldBean.class)
+            .addClass(MetricRegistryProducerMethodBean.class)
             // Test bean
             .addClass(TimedMethodBean.class)
             // Metrics CDI extension
@@ -63,7 +63,7 @@ public class MetricRegistryProducerFieldBeanTest {
     @Test
     @InSequence(1)
     public void timedMethodNotCalledYet() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), contains(TIMER_NAME));
+        assertThat("Metrics are not registered correctly", registry.getMetrics().keySet(), containsInAnyOrder("counter", "timer", TIMER_NAME));
 
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(TIMER_NAME));
         Timer timer = registry.getTimers().get(TIMER_NAME);

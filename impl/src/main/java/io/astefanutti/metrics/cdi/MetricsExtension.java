@@ -17,6 +17,7 @@ package io.astefanutti.metrics.cdi;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
@@ -85,8 +86,12 @@ public class MetricsExtension implements Extension {
 
     private void customMetrics(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
-        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet())
+        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
+            // TODO: add MetricSet metrics into the metric registry
+            if (metric.getKey().getTypes().contains(MetricSet.class))
+                continue;
             producer.registerMetric(manager, metric.getKey(), metric.getValue());
+        }
 
         // Let's clear the collected metric producers
         metrics.clear();
