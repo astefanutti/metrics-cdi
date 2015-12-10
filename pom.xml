@@ -64,7 +64,7 @@
         <weld.version>2.3.2.Final</weld.version>
         <owb.version>1.6.2</owb.version>
         <wildfly.version>8.2.1.Final</wildfly.version>
-        <wildfly-9.version>9.0.0.CR2</wildfly-9.version>
+        <wildfly-9.version>9.0.2.Final</wildfly-9.version>
         <!--Jetty requires Java 8 since version 9.3 -->
         <jetty.version>9.2.11.v20150529</jetty.version>
         <arquillian.version>1.1.10.Final</arquillian.version>
