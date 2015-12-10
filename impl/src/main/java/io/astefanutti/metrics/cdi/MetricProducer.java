@@ -89,7 +89,7 @@ import java.lang.reflect.Method;
     }
 
     void produceMetric(BeanManager manager, Bean<?> bean, AnnotatedMember<?> member) {
-        com.codahale.metrics.Metric metric = (com.codahale.metrics.Metric) manager.getReference(bean, member.getBaseType(), manager.createCreationalContext(null));
+        com.codahale.metrics.Metric metric = (com.codahale.metrics.Metric) manager.getReference(bean, member.getBaseType(), manager.createCreationalContext(bean));
         registry.register(metricName(member), metric);
     }
 

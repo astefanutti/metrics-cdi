@@ -104,6 +104,6 @@ public class MetricsExtension implements Extension {
     @SuppressWarnings("unchecked")
     private static <T> T getBeanInstance(BeanManager manager, Class<T> clazz) {
         Bean<?> bean = manager.resolve(manager.getBeans(clazz));
-        return (T) manager.getReference(bean, clazz, manager.createCreationalContext(null));
+        return (T) manager.getReference(bean, clazz, manager.createCreationalContext(bean));
     }
 }
