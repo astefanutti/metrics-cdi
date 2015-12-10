@@ -40,7 +40,7 @@ public class MetricProducerMethodBeanJava8 {
 
     @Produces
     @Metric(name = "cache-hits")
-    private Gauge<Double> cacheHitRatioGauge(Meter hits, Timer calls) {
+    Gauge<Double> cacheHitRatioGauge(Meter hits, Timer calls) {
         return () -> calls.getCount() == 0 ? Double.NaN : (double) hits.getCount() / calls.getCount();
     }
 }
