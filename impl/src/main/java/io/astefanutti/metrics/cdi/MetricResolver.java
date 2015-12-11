@@ -86,6 +86,7 @@ import java.util.Set;
         return new DoesNotHaveMetric<>();
     }
 
+    // TODO: should be grouped with the metric name strategy
     private <E extends Member & AnnotatedElement> String metricName(E element, Class<? extends Annotation> type, String name, boolean absolute) {
         String metric = name.isEmpty() ? defaultName(element, type) : metricName.of(name);
         return absolute ? metric : MetricRegistry.name(element.getDeclaringClass(), metric);

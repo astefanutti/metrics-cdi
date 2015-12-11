@@ -24,5 +24,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
     String of(AnnotatedMember<?> member);
 
+    // TODO: expose an SPI so that external strategies can be provided. For example, Camel CDI could provide a property placeholder resolution strategy.
     String of(String attribute);
 }
