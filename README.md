@@ -385,6 +385,26 @@ class MetricRegistryFactoryBean {
 [typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
 [built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
 
+
+#### Metrics CDI Configuration
+
+_Metrics CDI_ fires a `MetricsConfiguration` event at deployment time that can be used by the application to configure it, e.g.:
+
+```java
+import io.astefanutti.metrics.cdi.MetricsConfiguration;
+
+import javax.enterprise.event.Observes;
+
+class MetricsCdiConfiguration {
+
+    static void configure(@Observes MetricsConfiguration metrics) {
+        metrics.useAbsoluteName(true);
+    }
+}
+```
+
+Note that this event can only be used within the context of the observer method invocation. Any attempt to call one of its methods outside of that context will result in an `IllegalStateException` to be thrown.
+
 ## Limitations
 
 [CDI 1.2][] leverages on [Java Interceptors Specification 1.2][] to provide the ability to [associate interceptors to beans][Binding an interceptor to a bean] via _typesafe_ interceptor bindings. Interceptors are a mean to separate cross-cutting concerns from the business logic and _Metrics CDI_ is relying on interceptors to implement the support of _Metrics_ annotations in a CDI enabled environment.
