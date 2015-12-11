@@ -13,35 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.metrics.cdi.se;
+package io.astefanutti.metrics.cdi;
 
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.annotation.Metric;
+/**
+ * The Metrics CDI configuration. Metrics CDI fires a {@code MetricsConfiguration} event
+ * during the deployment phase and that the application can observe to configure Metrics CDI.
+ */
+public interface MetricsConfiguration {
 
-import javax.inject.Inject;
-
-public class TimerFieldBean {
-
-    @Inject
-    Timer timerWithoutAnnotation;
-
-    @Inject
-    @Metric(absolute = false)
-    Timer timerWithExplicitNonAbsoluteName;
-
-    @Inject
-    @Metric
-    Timer timerWithNoName;
-
-    @Inject
-    @Metric(name = "timerName")
-    Timer timerWithName;
-
-    @Inject
-    @Metric(absolute = true)
-    Timer timerWithAbsoluteDefaultName;
-
-    @Inject
-    @Metric(name = "timerAbsoluteName", absolute = true)
-    Timer timerWithAbsoluteName;
+    /**
+     * Overrides the Metrics annotation {@code absolute} attribute values globally for the application to use metric absolute names.
+     *
+     * @return This Metrics CDI configuration
+     */
+    MetricsConfiguration useAbsoluteName(boolean useAbsoluteName);
 }

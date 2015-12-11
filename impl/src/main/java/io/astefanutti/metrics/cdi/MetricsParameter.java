@@ -13,35 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.metrics.cdi.se;
+package io.astefanutti.metrics.cdi;
 
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.annotation.Metric;
 
-import javax.inject.Inject;
+/* package-private */ enum MetricsParameter {
 
-public class TimerFieldBean {
-
-    @Inject
-    Timer timerWithoutAnnotation;
-
-    @Inject
-    @Metric(absolute = false)
-    Timer timerWithExplicitNonAbsoluteName;
-
-    @Inject
-    @Metric
-    Timer timerWithNoName;
-
-    @Inject
-    @Metric(name = "timerName")
-    Timer timerWithName;
-
-    @Inject
-    @Metric(absolute = true)
-    Timer timerWithAbsoluteDefaultName;
-
-    @Inject
-    @Metric(name = "timerAbsoluteName", absolute = true)
-    Timer timerWithAbsoluteName;
+    useAbsoluteName
 }

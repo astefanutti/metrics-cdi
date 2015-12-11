@@ -58,6 +58,12 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
+    private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
+
+    Set<MetricsParameter> getParameters() {
+        return configuration.getParameters();
+    }
+
     private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {
         declareAsInterceptorBinding(Counted.class, manager, bbd);
         declareAsInterceptorBinding(ExceptionMetered.class, manager, bbd);
@@ -84,7 +90,12 @@ public class MetricsExtension implements Extension {
             abd.addBean(new MetricRegistryBean(manager));
     }
 
-    private void customMetrics(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+    private void configuration(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+        // Fire configuration event
+        manager.fireEvent(configuration);
+        configuration.unmodifiable();
+
+        // Produce and register custom metrics
         MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
             // TODO: add MetricSet metrics into the metric registry

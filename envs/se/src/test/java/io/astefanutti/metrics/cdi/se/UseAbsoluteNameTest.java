@@ -16,36 +16,34 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.MetricRegistry;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import io.astefanutti.metrics.cdi.MetricsConfiguration;
 import io.astefanutti.metrics.cdi.MetricsExtension;
-import io.astefanutti.metrics.cdi.se.util.MetricsUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimerFieldBeanTest {
+public class UseAbsoluteNameTest {
 
-    private final static String[] METRIC_NAMES = {"timerWithoutAnnotation", "timerWithExplicitNonAbsoluteName", "timerWithNoName", "timerName"};
-
-    private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithAbsoluteDefaultName", "timerAbsoluteName"};
+    private final static String[] ABSOLUTE_METRIC_NAMES = {"timerWithoutAnnotation", "timerWithExplicitNonAbsoluteName", "timerWithNoName", "timerName", "timerWithAbsoluteDefaultName", "timerAbsoluteName"};
 
     private Set<String> metricNames() {
-        Set<String> names = MetricsUtil.absoluteMetricNames(TimerFieldBean.class, METRIC_NAMES);
-        names.addAll(Arrays.asList(ABSOLUTE_METRIC_NAMES));
-        return names;
+        return new HashSet<>(Arrays.asList(ABSOLUTE_METRIC_NAMES));
     }
 
     @Deployment
@@ -57,6 +55,10 @@ public class TimerFieldBeanTest {
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
+
+    static void configuration(@Observes MetricsConfiguration configuration) {
+        configuration.useAbsoluteName(true);
     }
 
     @Inject

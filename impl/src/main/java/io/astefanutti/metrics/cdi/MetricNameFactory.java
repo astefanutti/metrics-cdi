@@ -30,10 +30,10 @@ import javax.inject.Singleton;
         try {
             // Cannot be inlined as OWB throws a NPE when manager.getELResolver() gets called
             ExpressionFactory factory = ExpressionFactory.newInstance();
-            return new ElMetricName(manager.getELResolver(), manager.wrapExpressionFactory(factory));
+            return new ElMetricName(manager.getELResolver(), manager.wrapExpressionFactory(factory), manager.getExtension(MetricsExtension.class).getParameters());
         } catch (ELException cause) {
             // Falls back to SE
-            return new SeMetricName();
+            return new SeMetricName(manager.getExtension(MetricsExtension.class).getParameters());
         }
     }
 }
