@@ -17,14 +17,17 @@ package io.astefanutti.metrics.cdi;
 
 /**
  * The Metrics CDI configuration. Metrics CDI fires a {@code MetricsConfiguration} event
- * during the deployment phase and that the application can observe to configure Metrics CDI.
+ * during the deployment phase that the application can observe and use to configure it.
+ *
+ * Note that the event fired can only be used within the observer method invocation context. Any attempt to call one of its methods outside of that context will result in an `IllegalStateException` to be thrown.
  */
 public interface MetricsConfiguration {
 
     /**
      * Overrides the Metrics annotation {@code absolute} attribute values globally for the application to use metric absolute names.
      *
-     * @return This Metrics CDI configuration
+     * @return this Metrics CDI configuration
+     * @throws IllegalStateException if called outside of the observer method invocation
      */
     MetricsConfiguration useAbsoluteName(boolean useAbsoluteName);
 }
