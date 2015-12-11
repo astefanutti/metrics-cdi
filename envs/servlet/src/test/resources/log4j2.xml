@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" shutdownHook="disable">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%style{%d}{dim} %highlight{%-5p}{FATAL=red reverse, ERROR=red, INFO=green, DEBUG=green dim, TRACE=white dim} %style{[%15.15t]}{dim} %style{%-40.40c{1.}}{cyan} %style{:}{dim} %highlight{%msg%n%rEx}{FATAL=red reverse, ERROR=red, INFO=green, DEBUG=green dim, TRACE=white dim}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.jboss.weld" level="info" />
+        <logger name="org.apache.webbeans" level="info" />
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
