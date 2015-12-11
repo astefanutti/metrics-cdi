@@ -70,6 +70,7 @@ import javax.interceptor.Interceptor;
             @Override
             @SuppressWarnings("unchecked")
             public T getValue() {
+                // TODO: better error report when the gauge doesn't exist
                 return ((Gauge<T>) registry.getGauges().get(name)).getValue();
             }
         };
