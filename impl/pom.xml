@@ -9,7 +9,29 @@
     </parent>
 
     <artifactId>metrics-cdi</artifactId>
+    <packaging>bundle</packaging>
     <name>Metrics CDI Library</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>io.astefanutti.metrics.cdi</Export-Package>
+                        <Import-Package>*</Import-Package>
+                        <Provide-Capability>org.ops4j.pax.cdi.extension; extension=metrics-cdi-extension</Provide-Capability>
+                        <Implementation-Title>Dropwizard Metrics CDI</Implementation-Title>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Karaf-Info>Metrics;${project.artifactId}=${project.version}</Karaf-Info>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
 
