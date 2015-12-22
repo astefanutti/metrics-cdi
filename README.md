@@ -6,7 +6,7 @@
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
 [Coveralls badge]: https://img.shields.io/coveralls/astefanutti/metrics-cdi.svg?style=flat
 [Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi
-[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg?style=flat
+[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg?style=flat
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.3.1/
