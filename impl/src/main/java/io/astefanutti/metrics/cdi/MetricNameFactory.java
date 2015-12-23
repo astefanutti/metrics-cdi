@@ -19,13 +19,11 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Singleton;
 
-@Singleton
-/* package-private */ final class MetricNameFactory {
+/* package-private */ class MetricNameFactory {
 
     @Produces
-    @Singleton
+    // TODO: should be declared @ApplicationScoped when WELD-2083 is fixed
     private MetricName metricName(BeanManager manager) {
         try {
             // Cannot be inlined as OWB throws a NPE when manager.getELResolver() gets called

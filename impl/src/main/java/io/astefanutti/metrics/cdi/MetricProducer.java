@@ -24,6 +24,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AnnotatedMember;
@@ -31,23 +32,18 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.interceptor.Interceptor;
 
-@Singleton
 @Alternative
+@ApplicationScoped
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* package-private */ final class MetricProducer {
-
-    private final MetricRegistry registry;
-
-    private final MetricName metricName;
+/* package-private */ class MetricProducer {
 
     @Inject
-    private MetricProducer(MetricRegistry registry, MetricName metricName) {
-        this.registry = registry;
-        this.metricName = metricName;
-    }
+    private MetricRegistry registry;
+
+    @Inject
+    private MetricName metricName;
 
     // Use to produce and register custom metrics
     void registerMetric(BeanManager manager, Bean<?> bean, AnnotatedMember<?> member) {

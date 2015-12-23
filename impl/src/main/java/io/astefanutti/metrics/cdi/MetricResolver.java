@@ -23,28 +23,23 @@ import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.Set;
 
-@Singleton
-/* package-private */ final class MetricResolver {
-
-    private final Set<MetricsParameter> parameters;
-
-    private final MetricName metricName;
+@ApplicationScoped
+/* package-private */ class MetricResolver {
 
     @Inject
-    private MetricResolver(MetricsExtension metricsExtension, MetricName metricName) {
-        this.parameters = metricsExtension.getParameters();
-        this.metricName = metricName;
-    }
+    private MetricsExtension extension;
+
+    @Inject
+    private MetricName metricName;
 
     Of<CachedGauge> cachedGauge(Method method) {
         return resolverOf(method, CachedGauge.class);
@@ -133,7 +128,7 @@ import java.util.Set;
     }
 
     private boolean isMetricAbsolute(Annotation annotation) {
-        if (parameters.contains(MetricsParameter.useAbsoluteName))
+        if (extension.getParameters().contains(MetricsParameter.useAbsoluteName))
             return true;
 
         if (CachedGauge.class.isInstance(annotation))
