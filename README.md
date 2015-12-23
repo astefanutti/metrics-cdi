@@ -4,11 +4,11 @@
 
 [Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
-[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/metrics-cdi.svg?style=flat
-[Coveralls build]: https://coveralls.io/r/astefanutti/metrics-cdi
+[Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.svg
+[Coveralls build]: https://coveralls.io/github/astefanutti/metrics-cdi
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
-[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg?style=flat
+[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.3.1/
 
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
