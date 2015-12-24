@@ -19,71 +19,49 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
 import javax.interceptor.Interceptor;
 
 @Alternative
-@ApplicationScoped
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
-/* package-private */ class MetricProducer {
-
-    @Inject
-    private MetricRegistry registry;
-
-    @Inject
-    private MetricName metricName;
-
-    // Use to produce and register custom metrics
-    void registerMetric(BeanManager manager, Bean<?> bean, AnnotatedMember<?> member) {
-        Metric metric = (Metric) manager.getReference(bean, member.getBaseType(), manager.createCreationalContext(bean));
-        registry.register(metricName.of(member), metric);
-    }
+/* package-private */ final class MetricProducer {
 
     @Produces
-    private Counter produceCounter(InjectionPoint ip) {
+    private static Counter counter(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
         return registry.counter(metricName.of(ip));
     }
 
     @Produces
-    private <T> Gauge<T> produceGauge(InjectionPoint ip) {
-        final String name = metricName.of(ip);
-        // A forwarding Gauge must be be returned as the Gauge creation happens when
-        // the declaring bean gets instantiated and the corresponding Gauge can be
-        // injected before which leads to producing a null value
+    private static <T> Gauge<T> gauge(final InjectionPoint ip, final MetricRegistry registry, final MetricName metricName) {
+        // A forwarding Gauge must be returned as the Gauge creation happens when the declaring bean gets instantiated and the corresponding Gauge can be injected before which leads to producing a null value
         return new Gauge<T>() {
             @Override
             @SuppressWarnings("unchecked")
             public T getValue() {
                 // TODO: better error report when the gauge doesn't exist
-                return ((Gauge<T>) registry.getGauges().get(name)).getValue();
+                return ((Gauge<T>) registry.getGauges().get(metricName.of(ip))).getValue();
             }
         };
     }
 
     @Produces
-    private Histogram produceHistogram(InjectionPoint ip) {
+    private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
         return registry.histogram(metricName.of(ip));
     }
 
     @Produces
-    private Meter produceMeter(InjectionPoint ip) {
+    private static Meter meter(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
         return registry.meter(metricName.of(ip));
     }
 
     @Produces
-    private Timer produceTimer(InjectionPoint ip) {
+    private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
         return registry.timer(metricName.of(ip));
     }
 }

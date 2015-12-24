@@ -43,6 +43,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -96,12 +97,13 @@ public class MetricsExtension implements Extension {
         configuration.unmodifiable();
 
         // Produce and register custom metrics
-        MetricProducer producer = getBeanInstance(manager, MetricProducer.class);
-        for (Map.Entry<Bean<?>, AnnotatedMember<?>> metric : metrics.entrySet()) {
+        MetricRegistry registry = getReference(manager, MetricRegistry.class);
+        MetricName name = getReference(manager, MetricName.class);
+        for (Map.Entry<Bean<?>, AnnotatedMember<?>> bean : metrics.entrySet()) {
             // TODO: add MetricSet metrics into the metric registry
-            if (metric.getKey().getTypes().contains(MetricSet.class))
+            if (bean.getKey().getTypes().contains(MetricSet.class))
                 continue;
-            producer.registerMetric(manager, metric.getKey(), metric.getValue());
+            registry.register(name.of(bean.getValue()), (Metric) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
         }
 
         // Let's clear the collected metric producers
@@ -117,9 +119,12 @@ public class MetricsExtension implements Extension {
         bbd.addInterceptorBinding(new AnnotatedTypeDecorator<>(annotated, INTERCEPTOR_BINDING, methods));
     }
 
+    private static <T> T getReference(BeanManager manager, Class<T> type) {
+        return getReference(manager, type, manager.resolve(manager.getBeans(type)));
+    }
+
     @SuppressWarnings("unchecked")
-    private static <T> T getBeanInstance(BeanManager manager, Class<T> clazz) {
-        Bean<?> bean = manager.resolve(manager.getBeans(clazz));
-        return (T) manager.getReference(bean, clazz, manager.createCreationalContext(bean));
+    private static <T> T getReference(BeanManager manager, Type type, Bean<?> bean) {
+        return (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
     }
 }
