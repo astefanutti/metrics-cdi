@@ -306,9 +306,7 @@ class CacheHitRatioBean {
     @Produces
     @Metric(name = "cache-hits")
     private Gauge<Double> cacheHitRatioGauge(Meter hits, Timer calls) {
-        return () -> calls.getOneMinuteRate() != 0 ?
-                     hits.getOneMinuteRate() / calls.getOneMinuteRate() :
-                     Double.NaN;
+        return () -> Ratio.of(hits.getCount(), calls.getCount()).getValue();
     }
 }
 ```
