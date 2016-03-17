@@ -69,7 +69,7 @@
         <jetty.version>9.2.11.v20150529</jetty.version>
         <arquillian.version>1.1.11.Final</arquillian.version>
         <arquillian.weld.version>1.0.0.CR9</arquillian.weld.version>
-        <shrinkwrap.resolver.version>2.2.0</shrinkwrap.resolver.version>
+        <shrinkwrap.resolver.version>2.2.2</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-8</shrinkwrap.descriptors.version>
     </properties>
 
