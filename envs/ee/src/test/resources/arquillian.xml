@@ -4,9 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <container qualifier="wildfly-managed" default="false">
+    <container qualifier="wildfly-8-managed" default="false">
         <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly.version}</property>
+            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-8.version}</property>
             <!-- FIXME: use when ARQ-579 is fixed -->
             <!--<protocol type="Servlet 3.0"/>-->
             <!-- ARQ-649 workaround -->
@@ -23,6 +23,15 @@
             <property name="outputToConsole">true</property>
             <property name="allowConnectingToRunningServer">false</property>
             <property name="javaVmArguments">-Xms128m -Xmx256m -XX:MaxPermSize=128m ${jacoco.agent}</property>
+        </configuration>
+    </container>
+
+    <container qualifier="wildfly-10-managed" default="false">
+        <configuration>
+            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-10.version}</property>
+            <property name="outputToConsole">true</property>
+            <property name="allowConnectingToRunningServer">false</property>
+            <property name="javaVmArguments">-Xms128m -Xmx256m ${jacoco.agent}</property>
         </configuration>
     </container>
 
