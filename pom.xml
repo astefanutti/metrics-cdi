@@ -62,7 +62,7 @@
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.3.3.Final</weld.version>
-        <owb.version>1.6.2</owb.version>
+        <owb.version>1.6.3</owb.version>
         <wildfly.version>8.2.1.Final</wildfly.version>
         <wildfly-9.version>9.0.2.Final</wildfly-9.version>
         <!--Jetty requires Java 8 since version 9.3 -->
