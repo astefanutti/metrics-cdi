@@ -70,19 +70,17 @@ Besides depending on _Metrics_ (`metrics-core` and `metrics-annotation` modules)
 
 _Metrics CDI_ is currently successfully tested with the following containers:
 
-| Container            | Version       | Specification          | Arquillian Container Adapter           |
-| -------------------- | ------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]          | `2.3.2.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]          | `2.3.2.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
-| [OpenWebBeans][]     | `1.6.2`       | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
-| [Jetty][]            | `9.2.11`      | [Servlet 3.1][]        | `arquillian-jetty-embedded-9`          |
-| [WildFly 8][WildFly] | `8.2.1.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
-| [WildFly 9][WildFly] | `9.0.2.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+| Container            | Version       | Environment                          |
+| -------------------- | ------------- | ------------------------------------ |
+| [Weld][]             | `2.3.2.Final` | Java SE 7,8 / [CDI 1.2][JSR 346 1.2] |
+| [OpenWebBeans][]     | `1.6.2`       | Java SE 7,8 / [CDI 1.2][JSR 346 1.2] |
+| [Jetty][]            | `9.2.11`      | [Servlet 3.1][]                      |
+| [WildFly 8][WildFly] | `8.2.1.Final` | [Java EE 7][]                        |
+| [WildFly 9][WildFly] | `9.0.2.Final` | [Java EE 7][]                        |
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 
 [Weld SE]: http://weld.cdi-spec.org/
-[Weld EE]: http://weld.cdi-spec.org/
 [OpenWebBeans]: http://openwebbeans.apache.org/
 [Jetty]: http://www.eclipse.org/jetty/
 [WildFly]: http://www.wildfly.org/
@@ -145,6 +143,7 @@ class CountedConstructorBean {
     }
 }
 ```
+
 The `name` and `absolute` attributes available on every _Metrics_ annotation can be used to customize the name of the `Metric` instance that gets registered in the _Metrics_ registry. The default naming convention being the annotated member simple name relative to the declaring class fully qualified name as illustrated in the above examples.
 
 [bean class]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
