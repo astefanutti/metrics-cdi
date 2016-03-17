@@ -22,7 +22,11 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>io.astefanutti.metrics.cdi</Export-Package>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            javax.enterprise.*; version="[1,3)",
+                            javax.decorator.*; version="[1,3)",
+                            *
+                        </Import-Package>
                         <Provide-Capability>org.ops4j.pax.cdi.extension; extension=metrics-cdi-extension</Provide-Capability>
                         <Implementation-Title>Dropwizard Metrics CDI</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>
