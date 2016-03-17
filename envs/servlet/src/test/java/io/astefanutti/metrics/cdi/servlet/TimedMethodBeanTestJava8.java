@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TimedMethodBeanTest {
+public class TimedMethodBeanTestJava8 {
 
     private final static String TIMER_NAME = MetricRegistry.name(TimedMethodBean.class, "timedMethod");
 

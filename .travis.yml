@@ -27,6 +27,7 @@ jdk:
 matrix:
   include:
     - jdk: oraclejdk8
+      script: mvn -B test -Pjacoco -Pjetty -pl envs/servlet
       script: mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
 
 notifications:
