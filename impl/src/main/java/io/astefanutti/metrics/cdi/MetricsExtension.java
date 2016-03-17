@@ -61,7 +61,7 @@ public class MetricsExtension implements Extension {
 
     private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
 
-    Set<MetricsParameter> getParameters() {
+    public Set<MetricsParameter> getParameters() {
         return configuration.getParameters();
     }
 
