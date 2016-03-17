@@ -81,7 +81,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 
-[Weld SE]: http://weld.cdi-spec.org/
+[Weld]: http://weld.cdi-spec.org/
 [OpenWebBeans]: http://openwebbeans.apache.org/
 [Jetty]: http://www.eclipse.org/jetty/
 [WildFly]: http://www.wildfly.org/
