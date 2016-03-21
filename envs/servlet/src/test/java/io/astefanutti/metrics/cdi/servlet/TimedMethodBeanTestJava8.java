@@ -97,14 +97,11 @@ public class TimedMethodBeanTestJava8 {
     }
 
     private String readStreamAndClose(InputStream is) throws IOException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             int read;
-            while( (read = is.read()) != -1)
+            while((read = is.read()) != -1)
                 os.write(read);
-        } finally {
-            is.close();
+            return os.toString();
         }
-        return os.toString();
     }
 }
