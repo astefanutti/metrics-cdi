@@ -23,12 +23,14 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
 @Alternative
+@Dependent
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 /* package-private */ final class MetricProducer {
 
