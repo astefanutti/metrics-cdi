@@ -17,9 +17,11 @@ package io.astefanutti.metrics.cdi;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.BeanManager;
 
+@Dependent
 /* package-private */ class MetricNameFactory {
 
     @Produces
