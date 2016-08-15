@@ -45,16 +45,16 @@ import java.lang.reflect.Member;
 
     @AroundConstruct
     private Object meteredConstructor(InvocationContext context) throws Throwable {
-        return meteredCallable(context, context.getConstructor());
+        return meteredCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
     }
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Throwable {
-        return meteredCallable(context, context.getMethod());
+        return meteredCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, E element) throws Throwable {
-        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(element);
+    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, Class<?> topClass, E element) throws Throwable {
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(topClass, element);
         Meter meter = (Meter) registry.getMetrics().get(exceptionMetered.metricName());
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + exceptionMetered.metricName() + "] found in registry [" + registry + "]");

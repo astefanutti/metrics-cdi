@@ -46,21 +46,21 @@ import javax.interceptor.AroundTimeout;
 
     @AroundConstruct
     private Object meteredConstructor(InvocationContext context) throws Exception {
-        return meteredCallable(context, context.getConstructor());
+        return meteredCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
     }
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Exception {
-        return meteredCallable(context, context.getMethod());
+        return meteredCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
     @AroundTimeout
     private Object meteredTimeout(InvocationContext context) throws Exception {
-        return meteredCallable(context, context.getMethod());
+        return meteredCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, E element) throws Exception {
-        String name = resolver.metered(element).metricName();
+    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, Class<?> topClass, E element) throws Exception {
+        String name = resolver.metered(topClass, element).metricName();
         Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
