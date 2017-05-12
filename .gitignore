@@ -4,4 +4,5 @@
 target/
 logs/
 .idea/
+.vscode/
 *.iml
