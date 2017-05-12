@@ -71,7 +71,7 @@
         <arquillian.weld.version>1.0.0.CR9</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.2.2</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-9</shrinkwrap.descriptors.version>
-        <log4j.version>2.6.1</log4j.version>
+        <log4j.version>2.8.2</log4j.version>
     </properties>
 
     <modules>
