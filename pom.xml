@@ -58,7 +58,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metrics.version>3.1.2</metrics.version>
+        <metrics.version>3.2.2</metrics.version>
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <weld.version>2.3.4.Final</weld.version>
