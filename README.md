@@ -253,45 +253,6 @@ class TimedMethodBean {
 Another use case is to register custom [gauges], e.g. with a [producer method][]:
 
 ```java
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Ratio;
-import com.codahale.metrics.RatioGauge;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.annotation.Metric;
-import com.codahale.metrics.annotation.Timed;
-
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-
-class CacheHitRatioBean {
-
-    @Inject
-    private Meter hits; // Meter name => CacheHitRatioBean.hits
-
-    @Timed(name = "calls")
-    public void cachedMethod() {
-        // Timer name => CacheHitRatioBean.calls
-        if (hit)
-            hits.mark();
-    }
-
-    @Produces
-    @Metric(name = "cache-hits")
-    private Gauge<Double> cacheHitRatioGauge(final Meter hits, final Timer calls) {
-        return new RatioGauge() { // Gauge name => CacheHitRatioBean.cache-hits
-            @Override
-            protected Ratio getRatio() {
-                return Ratio.of(hits.getOneMinuteRate(), calls.getOneMinuteRate());
-            }
-        };
-    }
-}
-```
-
-Since Java 8, [lambda expressions][] can be used as a generic way to compose metrics, so that the above example can be rewritten the following way:
-
-```java
 class CacheHitRatioBean {
 
     @Inject
@@ -316,7 +277,6 @@ class CacheHitRatioBean {
 [timers]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#timers
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
-[lambda expressions]: http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
 
 #### Metrics Registry Resolution
 
