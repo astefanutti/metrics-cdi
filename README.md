@@ -380,6 +380,6 @@ Note that this event can only be used within the context of the observer method 
 
 ## License
 
-Copyright © 2013-2015, Antonin Stefanutti
+Copyright © 2013-2017, Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
