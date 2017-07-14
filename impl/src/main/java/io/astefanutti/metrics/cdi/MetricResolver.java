@@ -41,42 +41,47 @@ import java.lang.reflect.Method;
     @Inject
     private MetricName metricName;
 
-    Of<CachedGauge> cachedGauge(Method method) {
-        return resolverOf(method, CachedGauge.class);
+    Of<CachedGauge> cachedGauge(Class<?> topClass, Method method) {
+        return resolverOf(topClass, method, CachedGauge.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Counted> counted(E element) {
-        return resolverOf(element, Counted.class);
+    <E extends Member & AnnotatedElement> Of<Counted> counted(Class<?> topClass, E element) {
+        return resolverOf(topClass, element, Counted.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<ExceptionMetered> exceptionMetered(E element) {
-        return resolverOf(element, ExceptionMetered.class);
+    <E extends Member & AnnotatedElement> Of<ExceptionMetered> exceptionMetered(Class<?> topClass, E element) {
+        return resolverOf(topClass, element, ExceptionMetered.class);
     }
 
-    Of<Gauge> gauge(Method method) {
-        return resolverOf(method, Gauge.class);
+    Of<Gauge> gauge(Class<?> topClass, Method method) {
+        return resolverOf(topClass, method, Gauge.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Metered> metered(E element) {
-        return resolverOf(element, Metered.class);
+    <E extends Member & AnnotatedElement> Of<Metered> metered(Class<?> topClass, E element) {
+        return resolverOf(topClass, element, Metered.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Timed> timed(E element) {
-        return resolverOf(element, Timed.class);
+    <E extends Member & AnnotatedElement> Of<Timed> timed(Class<?> topClass, E element) {
+        return resolverOf(topClass, element, Timed.class);
     }
 
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(E element, Class<T> type) {
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(Class<?> topClass, E element, Class<T> type) {
         if (element.isAnnotationPresent(type)) {
             T annotation = element.getAnnotation(type);
             String name = metricName(element, type, metricName(annotation), isMetricAbsolute(annotation));
             return new DoesHaveMetric<>(annotation, name);
         } else {
-            Class<?> bean = element.getDeclaringClass();
-            if (bean.isAnnotationPresent(type)) {
-                T annotation = bean.getAnnotation(type);
-                String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
-                return new DoesHaveMetric<>(annotation, name);
-            }
+        	return resolverOf(element, type, topClass);
+        }
+    }
+    
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(E element, Class<T> type, Class<?> bean) {
+        if (bean.isAnnotationPresent(type)) {
+            T annotation = bean.getAnnotation(type);
+            String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
+            return new DoesHaveMetric<>(annotation, name);
+        } else if (bean.getSuperclass() != null) {
+        	return resolverOf(element, type, bean.getSuperclass());
         }
         return new DoesNotHaveMetric<>();
     }

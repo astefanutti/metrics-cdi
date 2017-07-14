@@ -46,21 +46,21 @@ import javax.interceptor.AroundTimeout;
 
     @AroundConstruct
     private Object countedConstructor(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getConstructor());
+        return countedCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
     }
 
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getMethod());
+        return countedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
     @AroundTimeout
     private Object countedTimeout(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getMethod());
+        return countedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, E element) throws Exception {
-        MetricResolver.Of<Counted> counted = resolver.counted(element);
+    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, Class<?> topClass, E element) throws Exception {
+        MetricResolver.Of<Counted> counted = resolver.counted(topClass, element);
         Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
             throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");

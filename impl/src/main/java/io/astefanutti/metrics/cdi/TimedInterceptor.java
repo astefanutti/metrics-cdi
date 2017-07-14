@@ -46,21 +46,21 @@ import javax.interceptor.AroundTimeout;
 
     @AroundConstruct
     private Object timedConstructor(InvocationContext context) throws Exception {
-        return timedCallable(context, context.getConstructor());
+        return timedCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
     }
 
     @AroundInvoke
     private Object timedMethod(InvocationContext context) throws Exception {
-        return timedCallable(context, context.getMethod());
+        return timedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
     @AroundTimeout
     private Object timedTimeout(InvocationContext context) throws Exception {
-        return timedCallable(context, context.getMethod());
+        return timedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object timedCallable(InvocationContext context, E element) throws Exception {
-        String name = resolver.timed(element).metricName();
+    private <E extends Member & AnnotatedElement> Object timedCallable(InvocationContext context, Class<?> topClass, E element) throws Exception {
+        String name = resolver.timed(topClass, element).metricName();
         Timer timer = (Timer) registry.getMetrics().get(name);
         if (timer == null)
             throw new IllegalStateException("No timer with name [" + name + "] found in registry [" + registry + "]");

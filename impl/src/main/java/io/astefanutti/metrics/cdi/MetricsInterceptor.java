@@ -53,8 +53,10 @@ import java.util.concurrent.TimeUnit;
 
     @AroundConstruct
     private Object metrics(InvocationContext context) throws Exception {
+    	
+    	Class<?> topClass = context.getConstructor().getDeclaringClass();
         // Registers the present bean constructor metrics
-        registerMetrics(context.getConstructor());
+        registerMetrics(topClass, context.getConstructor());
 
         // Registers the present methods metrics over the bean type hierarchy
         Class<?> bean = context.getConstructor().getDeclaringClass();
@@ -62,7 +64,7 @@ import java.util.concurrent.TimeUnit;
             // TODO: discover annotations declared on implemented interfaces
             for (Method method : bean.getDeclaredMethods())
                 if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
-                    registerMetrics(method);
+                    registerMetrics(topClass, method);
             bean = bean.getSuperclass();
         } while (!Object.class.equals(bean));
 
@@ -73,11 +75,11 @@ import java.util.concurrent.TimeUnit;
         do {
             // TODO: discover annotations declared on implemented interfaces
             for (Method method : bean.getDeclaredMethods()) {
-                MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(method);
+                MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(topClass, method);
                 if (cachedGauge.isPresent())
                     registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
     
-                MetricResolver.Of<Gauge> gauge = resolver.gauge(method);
+                MetricResolver.Of<Gauge> gauge = resolver.gauge(topClass, method);
                 if (gauge.isPresent())
                     registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
             }
@@ -87,20 +89,20 @@ import java.util.concurrent.TimeUnit;
         return target;
     }
 
-    private <E extends Member & AnnotatedElement> void registerMetrics(E element) {
-        MetricResolver.Of<Counted> counted = resolver.counted(element);
+    private <E extends Member & AnnotatedElement> void registerMetrics(Class<?> topClass, E element) {
+        MetricResolver.Of<Counted> counted = resolver.counted(topClass, element);
         if (counted.isPresent())
             registry.counter(counted.metricName());
 
-        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(element);
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(topClass, element);
         if (exceptionMetered.isPresent())
             registry.meter(exceptionMetered.metricName());
 
-        MetricResolver.Of<Metered> metered = resolver.metered(element);
+        MetricResolver.Of<Metered> metered = resolver.metered(topClass, element);
         if (metered.isPresent())
             registry.meter(metered.metricName());
 
-        MetricResolver.Of<Timed> timed = resolver.timed(element);
+        MetricResolver.Of<Timed> timed = resolver.timed(topClass, element);
         if (timed.isPresent())
             registry.timer(timed.metricName());
     }
