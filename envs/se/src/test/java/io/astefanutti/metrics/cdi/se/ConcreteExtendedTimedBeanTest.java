@@ -1,11 +1,11 @@
 /**
- * Copyright (C) 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
+ * Copyright © 2013 Antonin Stefanutti (antonin.stefanutti@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.metrics.cdi.ee;
+package io.astefanutti.metrics.cdi.se;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
@@ -22,15 +22,14 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
 
+import io.astefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,31 +37,24 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 @RunWith(Arquillian.class)
-public class ConcreteTimedBeanTest {
+public class ConcreteExtendedTimedBeanTest {
 
-    private final static String TIMED_NAME = MetricRegistry.name(ConcreteTimedBean.class, "timedMethod");
-    private final static String EXTENDED_TIMED_NAME = MetricRegistry.name(ConcreteTimedBean.class, "normallyNotTimedMethod");
+    private final static String TIMED_NAME = MetricRegistry.name(ConcreteExtendedTimedBean.class, "timedMethod");
+    private final static String EXTENDED_TIMED_NAME = MetricRegistry.name(ConcreteExtendedTimedBean.class, "anotherTimedMethod");
 
     @Deployment
-    public static Archive<?> createTestArchive() {
-        return ShrinkWrap.create(EnterpriseArchive.class)
-            .addAsLibraries(
-                Maven.configureResolver()
-                    .workOffline()
-                    .loadPomFromFile("pom.xml")
-                    .resolve("io.astefanutti.metrics.cdi:metrics-cdi")
-                    .withTransitivity()
-                    .as(JavaArchive.class))
-            .addAsLibrary(
-                ShrinkWrap.create(JavaArchive.class)
-                    .addClass(ConcreteTimedBean.class)
-                    // FIXME: Test class must be added until ARQ-659 is fixed
-                    .addClass(ConcreteTimedBeanTest.class)
-                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
+    static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(JavaArchive.class)
+            // Test bean
+            .addClass(ConcreteExtendedTimedBean.class)
+            // Metrics CDI extension
+            .addPackage(MetricsExtension.class.getPackage())
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    private ConcreteTimedBean bean;
+    private ConcreteExtendedTimedBean bean;
 
     @Test
     @InSequence(1)
@@ -104,7 +96,7 @@ public class ConcreteTimedBeanTest {
         Timer timer = registry.getTimers().get(EXTENDED_TIMED_NAME);
 
         // Call the timed method and assert it's been timed
-        bean.normallyNotTimedMethod();
+        bean.anotherTimedMethod();
 
         // Make sure that the timer has been called
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(1L)));
