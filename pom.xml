@@ -66,7 +66,7 @@
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
         <wildfly-9.version>9.0.2.Final</wildfly-9.version>
         <wildfly-10.version>10.1.0.Final</wildfly-10.version>
-        <jetty.version>9.4.5.v20170502</jetty.version>
+        <jetty.version>9.4.6.v20170531</jetty.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
         <shrinkwrap.resolver.version>2.2.6</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
