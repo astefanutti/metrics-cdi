@@ -61,27 +61,30 @@ import java.lang.reflect.Method;
         return resolverOf(topClass, element, Metered.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Timed> timed(Class<?> topClass, E element) {
-        return resolverOf(topClass, element, Timed.class);
+    <E extends Member & AnnotatedElement> Of<Timed> timed(Class<?> bean, E element) {
+        return resolverOf(bean, element, Timed.class);
     }
 
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(Class<?> topClass, E element, Class<T> type) {
-        if (element.isAnnotationPresent(type)) {
-            T annotation = element.getAnnotation(type);
-            String name = metricName(element, type, metricName(annotation), isMetricAbsolute(annotation));
-            return new DoesHaveMetric<>(annotation, name);
-        } else {
-        	return resolverOf(element, type, topClass);
-        }
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(Class<?> bean, E element, Class<T> metric) {
+        if (element.isAnnotationPresent(metric))
+            return elementResolverOf(element, metric);
+        else
+            return beanResolverOf(element, metric, bean);
     }
-    
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(E element, Class<T> type, Class<?> bean) {
-        if (bean.isAnnotationPresent(type)) {
-            T annotation = bean.getAnnotation(type);
-            String name = metricName(bean, element, type, metricName(annotation), isMetricAbsolute(annotation));
+
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> elementResolverOf(E element, Class<T> metric) {
+        T annotation = element.getAnnotation(metric);
+        String name = metricName(element, metric, metricName(annotation), isMetricAbsolute(annotation));
+        return new DoesHaveMetric<>(annotation, name);
+    }
+
+    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> beanResolverOf(E element, Class<T> metric, Class<?> bean) {
+        if (bean.isAnnotationPresent(metric)) {
+            T annotation = bean.getAnnotation(metric);
+            String name = metricName(bean, element, metric, metricName(annotation), isMetricAbsolute(annotation));
             return new DoesHaveMetric<>(annotation, name);
         } else if (bean.getSuperclass() != null) {
-        	return resolverOf(element, type, bean.getSuperclass());
+        	return beanResolverOf(element, metric, bean.getSuperclass());
         }
         return new DoesNotHaveMetric<>();
     }

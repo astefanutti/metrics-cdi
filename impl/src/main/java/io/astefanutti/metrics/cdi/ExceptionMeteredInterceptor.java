@@ -20,6 +20,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.ExceptionMetered;
 
 import javax.annotation.Priority;
+import javax.enterprise.inject.Intercepted;
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
@@ -33,28 +35,31 @@ import java.lang.reflect.Member;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* package-private */ class ExceptionMeteredInterceptor {
 
+    private final Bean<?> bean;
+
     private final MetricRegistry registry;
 
     private final MetricResolver resolver;
 
     @Inject
-    private ExceptionMeteredInterceptor(MetricRegistry registry, MetricResolver resolver) {
+    private ExceptionMeteredInterceptor(@Intercepted Bean<?> bean, MetricRegistry registry, MetricResolver resolver) {
+        this.bean = bean;
         this.registry = registry;
         this.resolver = resolver;
     }
 
     @AroundConstruct
     private Object meteredConstructor(InvocationContext context) throws Throwable {
-        return meteredCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
+        return meteredCallable(context, context.getConstructor());
     }
 
     @AroundInvoke
     private Object meteredMethod(InvocationContext context) throws Throwable {
-        return meteredCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
+        return meteredCallable(context, context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, Class<?> topClass, E element) throws Throwable {
-        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(topClass, element);
+    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, E element) throws Throwable {
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(bean.getBeanClass(), element);
         Meter meter = (Meter) registry.getMetrics().get(exceptionMetered.metricName());
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + exceptionMetered.metricName() + "] found in registry [" + registry + "]");

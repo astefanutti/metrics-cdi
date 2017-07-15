@@ -53,56 +53,56 @@ import java.util.concurrent.TimeUnit;
 
     @AroundConstruct
     private Object metrics(InvocationContext context) throws Exception {
-    	
-    	Class<?> topClass = context.getConstructor().getDeclaringClass();
-        // Registers the present bean constructor metrics
-        registerMetrics(topClass, context.getConstructor());
-
-        // Registers the present methods metrics over the bean type hierarchy
         Class<?> bean = context.getConstructor().getDeclaringClass();
+
+        // Registers the bean constructor metrics
+        registerMetrics(bean, context.getConstructor());
+
+        // Registers the methods metrics over the bean type hierarchy
+        Class<?> type = bean;
         do {
             // TODO: discover annotations declared on implemented interfaces
-            for (Method method : bean.getDeclaredMethods())
+            for (Method method : type.getDeclaredMethods())
                 if (!method.isSynthetic() && !Modifier.isPrivate(method.getModifiers()))
-                    registerMetrics(topClass, method);
-            bean = bean.getSuperclass();
-        } while (!Object.class.equals(bean));
+                    registerMetrics(bean, method);
+            type = type.getSuperclass();
+        } while (!Object.class.equals(type));
 
         Object target = context.proceed();
 
-        // Registers the present gauges over the bean type hierarchy after the target is constructed as it is required for the gauge invocations
-        bean = context.getConstructor().getDeclaringClass();
+        // Registers the gauges over the bean type hierarchy after the target is constructed as it is required for the gauge invocations
+        type = bean;
         do {
             // TODO: discover annotations declared on implemented interfaces
-            for (Method method : bean.getDeclaredMethods()) {
-                MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(topClass, method);
+            for (Method method : type.getDeclaredMethods()) {
+                MetricResolver.Of<CachedGauge> cachedGauge = resolver.cachedGauge(bean, method);
                 if (cachedGauge.isPresent())
                     registry.register(cachedGauge.metricName(), new CachingGauge(new ForwardingGauge(method, context.getTarget()), cachedGauge.metricAnnotation().timeout(), cachedGauge.metricAnnotation().timeoutUnit()));
     
-                MetricResolver.Of<Gauge> gauge = resolver.gauge(topClass, method);
+                MetricResolver.Of<Gauge> gauge = resolver.gauge(bean, method);
                 if (gauge.isPresent())
                     registry.register(gauge.metricName(), new ForwardingGauge(method, context.getTarget()));
             }
-            bean = bean.getSuperclass();
-        } while (!Object.class.equals(bean));
+            type = type.getSuperclass();
+        } while (!Object.class.equals(type));
 
         return target;
     }
 
-    private <E extends Member & AnnotatedElement> void registerMetrics(Class<?> topClass, E element) {
-        MetricResolver.Of<Counted> counted = resolver.counted(topClass, element);
+    private <E extends Member & AnnotatedElement> void registerMetrics(Class<?> bean, E element) {
+        MetricResolver.Of<Counted> counted = resolver.counted(bean, element);
         if (counted.isPresent())
             registry.counter(counted.metricName());
 
-        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(topClass, element);
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(bean, element);
         if (exceptionMetered.isPresent())
             registry.meter(exceptionMetered.metricName());
 
-        MetricResolver.Of<Metered> metered = resolver.metered(topClass, element);
+        MetricResolver.Of<Metered> metered = resolver.metered(bean, element);
         if (metered.isPresent())
             registry.meter(metered.metricName());
 
-        MetricResolver.Of<Timed> timed = resolver.timed(topClass, element);
+        MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
         if (timed.isPresent())
             registry.timer(timed.metricName());
     }

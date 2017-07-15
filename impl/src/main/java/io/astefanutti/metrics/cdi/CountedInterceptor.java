@@ -20,6 +20,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Counted;
 
 import javax.annotation.Priority;
+import javax.enterprise.inject.Intercepted;
+import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
@@ -34,33 +36,36 @@ import javax.interceptor.AroundTimeout;
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
 /* package-private */ class CountedInterceptor {
 
+    private final Bean<?> bean;
+
     private final MetricRegistry registry;
 
     private final MetricResolver resolver;
 
     @Inject
-    private CountedInterceptor(MetricRegistry registry, MetricResolver resolver) {
+    private CountedInterceptor(@Intercepted Bean<?> bean, MetricRegistry registry, MetricResolver resolver) {
+        this.bean = bean;
         this.registry = registry;
         this.resolver = resolver;
     }
 
     @AroundConstruct
     private Object countedConstructor(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getConstructor().getDeclaringClass(), context.getConstructor());
+        return countedCallable(context, context.getConstructor());
     }
 
     @AroundInvoke
     private Object countedMethod(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
+        return countedCallable(context, context.getMethod());
     }
 
     @AroundTimeout
     private Object countedTimeout(InvocationContext context) throws Exception {
-        return countedCallable(context, context.getTarget().getClass().getSuperclass(), context.getMethod());
+        return countedCallable(context, context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, Class<?> topClass, E element) throws Exception {
-        MetricResolver.Of<Counted> counted = resolver.counted(topClass, element);
+    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, E element) throws Exception {
+        MetricResolver.Of<Counted> counted = resolver.counted(bean.getBeanClass(), element);
         Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
             throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");
