@@ -70,7 +70,7 @@ public class ConcreteExtendedTimedBeanTest {
     @InSequence(2)
     public void extendedTimedMethodNotCalledYet(MetricRegistry registry) {
         assertThat("Timer is not registered correctly on the methods on the abstract class", registry.getTimers(), hasKey(EXTENDED_TIMED_NAME));
-        Timer timer = registry.getTimers().get(TIMED_NAME);
+        Timer timer = registry.getTimers().get(EXTENDED_TIMED_NAME);
 
         // Make sure that the timer hasn't been called yet
         assertThat("Timer count is incorrect", timer.getCount(), is(equalTo(0L)));
@@ -90,7 +90,7 @@ public class ConcreteExtendedTimedBeanTest {
     }
     
     @Test
-    @InSequence(3)
+    @InSequence(4)
     public void callExtendedTimedMethodOnce(MetricRegistry registry) {
         assertThat("Timer is not registered correctly", registry.getTimers(), hasKey(EXTENDED_TIMED_NAME));
         Timer timer = registry.getTimers().get(EXTENDED_TIMED_NAME);
