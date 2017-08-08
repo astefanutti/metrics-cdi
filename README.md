@@ -9,7 +9,7 @@
 [VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
-[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.3.6/
+[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.4.0/
 
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
@@ -58,7 +58,7 @@ Add the `metrics-cdi` library as a dependency:
 <dependency>
     <groupId>io.astefanutti.metrics.cdi</groupId>
     <artifactId>metrics-cdi</artifactId>
-    <version>1.3.6</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
@@ -260,8 +260,7 @@ class CacheHitRatioBean {
 
     @Timed(name = "calls")
     public void cachedMethod() {
-        if (hit)
-            hits.mark();
+        if (hit) hits.mark();
     }
 
     @Produces
