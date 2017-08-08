@@ -55,7 +55,13 @@ public class MetricProducerFieldBeanTest {
     @Test
     @InSequence(1)
     public void countersNotIncrementedYet() {
-        assertThat("Counters are not registered correctly", registry.getCounters(), allOf(hasKey("counter1"), hasKey("counter2")));
+        assertThat("Counters are not registered correctly", registry.getCounters(),
+            allOf(
+                hasKey("counter1"),
+                hasKey("counter2"),
+                not(hasKey("not_registered_counter"))
+            )
+        );
         Counter counter1 = registry.getCounters().get("counter1");
         Counter counter2 = registry.getCounters().get("counter2");
 
@@ -69,7 +75,13 @@ public class MetricProducerFieldBeanTest {
     @Test
     @InSequence(2)
     public void incrementCountersFromRegistry() {
-        assertThat("Counters are not registered correctly", registry.getCounters(), allOf(hasKey("counter1"), hasKey("counter2")));
+        assertThat("Counters are not registered correctly", registry.getCounters(),
+            allOf(
+                hasKey("counter1"),
+                hasKey("counter2"),
+                not(hasKey("not_registered_counter"))
+            )
+        );
         Counter counter1 = registry.getCounters().get("counter1");
         Counter counter2 = registry.getCounters().get("counter2");
 

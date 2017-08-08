@@ -50,4 +50,9 @@ public class MetricProducerFieldBean {
     // TODO: add assertions in the corresponding test
     @Produces
     private final Histogram histogram = new Histogram(new SlidingTimeWindowReservoir(1L, TimeUnit.SECONDS));
+
+    @Produces
+    @FooQualifier
+    @Metric(name = "not_registered_metric", absolute = true)
+    private final Counter not_registered_metric = new Counter();
 }

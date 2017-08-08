@@ -15,7 +15,10 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.MetricRegistry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -61,7 +64,14 @@ public class MetricProducerMethodBeanTest {
     @Test
     @InSequence(1)
     public void cachedMethodNotCalledYet() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics(), allOf(hasKey(CALLS_METRIC), hasKey(HITS_METRIC), hasKey(CACHE_HITS_METRIC)));
+        assertThat("Metrics are not registered correctly", registry.getMetrics(),
+            allOf(
+                hasKey(CALLS_METRIC),
+                hasKey(HITS_METRIC),
+                hasKey(CACHE_HITS_METRIC),
+                not(hasKey("not_registered_metric"))
+            )
+        );
         Timer calls = registry.getTimers().get(CALLS_METRIC);
         Meter hits = registry.getMeters().get(HITS_METRIC);
         @SuppressWarnings("unchecked")
@@ -73,7 +83,14 @@ public class MetricProducerMethodBeanTest {
     @Test
     @InSequence(2)
     public void callCachedMethodMultipleTimes() {
-        assertThat("Metrics are not registered correctly", registry.getMetrics(), allOf(hasKey(CALLS_METRIC), hasKey(HITS_METRIC), hasKey(CACHE_HITS_METRIC)));
+        assertThat("Metrics are not registered correctly", registry.getMetrics(),
+            allOf(
+                hasKey(CALLS_METRIC),
+                hasKey(HITS_METRIC),
+                hasKey(CACHE_HITS_METRIC),
+                not(hasKey("not_registered_metric"))
+            )
+        );
         Timer calls = registry.getTimers().get(CALLS_METRIC);
         Meter hits = registry.getMeters().get(HITS_METRIC);
         @SuppressWarnings("unchecked")

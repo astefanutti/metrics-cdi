@@ -26,15 +26,18 @@ import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
@@ -56,6 +59,8 @@ public class MetricsExtension implements Extension {
     private static final AnnotationLiteral<InterceptorBinding> INTERCEPTOR_BINDING = new AnnotationLiteral<InterceptorBinding>(){};
 
     private static final AnnotationLiteral<MetricsBinding> METRICS_BINDING = new AnnotationLiteral<MetricsBinding>(){};
+
+    private static final AnnotationLiteral<Default> DEFAULT = new AnnotationLiteral<Default>(){};
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
@@ -101,7 +106,11 @@ public class MetricsExtension implements Extension {
         MetricName name = getReference(manager, MetricName.class);
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> bean : metrics.entrySet()) {
             // TODO: add MetricSet metrics into the metric registry
-            if (bean.getKey().getTypes().contains(MetricSet.class))
+            if (bean.getKey().getTypes().contains(MetricSet.class)
+                // skip non @Default beans
+                || !bean.getKey().getQualifiers().contains(DEFAULT)
+                // skip producer methods with injection point
+                || hasInjectionPoints(bean.getValue()))
                 continue;
             registry.register(name.of(bean.getValue()), (Metric) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
         }
@@ -126,5 +135,16 @@ public class MetricsExtension implements Extension {
     @SuppressWarnings("unchecked")
     private static <T> T getReference(BeanManager manager, Type type, Bean<?> bean) {
         return (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
+    }
+
+    private static boolean hasInjectionPoints(AnnotatedMember<?> member) {
+        if (!(member instanceof AnnotatedMethod))
+            return false;
+        AnnotatedMethod<?> method = (AnnotatedMethod<?>) member;
+        for (AnnotatedParameter<?> parameter : method.getParameters()) {
+            if (parameter.getBaseType().equals(InjectionPoint.class))
+                return true;
+        }
+        return false;
     }
 }

@@ -16,15 +16,13 @@
 package io.astefanutti.metrics.cdi.se;
 
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.RatioGauge;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.*;
 import com.codahale.metrics.annotation.Metric;
 import com.codahale.metrics.annotation.Timed;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
 @ApplicationScoped
@@ -35,8 +33,7 @@ public class MetricProducerMethodBean {
 
     @Timed(name = "calls")
     public void cachedMethod(boolean hit) {
-        if (hit)
-            hits.mark();
+        if (hit) hits.mark();
     }
 
     @Produces
@@ -49,5 +46,11 @@ public class MetricProducerMethodBean {
                 return Ratio.of(hits.getCount(), calls.getCount());
             }
         };
+    }
+
+    @Produces
+    @Metric(name = "not_registered_metric")
+    Counter not_registered_metric(MetricRegistry registry, InjectionPoint ip) {
+        return registry.counter("not_registered_metric");
     }
 }
