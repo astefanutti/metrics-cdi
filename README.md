@@ -1,13 +1,11 @@
 # CDI Extension for Metrics
 
-[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build] [![Maven Central][Maven Central badge]][Maven Central build]
+[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Maven Central][Maven Central badge]][Maven Central build]
 
 [Travis badge]: https://travis-ci.org/astefanutti/metrics-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.svg
 [Coveralls build]: https://coveralls.io/github/astefanutti/metrics-cdi
-[VersionEye badge]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c/badge.svg
-[VersionEye build]: https://www.versioneye.com/user/projects/52a633be632bacbded00001c
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.4.0/
 
