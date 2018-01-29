@@ -69,6 +69,10 @@ public class MetricsExtension implements Extension {
     Set<MetricsParameter> getParameters() {
         return configuration.getParameters();
     }
+    
+    ReservoirBuidler getReservoirBuidler() { 
+        return configuration.getReservoirBuilder();
+    }
 
     private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {
         declareAsInterceptorBinding(Counted.class, manager, bbd);

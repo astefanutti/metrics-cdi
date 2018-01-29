@@ -20,6 +20,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
@@ -53,8 +54,25 @@ import javax.interceptor.Interceptor;
     }
 
     @Produces
-    private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
-        return registry.histogram(metricName.of(ip));
+    private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
+        String histogramName = metricName.of(ip);
+        Reservoir reservoir = null;
+        ReservoirBuidler reservoirBuidler = extension.getReservoirBuidler();
+        if (reservoirBuidler != null) {
+            reservoir = reservoirBuidler.build(histogramName, ReservoirUsage.HISTOGRAM);
+        }
+        
+        if (reservoir == null) {
+            return registry.histogram(histogramName);
+        } else {
+            final Reservoir r = reservoir;
+            return registry.histogram(histogramName, new MetricRegistry.MetricSupplier<Histogram>() {
+                @Override
+                public Histogram newMetric() {
+                    return new Histogram(r);
+                }
+            });
+        }
     }
 
     @Produces
@@ -63,7 +81,24 @@ import javax.interceptor.Interceptor;
     }
 
     @Produces
-    private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName) {
-        return registry.timer(metricName.of(ip));
+    private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
+        String timerName = metricName.of(ip);
+        Reservoir reservoir = null;
+        ReservoirBuidler reservoirBuidler = extension.getReservoirBuidler();
+        if (reservoirBuidler != null) {
+            reservoir = reservoirBuidler.build(timerName, ReservoirUsage.TIMER);
+        }
+
+        if (reservoir == null) {
+            return registry.timer(timerName);
+        } else {
+            final Reservoir r = reservoir;
+            return registry.timer(timerName, new MetricRegistry.MetricSupplier<Timer>() {
+                @Override
+                public Timer newMetric() {
+                    return new Timer(r);
+                }
+            });
+        }
     }
 }

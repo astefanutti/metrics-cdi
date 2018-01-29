@@ -30,4 +30,12 @@ public interface MetricsConfiguration {
      * @throws IllegalStateException if called outside of the observer method invocation
      */
     MetricsConfiguration useAbsoluteName(boolean useAbsoluteName);
+
+    /**
+     * Registers a builder to produce different {@link com.codahale.metrics.Reservoir} implementations depending on the metric. 
+     * @param builder the builder to use to produce {@link com.codahale.metrics.Reservoir} instances
+     * @return this Metrics CDI configuration
+     * @throws IllegalStateException if called outside of the observer method invocation
+     */
+    MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder);
 }
