@@ -21,13 +21,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
 import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.UniformReservoir;
 
 import io.astefanutti.metrics.cdi.MetricsConfiguration;
 import io.astefanutti.metrics.cdi.ReservoirBuidler;
 import io.astefanutti.metrics.cdi.ReservoirUsage;
 
 @ApplicationScoped
-public class ReservoirBuilderNullContributor {
+public class ReservoirBuilderUniformContributor {
     AtomicInteger counter = new AtomicInteger();
     
     public int calls() {
@@ -39,7 +40,7 @@ public class ReservoirBuilderNullContributor {
             @Override
             public Reservoir build(String metricName, ReservoirUsage type) {
                 counter.incrementAndGet();
-                return null;
+                return new UniformReservoir();
             }
         });
     }
