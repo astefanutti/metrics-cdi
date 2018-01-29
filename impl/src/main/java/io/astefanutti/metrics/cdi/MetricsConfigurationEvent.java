@@ -20,10 +20,13 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import com.codahale.metrics.Reservoir;
+
 /* package-private */ final class MetricsConfigurationEvent implements MetricsConfiguration {
 
     private final EnumSet<MetricsParameter> configuration = EnumSet.noneOf(MetricsParameter.class);
 
+    private ReservoirBuidler reservoirBuilder;
     private volatile boolean unmodifiable;
 
     @Override
@@ -36,8 +39,19 @@ import java.util.Set;
         return this;
     }
 
+    @Override
+    public MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
+        throwsIfUnmodifiable();
+        this.reservoirBuilder = builder;
+        return this;
+    }
+
     Set<MetricsParameter> getParameters() {
         return Collections.unmodifiableSet(configuration);
+    }
+
+    ReservoirBuidler getReservoirBuilder() {
+        return reservoirBuilder;
     }
 
     void unmodifiable() {
