@@ -349,7 +349,10 @@ import javax.enterprise.event.Observes;
 class MetricsCdiConfiguration {
 
     static void configure(@Observes MetricsConfiguration metrics) {
+        // Use absolute name globally
         metrics.useAbsoluteName(true);
+        // Use a uniform reservoir globally
+        metrics.useReservoirBuilder((name, type) -> Optional.of(new UniformReservoir());
     }
 }
 ```
