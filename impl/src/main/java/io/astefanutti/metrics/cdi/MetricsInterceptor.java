@@ -16,7 +16,6 @@
 package io.astefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
@@ -35,7 +34,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Interceptor
@@ -110,11 +108,10 @@ import java.util.concurrent.TimeUnit;
 
         MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
         if (timed.isPresent()) {
-            String timerName = timed.metricName();
-            extension.getReservoirBuidler()
-                .flatMap(rb -> rb.build(timerName, Timer.class))
-                .map(reservoir -> registry.timer(timerName, () -> new Timer(reservoir)))
-                .orElseGet(() -> registry.timer(timerName));
+            extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+                .flatMap(builder -> builder.build(timed.metricName(), Timer.class))
+                .map(reservoir -> registry.timer(timed.metricName(), () -> new Timer(reservoir)))
+                .orElseGet(() -> registry.timer(timed.metricName()));
         }
     }
 

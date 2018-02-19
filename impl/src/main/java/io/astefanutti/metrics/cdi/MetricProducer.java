@@ -20,7 +20,6 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 
 import javax.annotation.Priority;
@@ -29,7 +28,6 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
-import java.util.Optional;
 
 @Alternative
 @Dependent
@@ -56,12 +54,11 @@ import java.util.Optional;
 
     @Produces
     private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
-        String histogramName = metricName.of(ip);
-        Optional<Reservoir> reservoirByExtension = extension.getReservoirBuidler()
-                .flatMap(rb -> rb.build(histogramName, Histogram.class));
-
-        return reservoirByExtension.map(reservoir -> registry.histogram(histogramName, () -> new Histogram(reservoir)))
-                .orElseGet(() -> registry.histogram(histogramName));
+        String name = metricName.of(ip);
+        return extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+            .flatMap(builder -> builder.build(name, Histogram.class))
+            .map(reservoir -> registry.histogram(name, () -> new Histogram(reservoir)))
+            .orElseGet(() -> registry.histogram(name));
     }
 
     @Produces
@@ -71,11 +68,10 @@ import java.util.Optional;
 
     @Produces
     private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
-        String timerName = metricName.of(ip);
-        Optional<Reservoir> reservoirByExtension = extension.getReservoirBuidler()
-                .flatMap(rb -> rb.build(timerName, Timer.class));
-
-        return reservoirByExtension.map(reservoir -> registry.timer(timerName, () -> new Timer(reservoir)))
-                .orElseGet(() -> registry.timer(timerName));
+        String name = metricName.of(ip);
+        return extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+            .flatMap(builder -> builder.build(name, Timer.class))
+            .map(reservoir -> registry.timer(name, () -> new Timer(reservoir)))
+            .orElseGet(() -> registry.timer(name));
     }
 }

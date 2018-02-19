@@ -47,7 +47,11 @@ import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class MetricsExtension implements Extension {
 
@@ -63,12 +67,8 @@ public class MetricsExtension implements Extension {
 
     private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
 
-    Set<MetricsParameter> getParameters() {
-        return configuration.getParameters();
-    }
-    
-    Optional<ReservoirBuidler> getReservoirBuidler() {
-        return configuration.getReservoirBuilder();
+    <T> Optional<T> getParameter(MetricsParameter parameter, Class<T> type) {
+        return Optional.ofNullable(configuration.getParameters().get(parameter)).map(type::cast);
     }
 
     private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {

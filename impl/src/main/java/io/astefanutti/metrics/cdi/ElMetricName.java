@@ -29,7 +29,6 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.enterprise.inject.Vetoed;
 import java.lang.reflect.Method;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,8 +41,8 @@ import java.util.regex.Pattern;
 
     private final ExpressionFactory expressionFactory;
 
-    ElMetricName(ELResolver resolver, ExpressionFactory expressionFactory, Set<MetricsParameter> parameters) {
-        super(parameters);
+    ElMetricName(ELResolver resolver, ExpressionFactory expressionFactory, MetricsExtension extension) {
+        super(extension);
         CompositeELResolver composite = new CompositeELResolver();
         composite.add(resolver);
         composite.add(new MapELResolver());

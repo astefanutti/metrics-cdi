@@ -17,42 +17,31 @@ package io.astefanutti.metrics.cdi;
 
 
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.Set;
-
-import com.codahale.metrics.Reservoir;
+import java.util.EnumMap;
+import java.util.Map;
 
 /* package-private */ final class MetricsConfigurationEvent implements MetricsConfiguration {
 
-    private final EnumSet<MetricsParameter> configuration = EnumSet.noneOf(MetricsParameter.class);
+    private final EnumMap<MetricsParameter, Object> configuration = new EnumMap<>(MetricsParameter.class);
 
-    private Optional<ReservoirBuidler> reservoirBuilder = Optional.empty();
     private volatile boolean unmodifiable;
 
     @Override
     public MetricsConfiguration useAbsoluteName(boolean useAbsoluteName) {
         throwsIfUnmodifiable();
-        if (useAbsoluteName)
-            configuration.add(MetricsParameter.useAbsoluteName);
-        else
-            configuration.remove(MetricsParameter.useAbsoluteName);
+        configuration.put(MetricsParameter.useAbsoluteName, Boolean.valueOf(useAbsoluteName));
         return this;
     }
 
     @Override
     public MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
         throwsIfUnmodifiable();
-        this.reservoirBuilder = Optional.ofNullable(builder);
+        configuration.put(MetricsParameter.useReservoirBuilder, builder);
         return this;
     }
 
-    Set<MetricsParameter> getParameters() {
-        return Collections.unmodifiableSet(configuration);
-    }
-
-    Optional<ReservoirBuidler> getReservoirBuilder() {
-        return reservoirBuilder;
+    Map<MetricsParameter, Object> getParameters() {
+        return Collections.unmodifiableMap(configuration);
     }
 
     void unmodifiable() {

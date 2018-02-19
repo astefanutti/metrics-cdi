@@ -136,7 +136,7 @@ import java.lang.reflect.Method;
     }
 
     private boolean isMetricAbsolute(Annotation annotation) {
-        if (extension.getParameters().contains(MetricsParameter.useAbsoluteName))
+        if (extension.getParameter(MetricsParameter.useAbsoluteName, Boolean.class).orElse(false))
             return true;
 
         if (CachedGauge.class.isInstance(annotation))

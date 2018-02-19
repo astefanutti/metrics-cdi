@@ -18,5 +18,6 @@ package io.astefanutti.metrics.cdi;
 
 /* package-private */ enum MetricsParameter {
 
-    useAbsoluteName
+    useAbsoluteName,
+    useReservoirBuilder
 }
