@@ -23,8 +23,8 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.InjectionPoint;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 import static io.astefanutti.metrics.cdi.MetricsParameter.useAbsoluteName;
 
@@ -74,23 +74,16 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.useAbsoluteName;
         }
     }
 
-    // Let's rely on reflection to retrieve the parameter name until Java 8 is required.
-    // To be refactored eventually when CDI SPI integrate JEP-118.
-    // See http://openjdk.java.net/jeps/118
-    // And http://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
+    // To be refactored eventually when CDI SPI integrates JEP-118.
     // TODO: move into a separate metric name strategy
     private String getParameterName(AnnotatedParameter<?> parameter) {
-        try {
-            Method method = Method.class.getMethod("getParameters");
-            Object[] parameters = (Object[]) method.invoke(parameter.getDeclaringCallable().getJavaMember());
-            Object param = parameters[parameter.getPosition()];
-            Class<?> Parameter = Class.forName("java.lang.reflect.Parameter");
-            if ((Boolean) Parameter.getMethod("isNamePresent").invoke(param))
-                return (String) Parameter.getMethod("getName").invoke(param);
-            else
-                throw new UnsupportedOperationException("Unable to retrieve name for parameter [" + parameter + "], activate the -parameters compiler argument or annotate the injected parameter with the @Metric annotation");
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException cause) {
-            throw new UnsupportedOperationException("Unable to retrieve name for parameter [" + parameter + "], @Metric annotation on injected parameter is required before Java 8");
+        Parameter[] parameters = ((Method) parameter.getDeclaringCallable().getJavaMember()).getParameters();
+        Parameter param = parameters[parameter.getPosition()];
+        if (param.isNamePresent()) {
+            return param.getName();
+        }
+        else {
+            throw new UnsupportedOperationException("Unable to retrieve name for parameter [" + parameter + "], activate the -parameters compiler argument or annotate the injected parameter with the @Metric annotation");
         }
     }
 }
