@@ -25,9 +25,10 @@ import java.util.Optional;
  */
 public interface ReservoirBuidler {
     /**
-     * Builds a {@link Reservoir} for the given metric
-     * @param metricClass the metric class for which a reservoir is required
-     * @return the reservoir to use, or null if default reservoir implementation has to be used
+     * Builds a {@link Reservoir} instance to be used for the given metric
+     * @param name the metric name
+     * @param type the metric class
+     * @return the reservoir to use, or an empty {@code Optional} instance if default reservoir implementation has to be used
      */
-    Optional<Reservoir> build(String metricName, Class<? extends Metric> metricClass);
+    Optional<Reservoir> build(String name, Class<? extends Metric> type);
 }
