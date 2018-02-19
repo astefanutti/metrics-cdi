@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-import static io.astefanutti.metrics.cdi.MetricsParameter.useAbsoluteName;
+import static io.astefanutti.metrics.cdi.MetricsParameter.UseAbsoluteName;
 
 @Vetoed
 /* package-private */ class SeMetricName implements MetricName {
@@ -53,9 +53,9 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.useAbsoluteName;
         if (member.isAnnotationPresent(Metric.class)) {
             Metric metric = member.getAnnotation(Metric.class);
             String name = (metric.name().isEmpty()) ? member.getJavaMember().getName() : of(metric.name());
-            return metric.absolute() | extension.getParameter(useAbsoluteName, Boolean.class).orElse(false) ? name : MetricRegistry.name(member.getJavaMember().getDeclaringClass(), name);
+            return metric.absolute() | extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false) ? name : MetricRegistry.name(member.getJavaMember().getDeclaringClass(), name);
         } else {
-            return extension.getParameter(useAbsoluteName, Boolean.class).orElse(false) ? member.getJavaMember().getName() : MetricRegistry.name(member.getJavaMember().getDeclaringClass(), member.getJavaMember().getName());
+            return extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false) ? member.getJavaMember().getName() : MetricRegistry.name(member.getJavaMember().getDeclaringClass(), member.getJavaMember().getName());
         }
     }
 
@@ -68,9 +68,9 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.useAbsoluteName;
         if (parameter.isAnnotationPresent(Metric.class)) {
             Metric metric = parameter.getAnnotation(Metric.class);
             String name = (metric.name().isEmpty()) ? getParameterName(parameter) : of(metric.name());
-            return metric.absolute() | extension.getParameter(useAbsoluteName, Boolean.class).orElse(false) ? name : MetricRegistry.name(parameter.getDeclaringCallable().getJavaMember().getDeclaringClass(), name);
+            return metric.absolute() | extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false) ? name : MetricRegistry.name(parameter.getDeclaringCallable().getJavaMember().getDeclaringClass(), name);
         } else {
-            return extension.getParameter(useAbsoluteName, Boolean.class).orElse(false) ? getParameterName(parameter) : MetricRegistry.name(parameter.getDeclaringCallable().getJavaMember().getDeclaringClass(), getParameterName(parameter));
+            return extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false) ? getParameterName(parameter) : MetricRegistry.name(parameter.getDeclaringCallable().getJavaMember().getDeclaringClass(), getParameterName(parameter));
         }
     }
 

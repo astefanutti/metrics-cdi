@@ -29,6 +29,8 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
+import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
+
 @Alternative
 @Dependent
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
@@ -55,7 +57,7 @@ import javax.interceptor.Interceptor;
     @Produces
     private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
         String name = metricName.of(ip);
-        return extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+        return extension.getParameter(UseReservoirBuilder, ReservoirBuidler.class)
             .flatMap(builder -> builder.build(name, Histogram.class))
             .map(reservoir -> registry.histogram(name, () -> new Histogram(reservoir)))
             .orElseGet(() -> registry.histogram(name));
@@ -69,7 +71,7 @@ import javax.interceptor.Interceptor;
     @Produces
     private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
         String name = metricName.of(ip);
-        return extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+        return extension.getParameter(UseReservoirBuilder, ReservoirBuidler.class)
             .flatMap(builder -> builder.build(name, Timer.class))
             .map(reservoir -> registry.timer(name, () -> new Timer(reservoir)))
             .orElseGet(() -> registry.timer(name));

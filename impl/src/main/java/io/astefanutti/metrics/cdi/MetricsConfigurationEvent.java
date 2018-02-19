@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi;
 
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -29,14 +28,14 @@ import java.util.Map;
     @Override
     public MetricsConfiguration useAbsoluteName(boolean useAbsoluteName) {
         throwsIfUnmodifiable();
-        configuration.put(MetricsParameter.useAbsoluteName, Boolean.valueOf(useAbsoluteName));
+        configuration.put(MetricsParameter.UseAbsoluteName, Boolean.valueOf(useAbsoluteName));
         return this;
     }
 
     @Override
     public MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
         throwsIfUnmodifiable();
-        configuration.put(MetricsParameter.useReservoirBuilder, builder);
+        configuration.put(MetricsParameter.UseReservoirBuilder, builder);
         return this;
     }
 

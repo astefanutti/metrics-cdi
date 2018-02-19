@@ -32,6 +32,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
+import static io.astefanutti.metrics.cdi.MetricsParameter.UseAbsoluteName;;;
+
 @ApplicationScoped
 /* package-private */ class MetricResolver {
 
@@ -136,7 +138,7 @@ import java.lang.reflect.Method;
     }
 
     private boolean isMetricAbsolute(Annotation annotation) {
-        if (extension.getParameter(MetricsParameter.useAbsoluteName, Boolean.class).orElse(false))
+        if (extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false))
             return true;
 
         if (CachedGauge.class.isInstance(annotation))

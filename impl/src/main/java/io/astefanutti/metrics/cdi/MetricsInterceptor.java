@@ -36,6 +36,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.TimeUnit;
 
+import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
+
 @Interceptor
 @MetricsBinding
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
@@ -108,7 +110,7 @@ import java.util.concurrent.TimeUnit;
 
         MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
         if (timed.isPresent()) {
-            extension.getParameter(MetricsParameter.useReservoirBuilder, ReservoirBuidler.class)
+            extension.getParameter(UseReservoirBuilder, ReservoirBuidler.class)
                 .flatMap(builder -> builder.build(timed.metricName(), Timer.class))
                 .map(reservoir -> registry.timer(timed.metricName(), () -> new Timer(reservoir)))
                 .orElseGet(() -> registry.timer(timed.metricName()));
