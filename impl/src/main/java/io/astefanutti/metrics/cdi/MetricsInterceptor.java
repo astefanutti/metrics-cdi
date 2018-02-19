@@ -16,6 +16,8 @@
 package io.astefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
 import com.codahale.metrics.annotation.ExceptionMetered;
@@ -33,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Interceptor
@@ -45,10 +48,13 @@ import java.util.concurrent.TimeUnit;
 
     private final MetricResolver resolver;
 
+    private final MetricsExtension extension;
+
     @Inject
-    private MetricsInterceptor(MetricRegistry registry, MetricResolver resolver) {
+    private MetricsInterceptor(MetricRegistry registry, MetricResolver resolver, MetricsExtension extension) {
         this.registry = registry;
         this.resolver = resolver;
+        this.extension = extension;
     }
 
     @AroundConstruct
@@ -103,8 +109,13 @@ import java.util.concurrent.TimeUnit;
             registry.meter(metered.metricName());
 
         MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
-        if (timed.isPresent())
-            registry.timer(timed.metricName());
+        if (timed.isPresent()) {
+            String timerName = timed.metricName();
+            extension.getReservoirBuidler()
+                .flatMap(rb -> rb.build(timerName, Timer.class))
+                .map(reservoir -> registry.timer(timerName, () -> new Timer(reservoir)))
+                .orElseGet(() -> registry.timer(timerName));
+        }
     }
 
     private static final class CachingGauge extends com.codahale.metrics.CachedGauge<Object> {

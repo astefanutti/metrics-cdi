@@ -18,6 +18,7 @@ package io.astefanutti.metrics.cdi;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.codahale.metrics.Reservoir;
@@ -26,7 +27,7 @@ import com.codahale.metrics.Reservoir;
 
     private final EnumSet<MetricsParameter> configuration = EnumSet.noneOf(MetricsParameter.class);
 
-    private ReservoirBuidler reservoirBuilder;
+    private Optional<ReservoirBuidler> reservoirBuilder = Optional.empty();
     private volatile boolean unmodifiable;
 
     @Override
@@ -42,7 +43,7 @@ import com.codahale.metrics.Reservoir;
     @Override
     public MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
         throwsIfUnmodifiable();
-        this.reservoirBuilder = builder;
+        this.reservoirBuilder = Optional.ofNullable(builder);
         return this;
     }
 
@@ -50,7 +51,7 @@ import com.codahale.metrics.Reservoir;
         return Collections.unmodifiableSet(configuration);
     }
 
-    ReservoirBuidler getReservoirBuilder() {
+    Optional<ReservoirBuidler> getReservoirBuilder() {
         return reservoirBuilder;
     }
 
