@@ -23,7 +23,7 @@ import java.util.Optional;
 /**
  * Builder class allowing the production of different {@link Reservoir} implementations based on the metric kind & names.
  */
-public interface ReservoirBuidler {
+public interface ReservoirBuilder {
     /**
      * Builds a {@link Reservoir} instance to be used for the given metric
      * @param name the metric name

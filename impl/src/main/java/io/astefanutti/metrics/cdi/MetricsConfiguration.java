@@ -38,7 +38,7 @@ public interface MetricsConfiguration {
      * @return this Metrics CDI configuration
      * @throws IllegalStateException if called outside of the observer method invocation
      */
-    default MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
+    default MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder) {
         return this;
     }
 }

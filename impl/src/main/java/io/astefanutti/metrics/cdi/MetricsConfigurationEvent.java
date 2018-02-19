@@ -33,7 +33,7 @@ import java.util.Map;
     }
 
     @Override
-    public MetricsConfiguration useReservoirBuilder(ReservoirBuidler builder) {
+    public MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder) {
         throwsIfUnmodifiable();
         configuration.put(MetricsParameter.UseReservoirBuilder, builder);
         return this;

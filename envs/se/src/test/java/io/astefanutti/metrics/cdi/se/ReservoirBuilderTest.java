@@ -33,6 +33,7 @@ import io.astefanutti.metrics.cdi.MetricsExtension;
 
 @RunWith(Arquillian.class)
 public class ReservoirBuilderTest {
+
     @Inject
     ReservoirBuilderNullContributor reservoirBuilder;
     
@@ -42,28 +43,27 @@ public class ReservoirBuilderTest {
     @Inject
     HistogramFieldBean histogramBean;
 
-
     @Deployment
     public static Archive<?> createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class)
-                // Test bean class with Timer injection
-                .addClass(TimerFieldBean.class)
-                // Test bean class with Histogram injection
-                .addClass(HistogramFieldBean.class)
-                // The ReservoirBuilder counting calls
-                .addClass(ReservoirBuilderNullContributor.class)
-                // Metrics CDI extension
-                .addPackage(MetricsExtension.class.getPackage())
-                // Bean archive deployment descriptor
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+            // Test bean class with Timer injection
+            .addClass(TimerFieldBean.class)
+            // Test bean class with Histogram injection
+            .addClass(HistogramFieldBean.class)
+            // The ReservoirBuilder counting calls
+            .addClass(ReservoirBuilderNullContributor.class)
+            // Metrics CDI extension
+            .addPackage(MetricsExtension.class.getPackage())
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
-    
+
     @Test
     public void checkReservoirBuilderCalls() {
         int NB_TIMER_FIELDS_IN_BEAN = 6;
         int NB_HISTOGRAM_FIELDS_IN_BEAN = 1;
-        
+
         int expectedCalls = NB_TIMER_FIELDS_IN_BEAN + NB_HISTOGRAM_FIELDS_IN_BEAN;
         assertThat("Number of ReservoirBuilder calls differ from expected # of Timer fields", reservoirBuilder.calls(), is(expectedCalls));
-    } 
+    }
 }

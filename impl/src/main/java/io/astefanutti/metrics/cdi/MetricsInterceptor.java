@@ -110,7 +110,7 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
 
         MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
         if (timed.isPresent()) {
-            extension.getParameter(UseReservoirBuilder, ReservoirBuidler.class)
+            extension.getParameter(UseReservoirBuilder, ReservoirBuilder.class)
                 .flatMap(builder -> builder.build(timed.metricName(), Timer.class))
                 .map(reservoir -> registry.timer(timed.metricName(), () -> new Timer(reservoir)))
                 .orElseGet(() -> registry.timer(timed.metricName()));
