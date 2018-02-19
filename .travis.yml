@@ -20,7 +20,7 @@ script:
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
 
 jdk:
-  - openjdk7
+  - openjdk8
   - oraclejdk8
 
 matrix:
