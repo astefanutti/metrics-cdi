@@ -47,10 +47,7 @@ import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MetricsExtension implements Extension {
 
@@ -70,7 +67,7 @@ public class MetricsExtension implements Extension {
         return configuration.getParameters();
     }
     
-    ReservoirBuidler getReservoirBuidler() { 
+    Optional<ReservoirBuidler> getReservoirBuidler() {
         return configuration.getReservoirBuilder();
     }
 

@@ -15,7 +15,10 @@
  */
 package io.astefanutti.metrics.cdi;
 
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.Reservoir;
+
+import java.util.Optional;
 
 /**
  * Builder class allowing the production of different {@link Reservoir} implementations based on the metric kind & names.
@@ -23,9 +26,8 @@ import com.codahale.metrics.Reservoir;
 public interface ReservoirBuidler {
     /**
      * Builds a {@link Reservoir} for the given metric
-     * @param metricName the name of the metric for which a Reservoir needs to be used
-     * @param type the kind of metric for which a reservoir is required
+     * @param metricClass the metric class for which a reservoir is required
      * @return the reservoir to use, or null if default reservoir implementation has to be used
      */
-    Reservoir build(String metricName, ReservoirUsage type);
+    Optional<Reservoir> build(String metricName, Class<? extends Metric> metricClass);
 }

@@ -15,16 +15,15 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.Reservoir;
+import io.astefanutti.metrics.cdi.MetricsConfiguration;
+import io.astefanutti.metrics.cdi.ReservoirBuidler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-
-import com.codahale.metrics.Reservoir;
-
-import io.astefanutti.metrics.cdi.MetricsConfiguration;
-import io.astefanutti.metrics.cdi.ReservoirBuidler;
-import io.astefanutti.metrics.cdi.ReservoirUsage;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class ReservoirBuilderNullContributor {
@@ -37,9 +36,9 @@ public class ReservoirBuilderNullContributor {
     void configuration(@Observes MetricsConfiguration configuration) {
         configuration.useReservoirBuilder(new ReservoirBuidler() {
             @Override
-            public Reservoir build(String metricName, ReservoirUsage type) {
+            public Optional<Reservoir> build(String metricName, Class<? extends Metric> metricClass) {
                 counter.incrementAndGet();
-                return null;
+                return Optional.empty();
             }
         });
     }
