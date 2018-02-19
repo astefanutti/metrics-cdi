@@ -16,7 +16,12 @@
 package io.astefanutti.metrics.cdi.se;
 
 
-import com.codahale.metrics.*;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.RatioGauge.Ratio;
+import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.Metric;
 import com.codahale.metrics.annotation.Timed;
 
@@ -33,19 +38,14 @@ public class MetricProducerMethodBean {
 
     @Timed(name = "calls")
     public void cachedMethod(boolean hit) {
-        if (hit) hits.mark();
+        if (hit)
+            hits.mark();
     }
 
     @Produces
     @Metric(name = "cache-hits")
-    Gauge<Double> cacheHitRatioGauge(final @Metric(name = "hits") Meter hits,
-                                     final @Metric(name = "calls") Timer calls) {
-        return new RatioGauge() {
-            @Override
-            protected Ratio getRatio() {
-                return Ratio.of(hits.getCount(), calls.getCount());
-            }
-        };
+    Gauge<Double> cacheHitRatioGauge(Meter hits, Timer calls) {
+        return () -> Ratio.of(hits.getCount(), calls.getCount()).getValue();
     }
 
     @Produces
