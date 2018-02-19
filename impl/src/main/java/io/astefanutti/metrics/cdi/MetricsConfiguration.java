@@ -37,6 +37,7 @@ public interface MetricsConfiguration {
      * @param builder the builder to use to produce {@link com.codahale.metrics.Reservoir} instances
      * @return this Metrics CDI configuration
      * @throws IllegalStateException if called outside of the observer method invocation
+     * @since 1.5.0
      */
     default MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder) {
         return this;
