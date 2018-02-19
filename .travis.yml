@@ -16,17 +16,13 @@ install:
 script:
   - mvn -B test -Pjacoco -Pweld
   - mvn -B test -Pjacoco -Powb -pl envs/se
+  - mvn -B test -Pjacoco -Pjetty -pl envs/servlet
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
+  - mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
 
 jdk:
   - openjdk8
   - oraclejdk8
-
-matrix:
-  include:
-    - jdk: oraclejdk8
-      script: mvn -B test -Pjacoco -Pjetty -pl envs/servlet
-      script: mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
 
 notifications:
   email:
