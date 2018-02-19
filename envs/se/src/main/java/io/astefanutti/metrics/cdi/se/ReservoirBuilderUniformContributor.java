@@ -15,11 +15,8 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.UniformReservoir;
 import io.astefanutti.metrics.cdi.MetricsConfiguration;
-import io.astefanutti.metrics.cdi.ReservoirBuilder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -36,12 +33,9 @@ public class ReservoirBuilderUniformContributor {
     }
 
     void configuration(@Observes MetricsConfiguration configuration) {
-        configuration.useReservoirBuilder(new ReservoirBuilder() {
-            @Override
-            public Optional<Reservoir> build(String name, Class<? extends Metric> type) {
-                counter.incrementAndGet();
-                return Optional.of(new UniformReservoir());
-            }
+        configuration.useReservoirBuilder((name, type) -> {
+            counter.incrementAndGet();
+            return Optional.of(new UniformReservoir());
         });
     }
 }
