@@ -15,11 +15,10 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.RatioGauge;
+import com.codahale.metrics.RatioGauge.Ratio;
 import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.codahale.metrics.annotation.Metric;
 
@@ -40,12 +39,7 @@ public class MetricProducerFieldBean {
 
     @Produces
     @Metric(name = "ratioGauge", absolute = true)
-    private final Gauge<Double> gauge = new RatioGauge() {
-        @Override
-        protected Ratio getRatio() {
-            return Ratio.of(counter1.getCount(), counter2.getCount());
-        }
-    };
+    private final Gauge<Double> gauge = () -> Ratio.of(counter1.getCount(), counter2.getCount()).getValue();
 
     // TODO: add assertions in the corresponding test
     @Produces

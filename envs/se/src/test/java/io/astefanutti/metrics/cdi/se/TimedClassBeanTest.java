@@ -15,7 +15,6 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -53,12 +52,7 @@ public class TimedClassBeanTest {
 
     private static final Set<String> METHOD_TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES);
 
-    private static final MetricFilter METHOD_TIMERS = new MetricFilter() {
-        @Override
-        public boolean matches(String name, Metric metric) {
-            return METHOD_TIMER_NAMES.contains(name);
-        }
-    };
+    private static final MetricFilter METHOD_TIMERS = (name, metric) -> METHOD_TIMER_NAMES.contains(name);
 
     private static final Set<String> TIMER_NAMES = MetricsUtil.absoluteMetricNames(TimedClassBean.class, "timedClass", METHOD_NAMES, CONSTRUCTOR_NAME);
 

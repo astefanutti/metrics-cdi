@@ -44,15 +44,13 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
     @Produces
     private static <T> Gauge<T> gauge(final InjectionPoint ip, final MetricRegistry registry, final MetricName metricName) {
         // A forwarding Gauge must be returned as the Gauge creation happens when the declaring bean gets instantiated and the corresponding Gauge can be injected before which leads to producing a null value
-        return new Gauge<T>() {
-            @Override
+        return () -> {
             @SuppressWarnings("unchecked")
-            public T getValue() {
-                // TODO: better error report when the gauge doesn't exist
-                return ((Gauge<T>) registry.getGauges().get(metricName.of(ip))).getValue();
-            }
+            Gauge<T> gauge = registry.getGauges().get(metricName.of(ip));
+            // TODO: better error report when the gauge doesn't exist
+            return gauge.getValue();
         };
-    }
+    };
 
     @Produces
     private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
