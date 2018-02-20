@@ -26,6 +26,7 @@ public interface MetricsConfiguration {
     /**
      * Overrides the Metrics annotation {@code absolute} attribute values globally for the application to use metric absolute names.
      *
+     * @param useAbsoluteName the value whether to use absolute name
      * @return this Metrics CDI configuration
      * @throws IllegalStateException if called outside of the observer method invocation
      */
