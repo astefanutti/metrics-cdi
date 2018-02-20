@@ -63,10 +63,10 @@ public class CountedMethodScheduledBeanTest {
     }
 
     @Inject
-    private MetricRegistry registry; 
+    private MetricRegistry registry;
 
     @Inject
-    private CallCounter callCounter; 
+    private CallCounter callCounter;
 
     @Before
     public void init() {

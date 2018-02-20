@@ -63,10 +63,10 @@ public class TimedMethodScheduledBeanTest {
     }
 
     @Inject
-    private MetricRegistry registry; 
+    private MetricRegistry registry;
 
     @Inject
-    private CallCounter counter; 
+    private CallCounter counter;
 
     @Before
     public void init() {

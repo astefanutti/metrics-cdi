@@ -64,7 +64,7 @@ public class TimedMethodTimerBeanTest {
     }
 
     @Inject
-    private MetricRegistry registry; 
+    private MetricRegistry registry;
 
     @Inject 
     private CallCounter counter;
