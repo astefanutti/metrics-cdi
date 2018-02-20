@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
-public class ReservoirBuilderUniformContributor {
+public class ReservoirFunctionUniform {
 
     AtomicInteger counter = new AtomicInteger();
 
@@ -33,7 +33,7 @@ public class ReservoirBuilderUniformContributor {
     }
 
     void configuration(@Observes MetricsConfiguration configuration) {
-        configuration.useReservoirBuilder((name, type) -> {
+        configuration.reservoirFunction((name, type) -> {
             counter.incrementAndGet();
             return Optional.of(new UniformReservoir());
         });

@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.metrics.cdi;
+package io.astefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.Reservoir;
+import io.astefanutti.metrics.cdi.MetricsConfiguration;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Builder class allowing the production of different {@link Reservoir} implementations based on the metric kind & names.
- */
-public interface ReservoirBuilder {
-    /**
-     * Builds a {@link Reservoir} instance to be used for the given metric
-     * @param name the metric name
-     * @param type the metric class
-     * @return the reservoir to use, or an empty {@code Optional} instance if default reservoir implementation has to be used
-     */
-    Optional<Reservoir> build(String name, Class<? extends Metric> type);
+@ApplicationScoped
+public class ReservoirFunctionEmpty {
+
+    AtomicInteger counter = new AtomicInteger();
+
+    public int calls() {
+        return counter.get();
+    }
+
+    void configuration(@Observes MetricsConfiguration configuration) {
+        configuration.reservoirFunction((name, type) -> {
+            counter.incrementAndGet();
+            return Optional.empty();
+        });
+    }
 }

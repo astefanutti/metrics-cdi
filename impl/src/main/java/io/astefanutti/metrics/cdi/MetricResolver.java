@@ -138,7 +138,7 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseAbsoluteName;;;
     }
 
     private boolean isMetricAbsolute(Annotation annotation) {
-        if (extension.getParameter(UseAbsoluteName, Boolean.class).orElse(false))
+        if (extension.<Boolean>getParameter(UseAbsoluteName).orElse(false))
             return true;
 
         if (CachedGauge.class.isInstance(annotation))

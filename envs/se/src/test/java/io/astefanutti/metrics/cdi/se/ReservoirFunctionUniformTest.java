@@ -32,11 +32,11 @@ import org.junit.runner.RunWith;
 import io.astefanutti.metrics.cdi.MetricsExtension;
 
 @RunWith(Arquillian.class)
-public class ReservoirBuilderTest {
+public class ReservoirFunctionUniformTest {
 
     @Inject
-    ReservoirBuilderNullContributor reservoirBuilder;
-    
+    ReservoirFunctionUniform reservoirBuilder;
+
     @Inject
     TimerFieldBean timerBean;
 
@@ -50,8 +50,8 @@ public class ReservoirBuilderTest {
             .addClass(TimerFieldBean.class)
             // Test bean class with Histogram injection
             .addClass(HistogramFieldBean.class)
-            // The ReservoirBuilder counting calls
-            .addClass(ReservoirBuilderNullContributor.class)
+            // The ReservoirBuilder counting calls and returning UniformReservoir
+            .addClass(ReservoirFunctionUniform.class)
             // Metrics CDI extension
             .addPackage(MetricsExtension.class.getPackage())
             // Bean archive deployment descriptor
@@ -59,7 +59,7 @@ public class ReservoirBuilderTest {
     }
 
     @Test
-    public void checkReservoirBuilderCalls() {
+    public void checkReservoirFunctionCalls() {
         int NB_TIMER_FIELDS_IN_BEAN = 6;
         int NB_HISTOGRAM_FIELDS_IN_BEAN = 1;
 

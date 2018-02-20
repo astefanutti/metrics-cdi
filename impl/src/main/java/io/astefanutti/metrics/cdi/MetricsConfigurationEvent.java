@@ -15,9 +15,13 @@
  */
 package io.astefanutti.metrics.cdi;
 
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.Reservoir;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 /* package-private */ final class MetricsConfigurationEvent implements MetricsConfiguration {
 
@@ -33,9 +37,9 @@ import java.util.Map;
     }
 
     @Override
-    public MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder) {
+    public MetricsConfiguration reservoirFunction(BiFunction<String, Class<? extends Metric>, Optional<Reservoir>> function) {
         throwsIfUnmodifiable();
-        configuration.put(MetricsParameter.UseReservoirBuilder, builder);
+        configuration.put(MetricsParameter.ReservoirFunction, function);
         return this;
     }
 

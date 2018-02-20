@@ -19,5 +19,5 @@ package io.astefanutti.metrics.cdi;
 /* package-private */ enum MetricsParameter {
 
     UseAbsoluteName,
-    UseReservoirBuilder
+    ReservoirFunction
 }

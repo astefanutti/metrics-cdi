@@ -15,7 +15,9 @@
  */
 package io.astefanutti.metrics.cdi;
 
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.annotation.CachedGauge;
 import com.codahale.metrics.annotation.Counted;
@@ -34,9 +36,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
-import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
+import static io.astefanutti.metrics.cdi.MetricsParameter.ReservoirFunction;
 
 @Interceptor
 @MetricsBinding
@@ -110,8 +114,8 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
 
         MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
         if (timed.isPresent()) {
-            extension.getParameter(UseReservoirBuilder, ReservoirBuilder.class)
-                .flatMap(builder -> builder.build(timed.metricName(), Timer.class))
+            extension.<BiFunction<String, Class<? extends Metric>, Optional<Reservoir>>>getParameter(ReservoirFunction)
+                .flatMap(function -> function.apply(timed.metricName(), Timer.class))
                 .map(reservoir -> registry.timer(timed.metricName(), () -> new Timer(reservoir)))
                 .orElseGet(() -> registry.timer(timed.metricName()));
         }

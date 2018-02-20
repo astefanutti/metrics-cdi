@@ -15,6 +15,11 @@
  */
 package io.astefanutti.metrics.cdi;
 
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.Reservoir;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 /**
  * The Metrics CDI configuration. Metrics CDI fires a {@code MetricsConfiguration} event
  * during the deployment phase that the application can observe and use to configure it.
@@ -33,12 +38,12 @@ public interface MetricsConfiguration {
     MetricsConfiguration useAbsoluteName(boolean useAbsoluteName);
 
     /**
-     * Registers a builder to produce different {@link com.codahale.metrics.Reservoir} implementations depending on the metric.
+     * Registers a function that supplies a {@link com.codahale.metrics.Reservoir} instance depending on the metric.
      *
-     * @param builder the builder to use to produce {@link com.codahale.metrics.Reservoir} instances
+     * @param function the {@code BiFunction} that supplies the {@link com.codahale.metrics.Reservoir} instances
      * @return this Metrics CDI configuration
      * @throws IllegalStateException if called outside of the observer method invocation
      * @since 1.5.0
      */
-    MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder);
+    MetricsConfiguration reservoirFunction(BiFunction<String, Class<? extends Metric>, Optional<Reservoir>> function);
 }

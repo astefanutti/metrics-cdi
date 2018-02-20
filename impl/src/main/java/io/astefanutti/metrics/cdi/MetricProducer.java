@@ -19,9 +19,12 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
-
+import java.util.Optional;
+import java.util.function.BiFunction;
 import javax.annotation.Priority;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
@@ -29,7 +32,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.interceptor.Interceptor;
 
-import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
+import static io.astefanutti.metrics.cdi.MetricsParameter.ReservoirFunction;
 
 @Alternative
 @Dependent
@@ -55,8 +58,8 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
     @Produces
     private static Histogram histogram(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
         String name = metricName.of(ip);
-        return extension.getParameter(UseReservoirBuilder, ReservoirBuilder.class)
-            .flatMap(builder -> builder.build(name, Histogram.class))
+        return extension.<BiFunction<String, Class<? extends Metric>, Optional<Reservoir>>>getParameter(ReservoirFunction)
+            .flatMap(function -> function.apply(name, Histogram.class))
             .map(reservoir -> registry.histogram(name, () -> new Histogram(reservoir)))
             .orElseGet(() -> registry.histogram(name));
     }
@@ -69,8 +72,8 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseReservoirBuilder;;
     @Produces
     private static Timer timer(InjectionPoint ip, MetricRegistry registry, MetricName metricName, MetricsExtension extension) {
         String name = metricName.of(ip);
-        return extension.getParameter(UseReservoirBuilder, ReservoirBuilder.class)
-            .flatMap(builder -> builder.build(name, Timer.class))
+        return extension.<BiFunction<String, Class<? extends Metric>, Optional<Reservoir>>>getParameter(ReservoirFunction)
+            .flatMap(function -> function.apply(name, Timer.class))
             .map(reservoir -> registry.timer(name, () -> new Timer(reservoir)))
             .orElseGet(() -> registry.timer(name));
     }

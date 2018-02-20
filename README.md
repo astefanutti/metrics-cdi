@@ -351,7 +351,7 @@ class MetricsCdiConfiguration {
         // Use absolute name globally
         metrics.useAbsoluteName(true);
         // Use a uniform reservoir globally
-        metrics.useReservoirBuilder((name, type) -> Optional.of(new UniformReservoir());
+        metrics.reservoirFunction((name, type) -> Optional.of(new UniformReservoir());
     }
 }
 ```

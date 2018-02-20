@@ -67,8 +67,9 @@ public class MetricsExtension implements Extension {
 
     private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
 
-    <T> Optional<T> getParameter(MetricsParameter parameter, Class<T> type) {
-        return Optional.ofNullable(configuration.getParameters().get(parameter)).map(type::cast);
+    @SuppressWarnings("unchecked")
+    <T> Optional<T> getParameter(MetricsParameter parameter) {
+        return (Optional<T>) Optional.ofNullable(configuration.getParameters().get(parameter));
     }
 
     private void addInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager manager) {
