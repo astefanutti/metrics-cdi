@@ -40,7 +40,5 @@ public interface MetricsConfiguration {
      * @throws IllegalStateException if called outside of the observer method invocation
      * @since 1.5.0
      */
-    default MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder) {
-        return this;
-    }
+    MetricsConfiguration useReservoirBuilder(ReservoirBuilder builder);
 }
