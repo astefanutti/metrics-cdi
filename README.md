@@ -178,7 +178,7 @@ class TimerBean {
 }
 ```
 
-In the above example, Java 8 with the `-parameters` compiler option activated is required to get access to injected parameter name. Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found in [Obtaining Names of Method Parameters][] from the Java tutorials. To work around that limitation for Java versions prior to Java 8, or to declare a specific name, the `@Metric` annotation can be used as documented hereafter.
+In the above example, the `-parameters` compiler option is required to get access to injected parameter name. Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found in [Obtaining Names of Method Parameters][] from the Java tutorials. To work around that limitation, or to declare a specific name, the `@Metric` annotation can be used as documented hereafter.
 
 [JEP-118]: http://openjdk.java.net/jeps/118
 [Obtaining Names of Method Parameters]: http://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
