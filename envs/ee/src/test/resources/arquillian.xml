@@ -4,15 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <container qualifier="wildfly-9-managed" default="false">
-        <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-9.version}</property>
-            <property name="outputToConsole">true</property>
-            <property name="allowConnectingToRunningServer">false</property>
-            <property name="javaVmArguments">-Xms128m -Xmx256m -XX:MaxPermSize=128m ${jacoco.agent}</property>
-        </configuration>
-    </container>
-
     <container qualifier="wildfly-10-managed" default="false">
         <configuration>
             <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-10.version}</property>

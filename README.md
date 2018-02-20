@@ -73,7 +73,6 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 | [Weld][]              | `2.4.3.Final`  | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
 | [OpenWebBeans][]      | `1.7.3`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
 | [Jetty][]             | `9.4.5`        | [Servlet 3.1][]                    |
-| [WildFly 9][WildFly]  | `9.0.2.Final`  | [Java EE 7][]                      |
 | [WildFly 10][WildFly] | `10.1.0.Final` | [Java EE 7][]                      |
 
 [Weld]: http://weld.cdi-spec.org/
