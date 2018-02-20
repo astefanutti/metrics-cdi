@@ -18,7 +18,6 @@ package io.astefanutti.metrics.cdi.se;
 import com.codahale.metrics.annotation.Gauge;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Typed;
 
 @ApplicationScoped
 public class InheritedGaugeMethodBean extends GaugeMethodBean {
