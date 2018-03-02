@@ -16,6 +16,7 @@
 [JSR 346]: https://jcp.org/en/jsr/detail?id=346
 [JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
 [JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
+[JSR 365]: https://jcp.org/en/jsr/detail?id=365
 [CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
@@ -71,6 +72,7 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 | Container             | Version        | Environment                        |
 | --------------------- | -------------- | ---------------------------------- |
 | [Weld][]              | `2.4.3.Final`  | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
+| [Weld][]              | `3.0.3.Final`  | Java SE 8 / [CDI 2.0][JSR 365]     |
 | [OpenWebBeans][]      | `1.7.3`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
 | [Jetty][]             | `9.4.5`        | [Servlet 3.1][]                    |
 | [WildFly 10][WildFly] | `10.1.0.Final` | [Java EE 7][]                      |
