@@ -14,7 +14,8 @@ install:
   - mvn -B clean install -Dmaven.test.skip.exec
 
 script:
-  - mvn -B test -Pjacoco -Pweld
+  - mvn -B test -Pjacoco -Pweld-1.2
+  - mvn -B test -Pjacoco -Pweld-2.0
   - mvn -B test -Pjacoco -Powb -pl envs/se
   - mvn -B test -Pjacoco -Pjetty -pl envs/servlet
   - mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
