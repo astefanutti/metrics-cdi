@@ -31,9 +31,8 @@ import javax.inject.Inject;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
@@ -99,20 +98,20 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.ReservoirFunction;
         return target;
     }
 
-    private <E extends Member & AnnotatedElement> void registerMetrics(Class<?> bean, E element) {
-        MetricResolver.Of<Counted> counted = resolver.counted(bean, element);
+    private void registerMetrics(Class<?> bean, Executable executable) {
+        MetricResolver.Of<Counted> counted = resolver.counted(bean, executable);
         if (counted.isPresent())
             registry.counter(counted.metricName());
 
-        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(bean, element);
+        MetricResolver.Of<ExceptionMetered> exceptionMetered = resolver.exceptionMetered(bean, executable);
         if (exceptionMetered.isPresent())
             registry.meter(exceptionMetered.metricName());
 
-        MetricResolver.Of<Metered> metered = resolver.metered(bean, element);
+        MetricResolver.Of<Metered> metered = resolver.metered(bean, executable);
         if (metered.isPresent())
             registry.meter(metered.metricName());
 
-        MetricResolver.Of<Timed> timed = resolver.timed(bean, element);
+        MetricResolver.Of<Timed> timed = resolver.timed(bean, executable);
         if (timed.isPresent()) {
             extension.<BiFunction<String, Class<? extends Metric>, Optional<Reservoir>>>getParameter(ReservoirFunction)
                 .flatMap(function -> function.apply(timed.metricName(), Timer.class))

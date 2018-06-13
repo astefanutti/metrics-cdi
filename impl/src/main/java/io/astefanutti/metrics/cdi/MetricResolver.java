@@ -27,8 +27,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
@@ -47,66 +47,66 @@ import static io.astefanutti.metrics.cdi.MetricsParameter.UseAbsoluteName;;;
         return resolverOf(topClass, method, CachedGauge.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Counted> counted(Class<?> topClass, E element) {
-        return resolverOf(topClass, element, Counted.class);
+    Of<Counted> counted(Class<?> topClass, Executable executable) {
+        return resolverOf(topClass, executable, Counted.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<ExceptionMetered> exceptionMetered(Class<?> topClass, E element) {
-        return resolverOf(topClass, element, ExceptionMetered.class);
+    Of<ExceptionMetered> exceptionMetered(Class<?> topClass, Executable executable) {
+        return resolverOf(topClass, executable, ExceptionMetered.class);
     }
 
     Of<Gauge> gauge(Class<?> topClass, Method method) {
         return resolverOf(topClass, method, Gauge.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Metered> metered(Class<?> topClass, E element) {
-        return resolverOf(topClass, element, Metered.class);
+    Of<Metered> metered(Class<?> topClass, Executable executable) {
+        return resolverOf(topClass, executable, Metered.class);
     }
 
-    <E extends Member & AnnotatedElement> Of<Timed> timed(Class<?> bean, E element) {
-        return resolverOf(bean, element, Timed.class);
+    Of<Timed> timed(Class<?> bean, Executable executable) {
+        return resolverOf(bean, executable, Timed.class);
     }
 
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> resolverOf(Class<?> bean, E element, Class<T> metric) {
-        if (element.isAnnotationPresent(metric))
-            return elementResolverOf(element, metric);
+    private <T extends Annotation> Of<T> resolverOf(Class<?> bean, Executable executable, Class<T> metric) {
+        if (executable.isAnnotationPresent(metric))
+            return elementResolverOf(executable, metric);
         else
-            return beanResolverOf(element, metric, bean);
+            return beanResolverOf(executable, metric, bean);
     }
 
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> elementResolverOf(E element, Class<T> metric) {
-        T annotation = element.getAnnotation(metric);
-        String name = metricName(element, metric, metricName(annotation), isMetricAbsolute(annotation));
+    private <T extends Annotation> Of<T> elementResolverOf(Executable executable, Class<T> metric) {
+        T annotation = executable.getAnnotation(metric);
+        String name = metricName(executable, metric, metricName(annotation), isMetricAbsolute(annotation));
         return new DoesHaveMetric<>(annotation, name);
     }
 
-    private <E extends Member & AnnotatedElement, T extends Annotation> Of<T> beanResolverOf(E element, Class<T> metric, Class<?> bean) {
+    private <T extends Annotation> Of<T> beanResolverOf(Executable executable, Class<T> metric, Class<?> bean) {
         if (bean.isAnnotationPresent(metric)) {
             T annotation = bean.getAnnotation(metric);
-            String name = metricName(bean, element, metric, metricName(annotation), isMetricAbsolute(annotation));
+            String name = metricName(bean, executable, metric, metricName(annotation), isMetricAbsolute(annotation));
             return new DoesHaveMetric<>(annotation, name);
         } else if (bean.getSuperclass() != null) {
-        	return beanResolverOf(element, metric, bean.getSuperclass());
+        	return beanResolverOf(executable, metric, bean.getSuperclass());
         }
         return new DoesNotHaveMetric<>();
     }
 
     // TODO: should be grouped with the metric name strategy
-    private <E extends Member & AnnotatedElement> String metricName(E element, Class<? extends Annotation> type, String name, boolean absolute) {
-        String metric = name.isEmpty() ? defaultName(element, type) : metricName.of(name);
-        return absolute ? metric : MetricRegistry.name(element.getDeclaringClass(), metric);
+    private String metricName(Executable executable, Class<? extends Annotation> type, String name, boolean absolute) {
+        String metric = name.isEmpty() ? defaultName(executable, type) : metricName.of(name);
+        return absolute ? metric : MetricRegistry.name(executable.getDeclaringClass(), metric);
     }
 
-    private <E extends Member & AnnotatedElement> String metricName(Class<?> bean, E element, Class<? extends Annotation> type, String name, boolean absolute) {
+    private String metricName(Class<?> bean, Executable executable, Class<? extends Annotation> type, String name, boolean absolute) {
         String metric = name.isEmpty() ? bean.getSimpleName() : metricName.of(name);
-        return absolute ? MetricRegistry.name(metric, defaultName(element, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(element, type));
+        return absolute ? MetricRegistry.name(metric, defaultName(executable, type)) : MetricRegistry.name(bean.getPackage().getName(), metric, defaultName(executable, type));
     }
 
-    private <E extends Member & AnnotatedElement> String defaultName(E element, Class<? extends Annotation> type) {
+    private String defaultName(Executable executable, Class<? extends Annotation> type) {
         if (ExceptionMetered.class.equals(type))
-            return MetricRegistry.name(memberName(element), ExceptionMetered.DEFAULT_NAME_SUFFIX);
+            return MetricRegistry.name(memberName(executable), ExceptionMetered.DEFAULT_NAME_SUFFIX);
         else
-            return memberName(element);
+            return memberName(executable);
     }
 
     // While the Member Javadoc states that the getName method should returns

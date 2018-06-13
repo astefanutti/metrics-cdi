@@ -27,8 +27,7 @@ import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
+import java.lang.reflect.Executable;
 import javax.interceptor.AroundTimeout;
 
 @Counted
@@ -64,8 +63,8 @@ import javax.interceptor.AroundTimeout;
         return countedCallable(context, context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object countedCallable(InvocationContext context, E element) throws Exception {
-        MetricResolver.Of<Counted> counted = resolver.counted(bean.getBeanClass(), element);
+    private Object countedCallable(InvocationContext context, Executable executable) throws Exception {
+        MetricResolver.Of<Counted> counted = resolver.counted(bean.getBeanClass(), executable);
         Counter counter = (Counter) registry.getMetrics().get(counted.metricName());
         if (counter == null)
             throw new IllegalStateException("No counter with name [" + counted.metricName() + "] found in registry [" + registry + "]");

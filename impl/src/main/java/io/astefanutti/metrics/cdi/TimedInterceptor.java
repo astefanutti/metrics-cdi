@@ -27,8 +27,7 @@ import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
+import java.lang.reflect.Executable;
 import javax.interceptor.AroundTimeout;
 
 @Timed
@@ -64,8 +63,8 @@ import javax.interceptor.AroundTimeout;
         return timedCallable(context, context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object timedCallable(InvocationContext context, E element) throws Exception {
-        String name = resolver.timed(bean.getBeanClass(), element).metricName();
+    private Object timedCallable(InvocationContext context, Executable executable) throws Exception {
+        String name = resolver.timed(bean.getBeanClass(), executable).metricName();
         Timer timer = (Timer) registry.getMetrics().get(name);
         if (timer == null)
             throw new IllegalStateException("No timer with name [" + name + "] found in registry [" + registry + "]");

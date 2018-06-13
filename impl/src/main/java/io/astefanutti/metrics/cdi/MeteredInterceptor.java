@@ -27,8 +27,7 @@ import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
+import java.lang.reflect.Executable;
 import javax.interceptor.AroundTimeout;
 
 @Metered
@@ -64,8 +63,8 @@ import javax.interceptor.AroundTimeout;
         return meteredCallable(context, context.getMethod());
     }
 
-    private <E extends Member & AnnotatedElement> Object meteredCallable(InvocationContext context, E element) throws Exception {
-        String name = resolver.metered(bean.getBeanClass(), element).metricName();
+    private Object meteredCallable(InvocationContext context, Executable executable) throws Exception {
+        String name = resolver.metered(bean.getBeanClass(), executable).metricName();
         Meter meter = (Meter) registry.getMetrics().get(name);
         if (meter == null)
             throw new IllegalStateException("No meter with name [" + name + "] found in registry [" + registry + "]");
