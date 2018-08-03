@@ -61,11 +61,11 @@ import java.util.Set;
 
     /** Factory method to return properly typed and described RegistryBean */
     static DefaultRegistryBean<MetricRegistry> createDefaultMetricRegistry(BeanManager manager) {
-        return new DefaultRegistryBean<>(manager, MetricRegistry.class, "metric-registry", "Default Metric Registry Bean");
+        return new DefaultRegistryBean<MetricRegistry>(manager, MetricRegistry.class, "metric-registry", "Default Metric Registry Bean");
     }
 
     static DefaultRegistryBean<HealthCheckRegistry> createDefaultHealthCheckRegistry(BeanManager manager) {
-        return new DefaultRegistryBean<>(manager, HealthCheckRegistry.class, "health-check-registry", "Default Health Check Registry Bean");
+        return new DefaultRegistryBean<HealthCheckRegistry>(manager, HealthCheckRegistry.class, "health-check-registry", "Default Health Check Registry Bean");
     }
 
     @Override

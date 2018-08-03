@@ -25,8 +25,8 @@ import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -67,6 +67,8 @@ public class MetricsExtension implements Extension {
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
 
+    private final Map<Bean<?>, AnnotatedMember<?>> healthChecks = new HashMap<>();
+
     private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
 
     @SuppressWarnings("unchecked")
@@ -85,13 +87,6 @@ public class MetricsExtension implements Extension {
         pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), METRICS_BINDING));
     }
 
-    private <X> void healthchecks(@Observes @WithAnnotations({ApplicationScoped.class}) ProcessAnnotatedType<X> pat) {
-        if (pat.getAnnotatedType().getJavaClass().isAssignableFrom(HealthCheck.class)) {
-            // TODO: Intercept / decorate the HealthCheck to add it to the registry.
-            return;
-        }
-    }
-
     private void metricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
         metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
     }
@@ -102,10 +97,19 @@ public class MetricsExtension implements Extension {
             metrics.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
     }
 
+    private void healthCheckProducerField(@Observes ProcessProducerField<? extends HealthCheck, ?> ppf) {
+        healthChecks.put(ppf.getBean(), ppf.getAnnotatedProducerField());
+    }
+
+    private void healthCheckProducerMethod(@Observes ProcessProducerMethod<? extends HealthCheck, ?> ppm) {
+        healthChecks.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
+    }
+
     private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(MetricRegistry.class).isEmpty())
             abd.addBean(DefaultRegistryBean.createDefaultMetricRegistry(manager));
-        if (manager.getBeans(HealthCheck.class).isEmpty())
+
+        if (manager.getBeans(HealthCheckRegistry.class).isEmpty())
             abd.addBean(DefaultRegistryBean.createDefaultHealthCheckRegistry(manager));
     }
 
@@ -116,7 +120,7 @@ public class MetricsExtension implements Extension {
 
         // Produce and register custom metrics
         MetricRegistry registry = getReference(manager, MetricRegistry.class);
-        MetricName name = getReference(manager, MetricName.class);
+        MetricName metricName = getReference(manager, MetricName.class);
         for (Map.Entry<Bean<?>, AnnotatedMember<?>> bean : metrics.entrySet()) {
             // TODO: add MetricSet metrics into the metric registry
             if (bean.getKey().getTypes().contains(MetricSet.class)
@@ -125,11 +129,30 @@ public class MetricsExtension implements Extension {
                 // skip producer methods with injection point
                 || hasInjectionPoints(bean.getValue()))
                 continue;
-            registry.register(name.of(bean.getValue()), (Metric) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
+            registry.register(metricName.of(bean.getValue()), (Metric) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
         }
 
         // Let's clear the collected metric producers
         metrics.clear();
+
+        // Register detected HealthChecks.
+        HealthCheckRegistry healthCheckRegistry = getReference(manager, HealthCheckRegistry.class);
+
+        // Produced Beans.
+        for (Map.Entry<Bean<?>, AnnotatedMember<?>> bean : healthChecks.entrySet()) {
+            // skip producer methods with injection points.
+            if (hasInjectionPoints(bean.getValue()))
+                continue;
+            healthCheckRegistry.register(bean.getKey().getName(), (HealthCheck) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
+        }
+
+        // Clear out collected health check producers.
+        healthChecks.clear();
+
+        // Declarative Scoped Beans
+        for (Bean<?> bean : manager.getBeans(HealthCheck.class)) {
+            healthCheckRegistry.register(bean.getName(), (HealthCheck) manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)));
+        }
     }
 
     private static <T extends Annotation> void declareAsInterceptorBinding(Class<T> annotation, BeanManager manager, BeforeBeanDiscovery bbd) {

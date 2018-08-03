@@ -15,5 +15,67 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
+import io.astefanutti.metrics.cdi.MetricsExtension;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+
+@RunWith(Arquillian.class)
 public class HealthCheckRegistryProducerFieldBeanTest {
+
+	@Deployment
+	static Archive<?> createTestArchive() {
+		return ShrinkWrap.create(JavaArchive.class)
+				// HealthCheck registry bean
+				.addClass(HealthCheckRegistryProducerFieldBean.class)
+				// Test bean
+				.addClass(HealthCheckBean.class)
+				// MetricsCDI extension
+				.addPackage(MetricsExtension.class.getPackage())
+				// Bean archive deployment descriptor
+				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+	}
+
+	@Inject
+	private HealthCheckRegistry registry;
+
+	@Inject
+	private HealthCheckBean bean;
+
+	@Test
+	@InSequence(1)
+	public void healthCheckNotCalledYet() {
+		assertThat("HealthCheck is not registered correctly", registry.getNames(), contains(bean.NAME));
+		HealthCheck check = registry.getHealthCheck(bean.NAME);
+
+		assertThat("Execution hasn't occurred yet.", bean.getCheckCount(), is(equalTo(0l)));
+	}
+
+	@Test
+	@InSequence(2)
+	public void healthCheckInvoked() {
+		assertThat("HealthCheck is not registered correctly", registry.getNames(), contains(bean.NAME));
+		HealthCheck check = registry.getHealthCheck(bean.NAME);
+
+		registry.runHealthChecks();
+
+		assertThat("Execution count is incorrect.", bean.getCheckCount(), is(equalTo(1l)));
+	}
 }
