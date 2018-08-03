@@ -24,7 +24,9 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
+import com.codahale.metrics.health.HealthCheck;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -83,6 +85,13 @@ public class MetricsExtension implements Extension {
         pat.setAnnotatedType(new AnnotatedTypeDecorator<>(pat.getAnnotatedType(), METRICS_BINDING));
     }
 
+    private <X> void healthchecks(@Observes @WithAnnotations({ApplicationScoped.class}) ProcessAnnotatedType<X> pat) {
+        if (pat.getAnnotatedType().getJavaClass().isAssignableFrom(HealthCheck.class)) {
+            // TODO: Intercept / decorate the HealthCheck to add it to the registry.
+            return;
+        }
+    }
+
     private void metricProducerField(@Observes ProcessProducerField<? extends Metric, ?> ppf) {
         metrics.put(ppf.getBean(), ppf.getAnnotatedProducerField());
     }
@@ -95,7 +104,9 @@ public class MetricsExtension implements Extension {
 
     private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(MetricRegistry.class).isEmpty())
-            abd.addBean(new MetricRegistryBean(manager));
+            abd.addBean(DefaultRegistryBean.createDefaultMetricRegistry(manager));
+        if (manager.getBeans(HealthCheck.class).isEmpty())
+            abd.addBean(DefaultRegistryBean.createDefaultHealthCheckRegistry(manager));
     }
 
     private void configuration(@Observes AfterDeploymentValidation adv, BeanManager manager) {

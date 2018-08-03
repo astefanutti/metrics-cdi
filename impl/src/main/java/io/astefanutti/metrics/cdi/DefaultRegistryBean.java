@@ -16,6 +16,7 @@
 package io.astefanutti.metrics.cdi;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
@@ -35,18 +36,36 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/* package-private */ final class MetricRegistryBean implements Bean<MetricRegistry>, PassivationCapable {
+/* package-private */ final class DefaultRegistryBean<T> implements Bean<T>, PassivationCapable {
 
     private final Set<Annotation> qualifiers = new HashSet<>(Arrays.<Annotation>asList(new AnnotationLiteral<Any>(){}, new AnnotationLiteral<Default>(){}));
 
     private final Set<Type> types;
 
-    private final InjectionTarget<MetricRegistry> target;
+    private final Class<T> clazz;
 
-    MetricRegistryBean(BeanManager manager) {
-        AnnotatedType<MetricRegistry> annotatedType = manager.createAnnotatedType(MetricRegistry.class);
+    private final InjectionTarget<T> target;
+
+    private final String name;
+
+    private final String description;
+
+    DefaultRegistryBean(BeanManager manager, Class<T> clazz, String name, String description) {
+        AnnotatedType<T> annotatedType = manager.createAnnotatedType(clazz);
+        this.clazz = clazz;
+        this.name = name;
+        this.description = description;
         this.types = annotatedType.getTypeClosure();
         this.target = manager.createInjectionTarget(annotatedType);
+    }
+
+    /** Factory method to return properly typed and described RegistryBean */
+    static DefaultRegistryBean<MetricRegistry> createDefaultMetricRegistry(BeanManager manager) {
+        return new DefaultRegistryBean<>(manager, MetricRegistry.class, "metric-registry", "Default Metric Registry Bean");
+    }
+
+    static DefaultRegistryBean<HealthCheckRegistry> createDefaultHealthCheckRegistry(BeanManager manager) {
+        return new DefaultRegistryBean<>(manager, HealthCheckRegistry.class, "health-check-registry", "Default Health Check Registry Bean");
     }
 
     @Override
@@ -60,8 +79,8 @@ import java.util.Set;
     }
 
     @Override
-    public MetricRegistry create(CreationalContext<MetricRegistry> context) {
-        MetricRegistry registry = target.produce(context);
+    public T create(CreationalContext<T> context) {
+        T registry = target.produce(context);
         target.inject(registry, context);
         target.postConstruct(registry);
         context.push(registry);
@@ -69,15 +88,15 @@ import java.util.Set;
     }
 
     @Override
-    public void destroy(MetricRegistry instance, CreationalContext<MetricRegistry> context) {
+    public void destroy(T instance, CreationalContext<T> context) {
         target.preDestroy(instance);
         target.dispose(instance);
         context.release();
     }
 
     @Override
-    public Class<MetricRegistry> getBeanClass() {
-        return MetricRegistry.class;
+    public Class<T> getBeanClass() {
+        return clazz;
     }
 
     @Override
@@ -87,12 +106,12 @@ import java.util.Set;
 
     @Override
     public String getName() {
-        return "metric-registry";
+        return this.name;
     }
 
     @Override
     public String toString() {
-        return "Default Metric Registry Bean";
+        return this.description;
     }
 
     @Override
