@@ -143,16 +143,27 @@ public class MetricsExtension implements Extension {
             // skip producer methods with injection points.
             if (hasInjectionPoints(bean.getValue()))
                 continue;
-            healthCheckRegistry.register(bean.getKey().getName(), (HealthCheck) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
-        }
 
-        // Clear out collected health check producers.
-        healthChecks.clear();
+            String name = bean.getKey().getName();
+            if (name == null) {
+                name = bean.getKey().getBeanClass().getName();
+            }
+            healthCheckRegistry.register(name, (HealthCheck) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
+        }
 
         // Declarative Scoped Beans
         for (Bean<?> bean : manager.getBeans(HealthCheck.class)) {
-            healthCheckRegistry.register(bean.getName(), (HealthCheck) manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)));
+            if (healthChecks.containsKey(bean))
+                continue;
+
+            String name = bean.getName();
+            if (name == null) {
+                name = bean.getBeanClass().getName();
+            }
+            healthCheckRegistry.register(name, (HealthCheck) manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)));
         }
+        // Clear out collected health check producers.
+        healthChecks.clear();
     }
 
     private static <T extends Annotation> void declareAsInterceptorBinding(Class<T> annotation, BeanManager manager, BeforeBeanDiscovery bbd) {
