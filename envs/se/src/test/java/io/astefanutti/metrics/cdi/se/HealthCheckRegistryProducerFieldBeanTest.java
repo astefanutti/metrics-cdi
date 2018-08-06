@@ -30,12 +30,10 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

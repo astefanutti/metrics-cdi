@@ -56,7 +56,7 @@ public class HealthCheckFieldProducerTest {
 	@InSequence(1)
 	public void healthChecksRegistered() {
 		assertThat("HealthChecks are not registered correctly", registry.getNames(),
-				containsInRelativeOrder("check1", "check2"));
+				containsInRelativeOrder("check1", "check2", "io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3"));
 
 		SortedMap<String, Result> results = registry.runHealthChecks();
 
@@ -66,6 +66,9 @@ public class HealthCheckFieldProducerTest {
 
 		assertThat("check2 did not execute", results, hasKey("check2"));
 		assertThat("check2 did not fail", results.get("check2").isHealthy(), is(false));
+
+		assertThat("check3 did not execute", results, hasKey("io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3"));
+		assertThat("check3 did not pass", results.get("io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3").isHealthy(), is(true));
 	}
 
 }

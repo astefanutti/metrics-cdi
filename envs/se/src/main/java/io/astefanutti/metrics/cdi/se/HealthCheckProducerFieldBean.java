@@ -16,10 +16,13 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Qualifier;
 
 @ApplicationScoped
 public class HealthCheckProducerFieldBean {
@@ -38,6 +41,14 @@ public class HealthCheckProducerFieldBean {
 		@Override
 		protected Result check() throws Exception {
 			return Result.unhealthy("check2");
+		}
+	};
+
+	@Produces
+	private final HealthCheck check3 = new HealthCheck() {
+		@Override
+		protected Result check() throws Exception {
+			return Result.healthy("check3");
 		}
 	};
 }

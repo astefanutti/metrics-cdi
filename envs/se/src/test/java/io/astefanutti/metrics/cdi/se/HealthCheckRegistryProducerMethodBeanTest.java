@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class HealthCheckRegistryProducerMethodBeanTest {
 	@Deployment
-	static Archive<?> createTestArchive() {
+	public static Archive<?> createTestArchive() {
 		return ShrinkWrap.create(JavaArchive.class)
 				// HealthCheck registry bean
 				.addClass(HealthCheckRegistryProducerMethodBean.class)

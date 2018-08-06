@@ -16,9 +16,11 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.health.HealthCheck;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
 @ApplicationScoped
@@ -43,5 +45,18 @@ public class HealthCheckProducerMethodBean {
 				return Result.unhealthy("check2");
 			}
 		};
+	}
+
+	@Produces
+	@Named("not_registered_healthcheck")
+	HealthCheck anInjectedCheck(HealthCheckRegistry registry, InjectionPoint ip) {
+		HealthCheck check3 = new HealthCheck() {
+			@Override
+			protected Result check() throws Exception {
+				return Result.healthy("check3");
+			}
+		};
+		registry.register("check3", check3);
+		return check3;
 	}
 }

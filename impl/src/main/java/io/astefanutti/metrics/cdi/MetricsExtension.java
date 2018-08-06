@@ -146,7 +146,7 @@ public class MetricsExtension implements Extension {
 
             String name = bean.getKey().getName();
             if (name == null) {
-                name = bean.getKey().getBeanClass().getName();
+                name = bean.getKey().getBeanClass().getName() + "." + bean.getValue().getJavaMember().getName();
             }
             healthCheckRegistry.register(name, (HealthCheck) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
         }

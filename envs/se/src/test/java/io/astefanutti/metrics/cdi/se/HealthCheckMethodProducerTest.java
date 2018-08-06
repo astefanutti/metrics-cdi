@@ -29,8 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.SortedMap;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
@@ -53,8 +56,25 @@ public class HealthCheckMethodProducerTest {
 	@Inject
 	private HealthCheckRegistry registry;
 
+	@Inject
+	@Named("not_registered_healthcheck")
+	private HealthCheck not_registerd_healthcheck;
+
 	@Test
 	@InSequence(1)
+	public void healthChecksRegisteredProperly() {
+		assertThat("HealthChecks are not registered correctly", registry.getNames(),
+			contains(
+					"check1", "check2", "check3"
+			)
+		);
+		assertThat("HealthChecks are not registered correctly", registry.getNames(),
+			not(contains("not_registered_healthcheck"))
+		);
+	}
+
+	@Test
+	@InSequence(2)
 	public void healthChecksRegistered() {
 		assertThat("HealthChecks are not registered correctly", registry.getNames(),
 				containsInRelativeOrder("check1", "check2"));
