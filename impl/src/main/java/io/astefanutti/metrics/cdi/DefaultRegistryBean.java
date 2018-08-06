@@ -136,6 +136,6 @@ import java.util.Set;
 
     @Override
     public String getId() {
-        return getClass().getName();
+        return getClass().getName() + "#" + name;
     }
 }
