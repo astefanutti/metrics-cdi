@@ -27,7 +27,7 @@ _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotatio
 + Injects [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
 + Registers or retrieves the produced [`Metric`][] instances in the resolved [`MetricRegistry`][] bean,
 + Declares automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container,
-Registers [`HealthCheck`][] beans with a provided or automatically configured [`HealthCheckRegistry`][] bean instance.
++ Registers [`HealthCheck`][] beans with a provided or automatically configured [`HealthCheckRegistry`][] bean instance.
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
