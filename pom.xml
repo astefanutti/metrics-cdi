@@ -58,7 +58,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metrics.version>3.2.4</metrics.version>
+        <metrics.version>4.0.3</metrics.version>
         <cdi.version>1.2</cdi.version>
         <cdi2.version>2.0</cdi2.version>
         <javaee7.version>7.0</javaee7.version>
@@ -208,6 +208,17 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-annotation</artifactId>
+                <version>${metrics.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-healthchecks</artifactId>
                 <version>${metrics.version}</version>
                 <exclusions>
                     <exclusion>
