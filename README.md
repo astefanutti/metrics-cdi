@@ -6,19 +6,18 @@
 [Travis build]: https://travis-ci.org/astefanutti/metrics-cdi
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.svg
 [Coveralls build]: https://coveralls.io/github/astefanutti/metrics-cdi
-[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
-[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.6.0/
+[Maven Central badge]: https://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
+[Maven Central build]: https://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.6.0/
 
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
 [CDI]: http://www.cdi-spec.org/
-[Metrics]: http://metrics.dropwizard.io/
+[Metrics]: https://metrics.dropwizard.io/
 [JSR 346]: https://jcp.org/en/jsr/detail?id=346
 [JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
 [JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
 [JSR 365]: https://jcp.org/en/jsr/detail?id=365
-[CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
-[CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
+[CDI 1.2]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
 ## About
 
@@ -80,9 +79,9 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 | [Jetty][]             | `9.4.5`        | [Servlet 3.1][]                    |
 | [WildFly 10][WildFly] | `10.1.0.Final` | [Java EE 7][]                      |
 
-[Weld]: http://weld.cdi-spec.org/
-[OpenWebBeans]: http://openwebbeans.apache.org/
-[Jetty]: http://www.eclipse.org/jetty/
+[Weld]: https://weld.cdi-spec.org/
+[OpenWebBeans]: https://openwebbeans.apache.org/
+[Jetty]: https://www.eclipse.org/jetty/
 [WildFly]: http://www.wildfly.org/
 [Servlet 3.1]: https://jcp.org/en/jsr/detail?id=340
 [Java EE 7]: https://jcp.org/en/jsr/detail?id=342
@@ -147,8 +146,8 @@ class CountedConstructorBean {
 
 The `name` and `absolute` attributes available on every _Metrics_ annotation can be used to customize the name of the `Metric` instance that gets registered in the _Metrics_ registry. The default naming convention being the annotated member simple name relative to the declaring class fully qualified name as illustrated in the above examples.
 
-[bean class]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
-[bean constructor]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
+[bean class]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#what_classes_are_beans
+[bean constructor]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#bean_constructors
 
 #### Metrics Injection
 
@@ -187,7 +186,7 @@ class TimerBean {
 In the above example, the `-parameters` compiler option is required to get access to injected parameter name. Indeed, access to parameter names at runtime has been introduced with [JEP-118][]. More information can be found in [Obtaining Names of Method Parameters][] from the Java tutorials. To work around that limitation, or to declare a specific name, the `@Metric` annotation can be used as documented hereafter.
 
 [JEP-118]: http://openjdk.java.net/jeps/118
-[Obtaining Names of Method Parameters]: http://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
+[Obtaining Names of Method Parameters]: https://docs.oracle.com/javase/tutorial/reflect/member/methodparameterreflection.html
 
 In order to provide metadata for the `Metric` instantiation and resolution, the injection point can be annotated with the `@Metric` annotation, e.g., with an [injected field][]:
 
@@ -222,8 +221,8 @@ class TimerBean {
 }
 ```
 
-[injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
-[initializer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#initializer_methods
+[injected field]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
+[initializer method]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#initializer_methods
 
 #### Metrics Registration
 
@@ -274,8 +273,8 @@ class CacheHitRatioBean {
 [gauges]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#gauges
 [histograms]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#histograms
 [timers]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#timers
-[producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
-[producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
+[producer field]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
+[producer method]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 
 #### Metrics Registry Resolution
 
@@ -339,8 +338,8 @@ class MetricRegistryFactoryBean {
 }
 ```
 
-[typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
-[built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
+[typesafe resolution]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
+[built-in _default_ qualifier]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
 
 #### Health Checks
 
@@ -403,9 +402,9 @@ Note that this event can only be used within the context of the observer method 
 > + Primitive types,
 > + And array types.
 
-[Java Interceptors Specification 1.2]: http://download.oracle.com/otndocs/jcp/interceptors-1_2-mrel2-eval-spec/
-[Binding an interceptor to a bean]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#binding_interceptor_to_bean
-[Unproxyable bean types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#unproxyable
+[Java Interceptors Specification 1.2]: https://download.oracle.com/otndocs/jcp/interceptors-1_2-mrel2-eval-spec/
+[Binding an interceptor to a bean]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#binding_interceptor_to_bean
+[Unproxyable bean types]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#unproxyable
 
 ## License
 
