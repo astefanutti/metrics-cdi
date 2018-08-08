@@ -31,23 +31,23 @@ Registers [`HealthCheck`][] beans with a provided or automatically configured [`
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
-[Metrics annotations]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/package-summary.html
-[`@CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/CachedGauge.html
-[`@Counted`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Counted.html
-[`@ExceptionMetered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
-[`@Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
-[`@Metered`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Gauge.html
-[`@Timed`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/annotation/Timed.html
-[`CachedGauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/CachedGauge.html
-[`Counter`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Counter.html
-[`Gauge`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Gauge.html
-[`Histogram`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Histogram.html
-[`Meter`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Meter.html
-[`Metric`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Metric.html
-[`Timer`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Timer.html
-[`MetricRegistry`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/MetricRegistry.html
-[`HealthCheck`]: https://metrics.dropwizard.io/3.1.0/apidocs/com/codahale/metrics/health/HealthCheck.html
-[`HealthCheckRegistry`]: https://metrics.dropwizard.io/3.1.0/apidocs/com/codahale/metrics/health/HealthCheckRegistry.html
+[Metrics annotations]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/package-summary.html
+[`@CachedGauge`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/CachedGauge.html
+[`@Counted`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/Counted.html
+[`@ExceptionMetered`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/ExceptionMetered.html
+[`@Gauge`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/Gauge.html
+[`@Metered`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/Gauge.html
+[`@Timed`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/annotation/Timed.html
+[`CachedGauge`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/CachedGauge.html
+[`Counter`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Counter.html
+[`Gauge`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Gauge.html
+[`Histogram`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Histogram.html
+[`Meter`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Meter.html
+[`Metric`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Metric.html
+[`Timer`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/Timer.html
+[`MetricRegistry`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/MetricRegistry.html
+[`HealthCheck`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/health/HealthCheck.html
+[`HealthCheckRegistry`]: https://metrics.dropwizard.io/4.0.0/apidocs/com/codahale/metrics/health/HealthCheckRegistry.html
 
 ## Getting Started
 
@@ -94,13 +94,13 @@ The [metrics registration](#metrics-registration) mechanism can be used to custo
 
 [Health checks](#health-checks) support is automatically activated when the `metrics-healthchecks` optional dependency is present in the classpath.
 
-[_Metrics_ registry]: https://dropwizard.github.io/metrics/3.1.0/getting-started/#the-registry
+[_Metrics_ registry]: https://metrics.dropwizard.io/4.0.0/getting-started.html#the-registry
 
 #### Metrics AOP Instrumentation
 
 _Metrics_ comes with the [`metrics-annotation`][] module that contains a set of annotations and provides a standard way to integrate _Metrics_ with frameworks supporting Aspect Oriented Programming (AOP). These annotations are supported by _Metrics CDI_ that implements their contract as documented in their Javadoc.
 
-[`metrics-annotation`]: https://github.com/dropwizard/metrics/tree/master/metrics-annotation
+[`metrics-annotation`]: https://github.com/dropwizard/metrics/tree/4.0.0-docs/metrics-annotation
 
 For example, a method of a bean can be annotated so that its execution can be monitored using _Metrics_:
 
@@ -270,9 +270,9 @@ class CacheHitRatioBean {
 }
 ```
 
-[gauges]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#gauges
-[histograms]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#histograms
-[timers]: https://dropwizard.github.io/metrics/3.1.0/manual/core/#timers
+[gauges]: https://metrics.dropwizard.io/4.0.0/manual/core.html#gauges
+[histograms]: https://metrics.dropwizard.io/4.0.0/manual/core.html#histograms
+[timers]: https://metrics.dropwizard.io/4.0.0/manual/core.html#timers
 [producer field]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 [producer method]: https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 
