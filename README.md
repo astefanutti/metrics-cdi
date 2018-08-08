@@ -23,11 +23,12 @@
 ## About
 
 _Metrics CDI_ provides support for the [_Metrics_ annotations][Metrics annotations] in CDI enabled environments. It implements the contract specified by these annotations with the following level of functionality:
-+ Intercept invocations of bean constructors, methods and public methods of bean classes annotated with [`@Counted`][], [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
-+ Create [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and [`@CachedGauge`][] respectively,
-+ Inject [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
-+ Register or retrieve the produced [`Metric`][] instances in the resolved [`MetricRegistry`][] bean,
-+ Declare automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container.
++ Intercepts invocations of bean constructors, methods and public methods of bean classes annotated with [`@Counted`][], [`@ExceptionMetered`][], [`@Metered`][] and [`@Timed`][],
++ Creates [`Gauge`][] and [`CachedGauge`][] instances for bean methods annotated with [`@Gauge`][] and [`@CachedGauge`][] respectively,
++ Injects [`Counter`][], [`Gauge`][], [`Histogram`][], [`Meter`][] and [`Timer`][] instances,
++ Registers or retrieves the produced [`Metric`][] instances in the resolved [`MetricRegistry`][] bean,
++ Declares automatically a default [`MetricRegistry`][] bean if no one exists in the CDI container,
+Registers [`HealthCheck`][] beans with a provided or automatically configured [`HealthCheckRegistry`][] bean instance.
 
 _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 
@@ -46,6 +47,8 @@ _Metrics CDI_ is compatible with _Metrics_ version `3.1.0`+.
 [`Metric`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Metric.html
 [`Timer`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/Timer.html
 [`MetricRegistry`]: https://dropwizard.github.io/metrics/3.1.0/apidocs/com/codahale/metrics/MetricRegistry.html
+[`HealthCheck`]: https://metrics.dropwizard.io/3.1.0/apidocs/com/codahale/metrics/health/HealthCheck.html
+[`HealthCheckRegistry`]: https://metrics.dropwizard.io/3.1.0/apidocs/com/codahale/metrics/health/HealthCheckRegistry.html
 
 ## Getting Started
 
@@ -89,6 +92,8 @@ _Metrics CDI_ is currently successfully tested with the following containers:
 _Metrics CDI_ activates the [_Metrics_ AOP Instrumentation](#metrics-aop-instrumentation) for beans annotated with [_Metrics_ annotations][Metrics annotations] and automatically registers the corresponding `Metric` instances in the [_Metrics_ registry][] resolved for the CDI application. The registration of these `Metric` instances happens each time such a bean gets instantiated. Besides, `Metric` instances can be retrieved from the _Metrics_ registry by declaring [metrics injection points](#metrics-injection).
 
 The [metrics registration](#metrics-registration) mechanism can be used to customize the `Metric` instances that get registered. Besides, the [_Metrics_ registry resolution](#metrics-registry-resolution) mechanism can be used for the application to provide a custom [`MetricRegistry`] instance.
+
+[Health checks](#health-checks) support is automatically activated when the `metrics-healthchecks` optional dependency is present in the classpath.
 
 [_Metrics_ registry]: https://dropwizard.github.io/metrics/3.1.0/getting-started/#the-registry
 
@@ -337,6 +342,33 @@ class MetricRegistryFactoryBean {
 [typesafe resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#typesafe_resolution
 [built-in _default_ qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#builtin_qualifiers
 
+#### Health Checks
+
+_Metrics CDI_ automatically registers a `HealthCheckRegistry` bean into the CDI container. This follows the same resolution mechanism as that of the [_Metrics_ registry](#metrics-registry-resolution), so that the application may provide a custom `HealthCheckRegistry` instance.
+
+_Metrics CDI_ then automatically registers any `HealthCheck` instance with the configured `HealthCheckRegistry` instance.
+A `HealthCheck` bean can be declared as any CDI bean, e.g. with a [bean class][]:
+
+```java
+import com.codahale.metrics.health.HealthCheck;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+@Named("databaseHealthCheck")
+class DatabaseHealthCheck extends HealthCheck {
+
+    @Inject
+    private Database database;
+
+    @Override
+    protected Result check() {
+        return database.ping()
+            ? Result.healthy()
+            : Result.unhealthy("Can't ping database!");
+    }
+}
+```
 
 #### Metrics CDI Configuration
 
