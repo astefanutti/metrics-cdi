@@ -22,23 +22,19 @@ import javax.inject.Named;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static io.astefanutti.metrics.cdi.se.HealthCheckBean.NAME;
-
 @ApplicationScoped
-@Named(NAME)
+@Named("HealthCheckBean")
 public class HealthCheckBean extends HealthCheck {
 
-	static final String NAME = "HealthCheckBean";
+    private final AtomicLong checkCount = new AtomicLong(0l);
 
-	private AtomicLong checkCount = new AtomicLong(0l);
+    @Override
+    public Result check() {
+        checkCount.incrementAndGet();
+        return Result.healthy();
+    }
 
-	@Override
-	public Result check() {
-		checkCount.incrementAndGet();
-		return Result.healthy();
-	}
-
-	public Long getCheckCount() {
-		return checkCount.get();
-	}
+    Long getCheckCount() {
+        return checkCount.get();
+    }
 }

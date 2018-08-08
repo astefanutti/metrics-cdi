@@ -16,39 +16,37 @@
 package io.astefanutti.metrics.cdi.se;
 
 import com.codahale.metrics.health.HealthCheck;
-import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
 @ApplicationScoped
 public class HealthCheckProducerFieldBean {
-	@Produces
-	@Named("check1")
-	private final HealthCheck check1 = new HealthCheck() {
-		@Override
-		protected Result check() {
-			return Result.healthy("check1");
-		}
-	};
 
-	@Produces
-	@Named("check2")
-	private final HealthCheck check2 = new HealthCheck() {
-		@Override
-		protected Result check() throws Exception {
-			return Result.unhealthy("check2");
-		}
-	};
+    @Produces
+    @Named("check1")
+    private final HealthCheck check1 = new HealthCheck() {
+        @Override
+        protected Result check() {
+            return Result.healthy("check1");
+        }
+    };
 
-	@Produces
-	private final HealthCheck check3 = new HealthCheck() {
-		@Override
-		protected Result check() throws Exception {
-			return Result.healthy("check3");
-		}
-	};
+    @Produces
+    @Named("check2")
+    private final HealthCheck check2 = new HealthCheck() {
+        @Override
+        protected Result check() {
+            return Result.unhealthy("check2");
+        }
+    };
+
+    @Produces
+    private final HealthCheck check3 = new HealthCheck() {
+        @Override
+        protected Result check() {
+            return Result.healthy("check3");
+        }
+    };
 }

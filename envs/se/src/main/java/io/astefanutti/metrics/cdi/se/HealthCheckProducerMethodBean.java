@@ -25,38 +25,39 @@ import javax.inject.Named;
 
 @ApplicationScoped
 public class HealthCheckProducerMethodBean {
-	@Produces
-	@Named("check1")
-	HealthCheck aHealthyCheck() {
-		return new HealthCheck() {
-			@Override
-			protected Result check() {
-				return Result.healthy("check1");
-			}
-		};
-	}
 
-	@Produces
-	@Named("check2")
-	HealthCheck anUnhealthyCheck() {
-		return new HealthCheck() {
-			@Override
-			protected Result check() throws Exception {
-				return Result.unhealthy("check2");
-			}
-		};
-	}
+    @Produces
+    @Named("check1")
+    HealthCheck aHealthyCheck() {
+        return new HealthCheck() {
+            @Override
+            protected Result check() {
+                return Result.healthy("check1");
+            }
+        };
+    }
 
-	@Produces
-	@Named("not_registered_healthcheck")
-	HealthCheck anInjectedCheck(HealthCheckRegistry registry, InjectionPoint ip) {
-		HealthCheck check3 = new HealthCheck() {
-			@Override
-			protected Result check() throws Exception {
-				return Result.healthy("check3");
-			}
-		};
-		registry.register("check3", check3);
-		return check3;
-	}
+    @Produces
+    @Named("check2")
+    HealthCheck anUnhealthyCheck() {
+        return new HealthCheck() {
+            @Override
+            protected Result check() {
+                return Result.unhealthy("check2");
+            }
+        };
+    }
+
+    @Produces
+    @Named("not_registered_healthcheck")
+    HealthCheck anInjectedCheck(HealthCheckRegistry registry, InjectionPoint ip) {
+        HealthCheck check3 = new HealthCheck() {
+            @Override
+            protected Result check() {
+                return Result.healthy("check3");
+            }
+        };
+        registry.register("check3", check3);
+        return check3;
+    }
 }

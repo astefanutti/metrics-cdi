@@ -15,13 +15,7 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
-import com.codahale.metrics.health.HealthCheck;
-
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static io.astefanutti.metrics.cdi.se.HealthCheckBean.NAME;
 
 @ApplicationScoped
 public class UnnamedHealthCheckBean extends HealthCheckBean {

@@ -42,50 +42,46 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class HealthCheckMethodProducerTest {
 
-	@Deployment
-	public static Archive<?> createTestArchive() {
-		return ShrinkWrap.create(JavaArchive.class)
-				// TestBean
-				.addClass(HealthCheckProducerMethodBean.class)
-				// Metrics CDI Extension
-				.addPackage(MetricsExtension.class.getPackage())
-				// Bean archive deployment descriptor
-				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-	}
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(JavaArchive.class)
+            // TestBean
+            .addClass(HealthCheckProducerMethodBean.class)
+            // Metrics CDI Extension
+            .addPackage(MetricsExtension.class.getPackage())
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
 
-	@Inject
-	private HealthCheckRegistry registry;
+    @Inject
+    private HealthCheckRegistry registry;
 
-	@Inject
-	@Named("not_registered_healthcheck")
-	private HealthCheck not_registerd_healthcheck;
+    @Inject
+    @Named("not_registered_healthcheck")
+    private HealthCheck not_registerd_healthcheck;
 
-	@Test
-	@InSequence(1)
-	public void healthChecksRegisteredProperly() {
-		assertThat("HealthChecks are not registered correctly", registry.getNames(),
-			contains(
-					"check1", "check2", "check3"
-			)
-		);
-		assertThat("HealthChecks are not registered correctly", registry.getNames(),
-			not(contains("not_registered_healthcheck"))
-		);
-	}
+    @Test
+    @InSequence(1)
+    public void healthChecksRegisteredProperly() {
+        assertThat("HealthChecks are not registered correctly", registry.getNames(),
+            contains("check1", "check2", "check3"));
 
-	@Test
-	@InSequence(2)
-	public void healthChecksRegistered() {
-		assertThat("HealthChecks are not registered correctly", registry.getNames(),
-				containsInRelativeOrder("check1", "check2"));
+        assertThat("HealthChecks are not registered correctly", registry.getNames(),
+            not(contains("not_registered_healthcheck")));
+    }
 
-		SortedMap<String, HealthCheck.Result> results = registry.runHealthChecks();
+    @Test
+    @InSequence(2)
+    public void healthChecksRegistered() {
+        assertThat("HealthChecks are not registered correctly", registry.getNames(),
+            containsInRelativeOrder("check1", "check2"));
 
+        SortedMap<String, HealthCheck.Result> results = registry.runHealthChecks();
 
-		assertThat("check1 did not execute", results, hasKey("check1"));
-		assertThat("check1 did not pass", results.get("check1").isHealthy(), is(true));
+        assertThat("check1 did not execute", results, hasKey("check1"));
+        assertThat("check1 did not pass", results.get("check1").isHealthy(), is(true));
 
-		assertThat("check2 did not execute", results, hasKey("check2"));
-		assertThat("check2 did not fail", results.get("check2").isHealthy(), is(false));
-	}
+        assertThat("check2 did not execute", results, hasKey("check2"));
+        assertThat("check2 did not fail", results.get("check2").isHealthy(), is(false));
+    }
 }

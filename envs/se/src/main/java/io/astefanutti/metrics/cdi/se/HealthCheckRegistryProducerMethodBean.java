@@ -21,11 +21,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
 public class HealthCheckRegistryProducerMethodBean {
-	@Produces
-	@ApplicationScoped
-	HealthCheckRegistry registry() {
-		HealthCheckRegistry registry = new HealthCheckRegistry();
-		return registry;
-	}
 
+    @Produces
+    @ApplicationScoped
+    HealthCheckRegistry registry() {
+        return new HealthCheckRegistry();
+    }
 }

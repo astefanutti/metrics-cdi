@@ -15,6 +15,7 @@
  */
 package io.astefanutti.metrics.cdi.se;
 
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import io.astefanutti.metrics.cdi.MetricsExtension;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -38,39 +39,38 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class HealthCheckFieldProducerTest {
-	@Deployment
-	public static Archive<?> createTestArchive() {
-		return ShrinkWrap.create(JavaArchive.class)
-				// Test bean
-				.addClass(HealthCheckProducerFieldBean.class)
-				// Metrics CDI Extension
-				.addPackage(MetricsExtension.class.getPackage())
-				// Bean archive deployment descriptor
-				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-	}
 
-	@Inject
-	private HealthCheckRegistry registry;
+    private final static String HEALTH_CHECK_NAME = MetricRegistry.name(HealthCheckProducerFieldBean.class, "check3");
 
-	@Test
-	@InSequence(1)
-	public void healthChecksRegistered() {
-		assertThat("HealthChecks are not registered correctly", registry.getNames(),
-				containsInRelativeOrder("check1", "check2", "io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3"));
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(JavaArchive.class)
+            // Test bean
+            .addClass(HealthCheckProducerFieldBean.class)
+            // Metrics CDI Extension
+            .addPackage(MetricsExtension.class.getPackage())
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
 
-		SortedMap<String, Result> results = registry.runHealthChecks();
+    @Inject
+    private HealthCheckRegistry registry;
 
+    @Test
+    @InSequence(1)
+    public void healthChecksRegistered() {
+        assertThat("HealthChecks are not registered correctly", registry.getNames(),
+                containsInRelativeOrder("check1", "check2", HEALTH_CHECK_NAME));
 
-		assertThat("check1 did not execute", results, hasKey("check1"));
-		assertThat("check1 did not pass", results.get("check1").isHealthy(), is(true));
+        SortedMap<String, Result> results = registry.runHealthChecks();
 
-		assertThat("check2 did not execute", results, hasKey("check2"));
-		assertThat("check2 did not fail", results.get("check2").isHealthy(), is(false));
+        assertThat("check1 did not execute", results, hasKey("check1"));
+        assertThat("check1 did not pass", results.get("check1").isHealthy(), is(true));
 
-		assertThat("check3 did not execute", results, hasKey("io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3"));
-		assertThat("check3 did not pass", results.get("io.astefanutti.metrics.cdi.se.HealthCheckProducerFieldBean.check3").isHealthy(), is(true));
-	}
+        assertThat("check2 did not execute", results, hasKey("check2"));
+        assertThat("check2 did not fail", results.get("check2").isHealthy(), is(false));
 
+        assertThat("check3 did not execute", results, hasKey(HEALTH_CHECK_NAME));
+        assertThat("check3 did not pass", results.get(HEALTH_CHECK_NAME).isHealthy(), is(true));
+    }
 }
-
-

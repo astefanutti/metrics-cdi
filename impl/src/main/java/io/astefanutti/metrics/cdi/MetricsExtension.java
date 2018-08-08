@@ -107,10 +107,10 @@ public class MetricsExtension implements Extension {
 
     private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(MetricRegistry.class).isEmpty())
-            abd.addBean(DefaultRegistryBean.createDefaultMetricRegistry(manager));
+            abd.addBean(new SyntheticBean<MetricRegistry>(manager, MetricRegistry.class, "metric-registry", "Default Metric Registry Bean"));
 
         if (manager.getBeans(HealthCheckRegistry.class).isEmpty())
-            abd.addBean(DefaultRegistryBean.createDefaultHealthCheckRegistry(manager));
+            abd.addBean(new SyntheticBean<HealthCheckRegistry>(manager, HealthCheckRegistry.class, "health-check-registry", "Default Health Check Registry Bean"));
     }
 
     private void configuration(@Observes AfterDeploymentValidation adv, BeanManager manager) {

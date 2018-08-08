@@ -22,7 +22,7 @@ import javax.enterprise.inject.Produces;
 
 public class HealthCheckRegistryProducerFieldBean {
 
-	@Produces
-	@ApplicationScoped
-	private final HealthCheckRegistry registry = new HealthCheckRegistry();
+    @Produces
+    @ApplicationScoped
+    private final HealthCheckRegistry registry = new HealthCheckRegistry();
 }
