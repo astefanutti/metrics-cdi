@@ -24,50 +24,36 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Gauge;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
-import com.codahale.metrics.health.HealthCheck;
-import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+
+import static io.astefanutti.metrics.cdi.CdiHelper.declareAsInterceptorBinding;
+import static io.astefanutti.metrics.cdi.CdiHelper.getReference;
+import static io.astefanutti.metrics.cdi.CdiHelper.hasInjectionPoints;
 
 public class MetricsExtension implements Extension {
-
-    private static final AnnotationLiteral<Nonbinding> NON_BINDING = new AnnotationLiteral<Nonbinding>(){};
-
-    private static final AnnotationLiteral<InterceptorBinding> INTERCEPTOR_BINDING = new AnnotationLiteral<InterceptorBinding>(){};
 
     private static final AnnotationLiteral<MetricsBinding> METRICS_BINDING = new AnnotationLiteral<MetricsBinding>(){};
 
     private static final AnnotationLiteral<Default> DEFAULT = new AnnotationLiteral<Default>(){};
 
     private final Map<Bean<?>, AnnotatedMember<?>> metrics = new HashMap<>();
-
-    private final Map<Bean<?>, AnnotatedMember<?>> healthChecks = new HashMap<>();
 
     private final MetricsConfigurationEvent configuration = new MetricsConfigurationEvent();
 
@@ -97,20 +83,9 @@ public class MetricsExtension implements Extension {
             metrics.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
     }
 
-    private void healthCheckProducerField(@Observes ProcessProducerField<? extends HealthCheck, ?> ppf) {
-        healthChecks.put(ppf.getBean(), ppf.getAnnotatedProducerField());
-    }
-
-    private void healthCheckProducerMethod(@Observes ProcessProducerMethod<? extends HealthCheck, ?> ppm) {
-        healthChecks.put(ppm.getBean(), ppm.getAnnotatedProducerMethod());
-    }
-
     private void defaultMetricRegistry(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(MetricRegistry.class).isEmpty())
             abd.addBean(new SyntheticBean<MetricRegistry>(manager, MetricRegistry.class, "metric-registry", "Default Metric Registry Bean"));
-
-        if (manager.getBeans(HealthCheckRegistry.class).isEmpty())
-            abd.addBean(new SyntheticBean<HealthCheckRegistry>(manager, HealthCheckRegistry.class, "health-check-registry", "Default Health Check Registry Bean"));
     }
 
     private void configuration(@Observes AfterDeploymentValidation adv, BeanManager manager) {
@@ -134,64 +109,5 @@ public class MetricsExtension implements Extension {
 
         // Let's clear the collected metric producers
         metrics.clear();
-
-        // Register detected HealthChecks.
-        HealthCheckRegistry healthCheckRegistry = getReference(manager, HealthCheckRegistry.class);
-
-        // Produced Beans.
-        for (Map.Entry<Bean<?>, AnnotatedMember<?>> bean : healthChecks.entrySet()) {
-            // skip producer methods with injection points.
-            if (hasInjectionPoints(bean.getValue()))
-                continue;
-
-            String name = bean.getKey().getName();
-            if (name == null) {
-                name = bean.getKey().getBeanClass().getName() + "." + bean.getValue().getJavaMember().getName();
-            }
-            healthCheckRegistry.register(name, (HealthCheck) getReference(manager, bean.getValue().getBaseType(), bean.getKey()));
-        }
-
-        // Declarative Scoped Beans
-        for (Bean<?> bean : manager.getBeans(HealthCheck.class)) {
-            if (healthChecks.containsKey(bean))
-                continue;
-
-            String name = bean.getName();
-            if (name == null) {
-                name = bean.getBeanClass().getName();
-            }
-            healthCheckRegistry.register(name, (HealthCheck) manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)));
-        }
-        // Clear out collected health check producers.
-        healthChecks.clear();
-    }
-
-    private static <T extends Annotation> void declareAsInterceptorBinding(Class<T> annotation, BeanManager manager, BeforeBeanDiscovery bbd) {
-        AnnotatedType<T> annotated = manager.createAnnotatedType(annotation);
-        Set<AnnotatedMethod<? super T>> methods = new HashSet<>();
-        for (AnnotatedMethod<? super T> method : annotated.getMethods())
-            methods.add(new AnnotatedMethodDecorator<>(method, NON_BINDING));
-
-        bbd.addInterceptorBinding(new AnnotatedTypeDecorator<>(annotated, INTERCEPTOR_BINDING, methods));
-    }
-
-    private static <T> T getReference(BeanManager manager, Class<T> type) {
-        return getReference(manager, type, manager.resolve(manager.getBeans(type)));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T getReference(BeanManager manager, Type type, Bean<?> bean) {
-        return (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
-    }
-
-    private static boolean hasInjectionPoints(AnnotatedMember<?> member) {
-        if (!(member instanceof AnnotatedMethod))
-            return false;
-        AnnotatedMethod<?> method = (AnnotatedMethod<?>) member;
-        for (AnnotatedParameter<?> parameter : method.getParameters()) {
-            if (parameter.getBaseType().equals(InjectionPoint.class))
-                return true;
-        }
-        return false;
     }
 }

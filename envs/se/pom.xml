@@ -11,6 +11,15 @@
     <artifactId>metrics-cdi-se</artifactId>
     <name>Metrics CDI Java SE Environment</name>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-healthchecks</artifactId>
+        </dependency>
+
+    </dependencies>
+
     <profiles>
 
         <profile>

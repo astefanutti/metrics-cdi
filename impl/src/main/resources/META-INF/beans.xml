@@ -5,4 +5,9 @@
                            http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
        version="1.1" bean-discovery-mode="annotated">
 
+    <scan>
+        <exclude name="io.astefanutti.metrics.cdi.HealthCheckExtension">
+            <if-class-not-available name="com.codahale.metrics.health.HealthCheck"/>
+        </exclude>
+    </scan>
 </beans>

@@ -51,6 +51,7 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-healthchecks</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- provided dependencies -->
