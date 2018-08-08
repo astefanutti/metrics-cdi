@@ -7,7 +7,7 @@
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/metrics-cdi/badge.svg
 [Coveralls build]: https://coveralls.io/github/astefanutti/metrics-cdi
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.metrics.cdi/metrics-cdi.svg
-[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.5.0/
+[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/metrics/cdi/metrics-cdi/1.6.0/
 
 [CDI][] portable extension for Dropwizard [Metrics][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
@@ -57,7 +57,7 @@ Add the `metrics-cdi` library as a dependency:
 <dependency>
     <groupId>io.astefanutti.metrics.cdi</groupId>
     <artifactId>metrics-cdi</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 
