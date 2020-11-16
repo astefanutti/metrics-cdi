@@ -67,7 +67,7 @@
         <weld3.version>3.0.3.Final</weld3.version>
         <owb.version>1.7.3</owb.version>
         <wildfly-10.version>10.1.0.Final</wildfly-10.version>
-        <jetty.version>9.4.6.v20170531</jetty.version>
+        <jetty.version>9.4.34.v20201102</jetty.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
         <shrinkwrap.resolver.version>2.2.6</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
